@@ -226,6 +226,21 @@ body{font-family:'Segoe UI',-apple-system,'微軟正黑體',sans-serif;
   transform:translateY(8px);opacity:0;transition:all .2s;z-index:200;pointer-events:none}
 .toast.show{transform:translateY(0);opacity:1}
 
+/* 紀錄管理 */
+.btn-rec{background:#fff;border:1px solid var(--g200);color:var(--g600)}
+.btn-rec:hover{background:var(--g100);color:var(--g800)}
+.rec-item{display:flex;align-items:center;gap:10px;padding:11px 13px;
+  background:var(--g50);border-radius:var(--r);border:1px solid var(--g200);transition:border-color .15s}
+.rec-item:hover{border-color:var(--g300)}
+.rec-info{flex:1;min-width:0}
+.rec-name{font-size:13px;font-weight:600;color:var(--g800);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rec-meta{font-size:10.5px;color:var(--g400);margin-top:2px}
+.rec-prog{display:flex;align-items:center;gap:6px;margin-top:5px}
+.rec-bar{flex:1;height:4px;background:var(--g200);border-radius:2px;overflow:hidden}
+.rec-fill{height:100%;background:var(--pr);border-radius:2px;transition:width .3s}
+.rec-pct{font-size:10.5px;color:var(--g500);flex-shrink:0;min-width:28px;text-align:right}
+.rec-acts{display:flex;gap:5px;flex-shrink:0;align-items:center}
+
 /* Welcome screen */
 .welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;
   min-height:60vh;text-align:center;gap:12px}
@@ -322,6 +337,12 @@ body{font-family:'Segoe UI',-apple-system,'微軟正黑體',sans-serif;
       <div class="pf"><label>核對日期</label>
         <input type="date" id="checkDate"></div>
     </div>
+    <div style="display:flex;gap:5px;align-items:center;border-left:1px solid var(--g200);padding-left:8px">
+      <button class="btn btn-rec" onclick="saveAsRecord()" title="儲存目前進度為一筆紀錄">💾 儲存</button>
+      <button class="btn btn-rec" onclick="openRecordManager()" title="管理所有已儲存的紀錄">📂 紀錄</button>
+      <button class="btn btn-rec" onclick="exportJSON()" title="匯出為 JSON 檔（可換電腦使用）">📤 匯出</button>
+      <label class="btn btn-rec" title="從 JSON 檔匯入" style="cursor:pointer;display:inline-flex;align-items:center;gap:3px">📥 匯入<input type="file" id="importFileInput" accept=".json" onchange="importJSON(event)" style="display:none"></label>
+    </div>
     <button class="btn btn-p" onclick="exportPrint()">🖨 列印/PDF</button>
     <button class="btn btn-d" onclick="confirmReset()">↺ 重置</button>
   </div>
@@ -338,6 +359,10 @@ body{font-family:'Segoe UI',-apple-system,'微軟正黑體',sans-serif;
         <button class="sb-btn sb-btn-p" onclick="exportPrint()">列印</button>
         <button class="sb-btn sb-btn-g" onclick="confirmReset()">重置</button>
       </div>
+      <div class="sb-acts" style="margin-top:5px">
+        <button class="sb-btn sb-btn-g" onclick="saveAsRecord()">💾 儲存紀錄</button>
+        <button class="sb-btn sb-btn-g" onclick="openRecordManager()">📂 紀錄</button>
+      </div>
     </div>
   </aside>
   <main class="main" id="mainContent"></main>
@@ -350,6 +375,19 @@ body{font-family:'Segoe UI',-apple-system,'微軟正黑體',sans-serif;
     <div class="modal-acts">
       <button class="btn-out" onclick="startFresh()">重新開始</button>
       <button class="btn btn-p" onclick="restoreSession()">繼續上次作業</button>
+    </div>
+  </div>
+</div>
+<div class="modal-ov hidden" id="recordModal">
+  <div class="modal" style="max-width:500px;width:92%">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div class="modal-title">📂 紀錄管理</div>
+      <button class="btn-out" onclick="g('recordModal').classList.add('hidden')" style="padding:3px 9px">✕</button>
+    </div>
+    <div style="font-size:11px;color:var(--g400);margin-bottom:10px">最多儲存 20 筆・同名專案＋版次自動覆蓋</div>
+    <div id="recordList" style="max-height:350px;overflow-y:auto;display:flex;flex-direction:column;gap:7px"></div>
+    <div class="modal-acts" style="margin-top:12px;border-top:1px solid var(--g100);padding-top:10px">
+      <button class="btn-out" onclick="g('recordModal').classList.add('hidden')">關閉</button>
     </div>
   </div>
 </div>
@@ -878,6 +916,115 @@ function startFresh(){
 function g(id){return document.getElementById(id);}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function toast(msg){const t=g('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+
+// ═══════════════════════════════════════════════
+// 多份紀錄管理
+// ═══════════════════════════════════════════════
+const RKEY='mep_records_v3';
+function loadRecords(){try{return JSON.parse(localStorage.getItem(RKEY))||[];}catch(e){return[];}}
+function saveRecs(recs){localStorage.setItem(RKEY,JSON.stringify(recs));}
+
+function saveAsRecord(){
+  const proj=g('projectName').value.trim()||'未命名專案';
+  const rev=g('drawingRev').value.trim();
+  const date=g('checkDate').value;
+  const ov=overallStats();
+  const rec={
+    id:Date.now().toString(),ts:new Date().toISOString(),
+    proj:{name:proj,rev,date},pct:ov.pct,
+    sys:S.sys,sub:S.sub,expanded:{...S.expanded},
+    chk:{...S.chk},note:{...S.note},sig:JSON.parse(JSON.stringify(S.sig))
+  };
+  let recs=loadRecords();
+  const ei=recs.findIndex(r=>r.proj.name===proj&&r.proj.rev===rev);
+  if(ei>=0){
+    if(!confirm(`「${proj}${rev?' '+rev:''}」已有紀錄，是否覆蓋？`))return;
+    recs[ei]=rec;
+  } else {
+    recs.unshift(rec);
+    if(recs.length>20)recs.pop();
+  }
+  saveRecs(recs);
+  toast('✅ 已儲存紀錄：'+proj+(rev?' '+rev:''));
+}
+
+function openRecordManager(){_renderRecList();g('recordModal').classList.remove('hidden');}
+
+function _renderRecList(){
+  const recs=loadRecords();
+  g('recordList').innerHTML=recs.length===0
+    ?'<div style="text-align:center;color:#94a3b8;padding:24px 0">尚無儲存的紀錄<br><span style="font-size:10.5px">點「💾 儲存」建立第一筆</span></div>'
+    :recs.map(r=>{
+      const ts=new Date(r.ts).toLocaleString('zh-TW');
+      const nm=esc((r.proj?.name||'未命名')+(r.proj?.rev?' '+r.proj.rev:''));
+      const dt=r.proj?.date?'核對日：'+r.proj.date+' · ':'';
+      return`<div class="rec-item">
+        <div class="rec-info">
+          <div class="rec-name">${nm}</div>
+          <div class="rec-meta">${dt}儲存：${ts}</div>
+          <div class="rec-prog">
+            <div class="rec-bar"><div class="rec-fill" style="width:${r.pct||0}%"></div></div>
+            <span class="rec-pct">${r.pct||0}%</span>
+          </div>
+        </div>
+        <div class="rec-acts">
+          <button class="btn-out" onclick="deleteRecord('${r.id}')" title="刪除" style="padding:5px 9px">🗑</button>
+          <button class="btn btn-p" onclick="loadRecord('${r.id}')">載入</button>
+        </div>
+      </div>`;
+    }).join('');
+}
+
+function loadRecord(id){
+  const r=loadRecords().find(x=>x.id===id);
+  if(!r)return;
+  applyData(r);renderSB();renderMain();save();
+  g('recordModal').classList.add('hidden');
+  toast('✅ 已載入：'+(r.proj?.name||'紀錄'));
+}
+
+function deleteRecord(id){
+  if(!confirm('確定刪除這筆紀錄？'))return;
+  saveRecs(loadRecords().filter(r=>r.id!==id));
+  _renderRecList();
+  toast('🗑 已刪除紀錄');
+}
+
+// ═══════════════════════════════════════════════
+// 匯出 / 匯入 JSON
+// ═══════════════════════════════════════════════
+function exportJSON(){
+  const proj=g('projectName').value||'未命名專案';
+  const data={
+    version:'MEP_v3',exportedAt:new Date().toISOString(),
+    proj:{name:proj,rev:g('drawingRev').value,date:g('checkDate').value},
+    sys:S.sys,sub:S.sub,expanded:S.expanded,
+    chk:S.chk,note:S.note,sig:S.sig
+  };
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download='MEP_'+proj.replace(/[/\\?%*:|"<>]/g,'_')+'_'+new Date().toISOString().split('T')[0]+'.json';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast('✅ 已匯出 JSON 檔案');
+}
+
+function importJSON(e){
+  const file=e.target.files[0];if(!file)return;
+  const rd=new FileReader();
+  rd.onload=ev=>{
+    try{
+      const d=JSON.parse(ev.target.result);
+      if(!d.chk)throw new Error('格式錯誤（缺少 chk 欄位）');
+      applyData(d);renderSB();renderMain();save();
+      toast('✅ 已匯入：'+(d.proj?.name||file.name));
+    }catch(err){alert('❌ 匯入失敗：'+err.message);}
+    e.target.value='';
+  };
+  rd.readAsText(file,'UTF-8');
+}
 
 // ═══════════════════════════════════════════════
 // 初始化（冷啟動）

@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>機水電設計圖說 自主檢查系統</title>
+<style>
+:root{
+  --sb:#1e2d3d;--sbh:#2d4057;--pr:#3b82f6;--prd:#2563eb;
+  --ok:#10b981;--wa:#f59e0b;--er:#ef4444;
+  --g50:#f8fafc;--g100:#f1f5f9;--g200:#e2e8f0;--g300:#cbd5e1;
+  --g400:#94a3b8;--g500:#64748b;--g600:#475569;--g700:#334155;--g800:#1e293b;
+  --r:8px;--sh:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);
+  --sh2:0 4px 6px -1px rgba(0,0,0,.1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',-apple-system,'微軟正黑體',sans-serif;
+  background:var(--g50);color:var(--g800);height:100vh;overflow:hidden;
+  display:flex;flex-direction:column;font-size:14px}
+
+/* ── Header ── */
+.hdr{background:#fff;border-bottom:1px solid var(--g200);padding:0 18px;
+  height:56px;display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;box-shadow:var(--sh);z-index:10}
+.hdr-l{display:flex;align-items:center;gap:10px}
+.logo{width:32px;height:32px;background:linear-gradient(135deg,#3b82f6,#1d4ed8);
+  border-radius:7px;display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:15px;font-weight:700;flex-shrink:0}
+.app-t{font-size:13.5px;font-weight:700;color:var(--g800)}
+.app-s{font-size:10.5px;color:var(--g500)}
+.hdr-r{display:flex;align-items:center;gap:10px}
+.pf{display:flex;flex-direction:column;align-items:flex-end}
+.pf label{font-size:9.5px;color:var(--g400);text-transform:uppercase;letter-spacing:.05em}
+.pf input{border:none;border-bottom:1px solid var(--g200);padding:1px 3px;
+  font-size:12px;color:var(--g700);background:transparent;text-align:right;
+  font-family:inherit;width:130px}
+.pf input[id=drawingRev]{width:65px}
+.pf input[type=date]{width:115px}
+.pf input:focus{outline:none;border-bottom-color:var(--pr)}
+.btn{padding:5px 12px;border-radius:6px;font-size:12px;font-weight:600;
+  cursor:pointer;border:none;transition:all .15s;font-family:inherit}
+.btn-p{background:var(--pr);color:#fff}.btn-p:hover{background:var(--prd)}
+.btn-d{background:#fff;border:1px solid #fca5a5;color:var(--er)}.btn-d:hover{background:#fef2f2}
+
+/* ── Layout ── */
+.body{display:flex;flex:1;overflow:hidden}
+
+/* ── Sidebar ── */
+.sb{width:230px;background:var(--sb);flex-shrink:0;display:flex;flex-direction:column;overflow:hidden}
+.sb-sec{padding:12px 14px 5px;font-size:9.5px;text-transform:uppercase;
+  letter-spacing:.1em;color:#4a5568;font-weight:600}
+.sb-nav{flex:1;overflow-y:auto;padding:3px 0}
+.sb-nav::-webkit-scrollbar{width:3px}
+.sb-nav::-webkit-scrollbar-thumb{background:#374151;border-radius:2px}
+
+/* Parent nav item */
+.nav-item{display:flex;align-items:center;padding:8px 12px;cursor:pointer;
+  transition:all .15s;gap:9px;position:relative;user-select:none}
+.nav-item:hover{background:var(--sbh)}
+.nav-item.active{background:rgba(59,130,246,.15)}
+.nav-item.active::before{content:'';position:absolute;left:0;top:0;bottom:0;
+  width:3px;background:var(--pr);border-radius:0 2px 2px 0}
+.nav-ic{width:24px;height:24px;border-radius:5px;display:flex;align-items:center;
+  justify-content:center;font-size:12px;flex-shrink:0}
+.nav-ct{flex:1;min-width:0}
+.nav-nm{font-size:12px;font-weight:500;color:#94a3b8;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nav-item.active .nav-nm,.nav-item.sub-active .nav-nm{color:#fff}
+.nav-pw{display:flex;align-items:center;gap:4px;margin-top:2px}
+.nav-pb{flex:1;height:2.5px;background:#374151;border-radius:2px;overflow:hidden}
+.nav-pf{height:100%;border-radius:2px;transition:width .3s}
+.nav-pt{font-size:9.5px;color:#4a5568;white-space:nowrap}
+.nav-item.active .nav-pt,.nav-item.sub-active .nav-pt{color:#94a3b8}
+.nav-arrow{font-size:10px;color:#4a5568;transition:transform .2s;flex-shrink:0;margin-left:2px}
+.nav-arrow.open{transform:rotate(90deg)}
+
+/* Sub nav items */
+.sub-nav{overflow:hidden;max-height:0;transition:max-height .25s ease}
+.sub-nav.open{max-height:400px}
+.sub-item{display:flex;align-items:center;padding:7px 12px 7px 36px;
+  cursor:pointer;transition:all .15s;gap:7px;position:relative;user-select:none}
+.sub-item:hover{background:rgba(255,255,255,.06)}
+.sub-item.active{background:rgba(59,130,246,.12)}
+.sub-item.active::before{content:'';position:absolute;left:0;top:0;bottom:0;
+  width:2px;background:var(--pr);border-radius:0 1px 1px 0}
+.sub-dot{width:6px;height:6px;border-radius:50%;background:#4a5568;flex-shrink:0;transition:background .15s}
+.sub-item.active .sub-dot{background:var(--pr)}
+.sub-nm{font-size:11.5px;color:#6b7280;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sub-item.active .sub-nm{color:#93c5fd;font-weight:500}
+.sub-cnt{font-size:10px;color:#374151;flex-shrink:0}
+.sub-item.active .sub-cnt{color:#6b7280}
+
+/* Sidebar footer */
+.sb-foot{padding:12px;border-top:1px solid #2d3748}
+.ov-lbl{display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;margin-bottom:4px}
+.ov-bar{height:5px;background:#2d3748;border-radius:3px;overflow:hidden;margin-bottom:10px}
+.ov-fill{height:100%;border-radius:3px;transition:width .3s;
+  background:linear-gradient(90deg,var(--pr),#34d399)}
+.sb-acts{display:flex;gap:6px}
+.sb-btn{flex:1;padding:6px;border-radius:6px;font-size:11.5px;cursor:pointer;
+  border:none;font-weight:500;font-family:inherit;transition:all .15s}
+.sb-btn-p{background:var(--pr);color:#fff}.sb-btn-p:hover{background:var(--prd)}
+.sb-btn-g{background:#2d3748;color:#94a3b8}.sb-btn-g:hover{background:#374151;color:#fff}
+
+/* ── Main ── */
+.main{flex:1;overflow-y:auto;padding:18px}
+.main::-webkit-scrollbar{width:5px}
+.main::-webkit-scrollbar-thumb{background:var(--g300);border-radius:3px}
+
+/* Page title banner */
+.page-banner{background:linear-gradient(135deg,#1e3a5f,#2563eb);
+  border-radius:var(--r);padding:16px 20px;margin-bottom:14px;
+  display:flex;align-items:center;justify-content:space-between}
+.banner-title{color:#fff;font-size:15px;font-weight:700;letter-spacing:.02em}
+.banner-sub{color:#93c5fd;font-size:11px;margin-top:2px}
+.banner-badge{background:rgba(255,255,255,.15);color:#fff;padding:4px 12px;
+  border-radius:20px;font-size:11px;font-weight:600}
+
+/* System overview card (shown when parent selected, no sub) */
+.sys-overview{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-bottom:4px}
+.sub-card{background:#fff;border-radius:var(--r);padding:14px 16px;box-shadow:var(--sh);
+  cursor:pointer;transition:all .18s;border:2px solid transparent;position:relative}
+.sub-card:hover{box-shadow:var(--sh2);border-color:var(--pr);transform:translateY(-1px)}
+.sub-card.done{border-color:var(--ok)}
+.sub-card-ic{font-size:22px;margin-bottom:8px}
+.sub-card-nm{font-size:13px;font-weight:600;color:var(--g700);margin-bottom:6px}
+.sub-card-prog{display:flex;align-items:center;gap:6px}
+.sc-bar{flex:1;height:4px;background:var(--g200);border-radius:2px;overflow:hidden}
+.sc-fill{height:100%;border-radius:2px;transition:width .3s}
+.sc-pct{font-size:10.5px;color:var(--g500);flex-shrink:0}
+.sub-card-cnt{font-size:10.5px;color:var(--g400);margin-top:4px}
+
+/* Legend */
+.legend{display:flex;align-items:center;gap:10px;margin-bottom:10px;
+  padding:8px 13px;background:#fff;border-radius:var(--r);box-shadow:var(--sh);
+  flex-wrap:wrap;font-size:11px}
+.li{display:flex;align-items:center;gap:3px;color:var(--g600)}
+.ldiv{color:var(--g300);margin:0 1px}
+
+/* System header */
+.sys-hdr{background:#fff;border-radius:var(--r);padding:15px 18px;
+  margin-bottom:10px;box-shadow:var(--sh);display:flex;align-items:center;gap:12px}
+.sys-ic{width:42px;height:42px;border-radius:10px;display:flex;
+  align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.sys-hdr-ct{flex:1}
+.sys-title{font-size:15px;font-weight:700;color:var(--g800);margin-bottom:2px}
+.sys-meta{font-size:11px;color:var(--g500)}
+.sys-right{display:flex;align-items:center;gap:12px}
+.stats{display:flex;gap:12px}
+.stat{text-align:center}
+.stat-v{font-size:17px;font-weight:700;line-height:1}
+.stat-l{font-size:10px;color:var(--g400);margin-top:2px}
+.circ{position:relative;width:50px;height:50px;flex-shrink:0}
+.circ svg{transform:rotate(-90deg)}
+.circ-txt{position:absolute;inset:0;display:flex;align-items:center;
+  justify-content:center;font-size:11px;font-weight:700;color:var(--g700)}
+
+/* Checklist */
+.cl-list{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.cl-item{background:#fff;border-radius:var(--r);padding:11px 13px;
+  box-shadow:var(--sh);border-left:4px solid transparent;transition:all .15s}
+.cl-item:hover{box-shadow:var(--sh2)}
+.cl-item.sa{border-left-color:var(--er)}
+.cl-item.sb2{border-left-color:var(--wa)}
+.cl-item.sc{border-left-color:var(--ok)}
+.cl-item.s-pass{background:#f0fdf4}
+.cl-item.s-issue{background:#fff7f7}
+.cl-item.s-na{opacity:.5}
+.item-row{display:flex;align-items:flex-start;gap:9px}
+.status-btns{display:flex;gap:3px;flex-shrink:0;margin-top:1px}
+.sb3{width:26px;height:26px;border-radius:5px;border:1.5px solid var(--g200);
+  background:#fff;cursor:pointer;font-size:11px;display:flex;align-items:center;
+  justify-content:center;transition:all .15s;font-family:inherit}
+.sb3:hover{border-color:var(--g400);background:var(--g50)}
+.sb3.ap{background:var(--ok);border-color:var(--ok);color:#fff}
+.sb3.ai{background:var(--er);border-color:var(--er);color:#fff}
+.sb3.an{background:var(--g400);border-color:var(--g400);color:#fff}
+.item-ct{flex:1;min-width:0}
+.item-hdr{display:flex;align-items:center;gap:6px;margin-bottom:2px}
+.badge{padding:1.5px 6px;border-radius:4px;font-size:10px;font-weight:700;flex-shrink:0}
+.ba{background:#fef2f2;color:var(--er)}
+.bb{background:#fffbeb;color:#d97706}
+.bc{background:#ecfdf5;color:#059669}
+.item-txt{font-size:12.5px;color:var(--g700);line-height:1.55}
+.item-basis{font-size:10.5px;color:var(--g400);margin-top:2px}
+.item-foot{display:flex;justify-content:flex-end;margin-top:4px}
+.note-tog{font-size:10.5px;color:var(--g400);cursor:pointer;background:none;
+  border:none;padding:2px 5px;border-radius:4px;transition:all .15s;font-family:inherit}
+.note-tog:hover{color:var(--pr);background:var(--g100)}
+.note-area{margin-top:6px;display:none}
+.note-area.show{display:block}
+.note-ta{width:100%;border:1px solid var(--g200);border-radius:6px;
+  padding:5px 9px;font-size:11.5px;color:var(--g600);resize:vertical;
+  min-height:36px;font-family:inherit;background:var(--g50);line-height:1.5}
+.note-ta:focus{outline:none;border-color:var(--pr);background:#fff}
+
+/* Signature */
+.sig-sec{background:#fff;border-radius:var(--r);padding:16px 18px;box-shadow:var(--sh)}
+.sig-title{font-size:11.5px;font-weight:600;color:var(--g600);margin-bottom:9px;
+  padding-bottom:7px;border-bottom:1px solid var(--g100)}
+.sig-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.sig-f{display:flex;flex-direction:column;gap:3px}
+.sig-f label{font-size:10.5px;color:var(--g400)}
+.sig-in{border:none;border-bottom:1.5px solid var(--g200);padding:3px 0;
+  font-size:12px;color:var(--g700);background:transparent;font-family:inherit;width:100%}
+.sig-in:focus{outline:none;border-bottom-color:var(--pr)}
+
+/* Modal */
+.modal-ov{position:fixed;inset:0;background:rgba(15,23,42,.55);
+  display:flex;align-items:center;justify-content:center;z-index:100;
+  backdrop-filter:blur(3px)}
+.modal-ov.hidden{display:none}
+.modal{background:#fff;border-radius:12px;padding:22px;max-width:400px;
+  width:90%;box-shadow:0 20px 40px rgba(0,0,0,.2)}
+.modal-title{font-size:14px;font-weight:700;color:var(--g800);margin-bottom:5px}
+.modal-desc{font-size:12px;color:var(--g500);margin-bottom:16px;line-height:1.6;white-space:pre-line}
+.modal-acts{display:flex;gap:8px;justify-content:flex-end}
+.btn-out{background:#fff;border:1px solid var(--g200);color:var(--g600);
+  padding:6px 13px;border-radius:6px;font-size:12px;font-weight:500;
+  cursor:pointer;font-family:inherit;transition:all .15s}
+.btn-out:hover{background:var(--g100)}
+
+/* Toast */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--g800);color:#fff;
+  padding:8px 14px;border-radius:8px;font-size:12px;box-shadow:var(--sh2);
+  transform:translateY(8px);opacity:0;transition:all .2s;z-index:200;pointer-events:none}
+.toast.show{transform:translateY(0);opacity:1}
+
+/* Welcome screen */
+.welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:60vh;text-align:center;gap:12px}
+.welcome-ic{font-size:52px}
+.welcome-t{font-size:17px;font-weight:700;color:var(--g700)}
+.welcome-s{font-size:12.5px;color:var(--g400);max-width:320px;line-height:1.6}
+
+/* ── 列印狀態標籤（螢幕隱藏，列印顯示）── */
+.print-lbl{display:none}
+.print-sum{display:none}
+
+@media print{
+  /* 強制列印背景色 */
+  *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;color-adjust:exact !important}
+
+  body{height:auto;overflow:visible}
+  .hdr{display:flex !important;box-shadow:none;border-bottom:2px solid #1e3a5f;margin-bottom:6px}
+  .hdr .btn,.hdr .btn-d{display:none !important}
+  .sb,.legend,.modal-ov,.toast{display:none !important}
+  .body{display:block}
+  .main{overflow:visible;padding:4px 0}
+  .page-banner{margin-bottom:8px;-webkit-print-color-adjust:exact !important}
+
+  /* 摘要統計列：列印時顯示 */
+  .print-sum{
+    display:flex !important;gap:0;margin-bottom:10px;
+    border:2px solid #1e3a5f;border-radius:8px;overflow:hidden;
+    font-size:12px;font-weight:600;break-inside:avoid
+  }
+  .ps-cell{flex:1;padding:8px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.3)}
+  .ps-cell:last-child{border-right:none}
+  .ps-cell .ps-num{font-size:20px;font-weight:800;line-height:1;display:block;margin-bottom:2px}
+  .ps-cell .ps-lbl{font-size:10px;opacity:.85;display:block}
+  .ps-total{background:#1e3a5f;color:#fff}
+  .ps-pass {background:#065f46;color:#fff}
+  .ps-issue{background:#991b1b;color:#fff}
+  .ps-na   {background:#374151;color:#fff}
+  .ps-todo {background:#92400e;color:#fff}
+
+  /* 核對項目底色辨識 */
+  .cl-item{
+    break-inside:avoid;box-shadow:none;
+    border:1px solid #d1d5db;border-left:5px solid #d1d5db;
+    margin-bottom:5px;padding:9px 11px
+  }
+  /* 未核對：淡黃，最醒目——代表「還沒看」 */
+  .cl-item:not(.s-pass):not(.s-issue):not(.s-na){
+    background:#fef9c3 !important;border-left-color:#ca8a04 !important
+  }
+  /* 符合：淡綠 */
+  .cl-item.s-pass{background:#dcfce7 !important;border-left-color:#16a34a !important}
+  /* 有問題：淡紅 */
+  .cl-item.s-issue{background:#fee2e2 !important;border-left-color:#dc2626 !important;opacity:1 !important}
+  /* 不適用：淡灰 */
+  .cl-item.s-na{background:#f3f4f6 !important;border-left-color:#9ca3af !important;opacity:1 !important}
+
+  /* 隱藏三態按鈕，改顯示狀態標籤 */
+  .status-btns{display:none}
+  .print-lbl{
+    display:inline-flex !important;align-items:center;
+    padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;
+    margin-bottom:4px;border:1.5px solid currentColor
+  }
+  .pl-pass{background:#dcfce7;color:#15803d;border-color:#16a34a}
+  .pl-issue{background:#fee2e2;color:#b91c1c;border-color:#dc2626}
+  .pl-na{background:#f3f4f6;color:#6b7280;border-color:#9ca3af}
+  .pl-todo{background:#fef9c3;color:#92400e;border-color:#ca8a04}
+
+  .note-area{display:block !important}
+  .note-tog{display:none}
+  .sys-hdr{break-inside:avoid;box-shadow:none;border:1px solid #e2e8f0;margin-bottom:8px}
+  .sig-sec{break-inside:avoid;box-shadow:none;border:1px solid #e2e8f0;margin-top:10px}
+  .cl-list{gap:4px}
+  @page{margin:14mm;size:A4}
+}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-l">
+    <div class="logo">M</div>
+    <div>
+      <div class="app-t">機水電設計圖說 自主檢查系統</div>
+      <div class="app-s">MEP Drawing Self-Inspection System</div>
+    </div>
+  </div>
+  <div class="hdr-r">
+    <div style="display:flex;gap:10px;align-items:center">
+      <div class="pf"><label>專案名稱</label>
+        <input type="text" id="projectName" placeholder="請輸入專案名稱"></div>
+      <div class="pf"><label>版次</label>
+        <input type="text" id="drawingRev" placeholder="Rev.__"></div>
+      <div class="pf"><label>核對日期</label>
+        <input type="date" id="checkDate"></div>
+    </div>
+    <button class="btn btn-p" onclick="exportPrint()">🖨 列印/PDF</button>
+    <button class="btn btn-d" onclick="confirmReset()">↺ 重置</button>
+  </div>
+</header>
+
+<div class="body">
+  <aside class="sb">
+    <div class="sb-sec">系統分類</div>
+    <nav class="sb-nav" id="sbNav"></nav>
+    <div class="sb-foot">
+      <div class="ov-lbl"><span>整體完成進度</span><span id="ovPct">0%</span></div>
+      <div class="ov-bar"><div class="ov-fill" id="ovFill" style="width:0%"></div></div>
+      <div class="sb-acts">
+        <button class="sb-btn sb-btn-p" onclick="exportPrint()">列印</button>
+        <button class="sb-btn sb-btn-g" onclick="confirmReset()">重置</button>
+      </div>
+    </div>
+  </aside>
+  <main class="main" id="mainContent"></main>
+</div>
+
+<div class="modal-ov hidden" id="restoreModal">
+  <div class="modal">
+    <div class="modal-title">🔄 偵測到上次作業紀錄</div>
+    <div class="modal-desc" id="restoreDesc"></div>
+    <div class="modal-acts">
+      <button class="btn-out" onclick="startFresh()">重新開始</button>
+      <button class="btn btn-p" onclick="restoreSession()">繼續上次作業</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════
+// 資料定義
+// ═══════════════════════════════════════════════
+const DATA = [
+  {
+    id:'power', num:1, icon:'⚡', name:'電力系統', color:'#3b82f6', bg:'#eff6ff',
+    expandable: true,
+    subs:[
+      {
+        id:'pw-motor', name:'① 動力系統', icon:'⚙️',
+        items:[
+          {id:'pm01',sev:'A',text:'動力迴路線徑、斷路器規格（AT/AF/IC值）於動力圖說完整標示，並與SLD核對一致',basis:'屋內線路裝置規則；IEC 60364'},
+          {id:'pm02',sev:'A',text:'馬達啟動方式（DOL/Y-△/Soft Starter/VFD）與馬達容量對應正確，啟動電流計算標示',basis:'屋內線路裝置規則；NEMA MG-1'},
+          {id:'pm03',sev:'A',text:'過載保護（OL Relay）設定值標示，設定電流 ≤ 馬達額定電流×1.25倍',basis:'屋內線路裝置規則第65條'},
+          {id:'pm04',sev:'A',text:'導線安培容量已修正降容係數（管內根數/環境溫度），修正後安培容量 ≥ 負載電流',basis:'屋內線路裝置規則'},
+          {id:'pm05',sev:'A',text:'動力盤（MCC/DP）前方維護淨空 ≥1.0m，側面淨空標示，盤體接地連接標示',basis:'屋內線路裝置規則；CNS 13542'},
+          {id:'pm06',sev:'A',text:'PE接地線截面積符合規定（IEC 60364-5-54 Table 54.2），每台設備獨立接地線標示',basis:'IEC 60364-5-54'},
+          {id:'pm07',sev:'A',text:'強電/弱電（控制訊號）Cable Tray 完全實體分隔，不得共用同一Tray格',basis:'工程規範通則；EMC'},
+          {id:'pm08',sev:'A',text:'屋外動力線路：電纜型式為屋外型（UV抗候護套/CVT），管材為HDG/RGS，管口設防水彎頭',basis:'屋內線路裝置規則屋外配線'},
+          {id:'pm09',sev:'B',text:'Cable Tray 電纜截面積合計 ≤ Tray截面積50%（NEC 392），預留20-30%備用空間',basis:'NEC 392'},
+          {id:'pm10',sev:'B',text:'迴路編號跨圖一致：動力平面圖 / Cable Schedule / Panel Schedule / SLD 四圖吻合',basis:'圖說管理規範'},
+          {id:'pm11',sev:'B',text:'防火區劃貫穿點：Cable Tray/電管穿越防火牆、樓板處標示防火填塞工法及材料',basis:'建築技術規則設備篇；消防法'},
+          {id:'pm12',sev:'C',text:'VFD變頻器輸出端電纜建議使用屏蔽電纜（減少EMI），屏蔽層接地方式標示',basis:'IEC 61800-3；EMC'},
+        ]
+      },
+      {
+        id:'pw-light', name:'② 照明系統', icon:'💡',
+        items:[
+          {id:'pl01',sev:'A',text:'照度計算書與圖面燈具數量、型式一致；各空間照度值符合CNS照度標準（辦公≥500lux，走廊≥100lux）',basis:'CNS 12112；建築技術規則'},
+          {id:'pl02',sev:'A',text:'燈具IP等級與安裝環境對應（屋外/潮濕區≥IP65，一般室內IP20，浴廁IP44）',basis:'IEC 60529；CNS'},
+          {id:'pl03',sev:'A',text:'緊急照明設置位置（走廊、樓梯、出入口、避難動線）、數量、備用時間 ≥30分鐘標示',basis:'各類場所消防安全設備設置標準'},
+          {id:'pl04',sev:'A',text:'緊急照明迴路（E迴路）與一般照明迴路完全分離，配電盤名稱牌白底紅字',basis:'消防法；00702 §16010'},
+          {id:'pl05',sev:'A',text:'照明迴路過電流保護（MCCB/MCB）規格標示，分路電流 ≤ 開關額定值80%',basis:'屋內線路裝置規則第85條'},
+          {id:'pl06',sev:'A',text:'防爆區（Ex Zone）燈具須為防爆型（Ex d/Ex e/Ex n），防爆等級標示與危險區域圖一致',basis:'IEC 60079；CNS 3376'},
+          {id:'pl07',sev:'B',text:'燈具電源供電類別標示（N一般/E緊急），緊急出口指示燈設雙電源（市電+電池）',basis:'各類場所消防安全設備設置標準'},
+          {id:'pl08',sev:'B',text:'照明控制方式標示（手動/定時/感應/場景控制），控制迴路線徑及控制器規格',basis:'節能設計規範'},
+          {id:'pl09',sev:'B',text:'燈具安裝高度、維護空間標示，重型燈具（>25kg）安裝固定方式說明',basis:'建築技術規則；CNS'},
+          {id:'pl10',sev:'C',text:'節能設計：全數LED燈具標示，Color Temperature（色溫）及CRI（演色性≥80）標示',basis:'能源管理法；ASHRAE 90.1'},
+        ]
+      },
+      {
+        id:'pw-sld', name:'③ 系統單線・升位圖', icon:'📊',
+        items:[
+          {id:'ps01',sev:'A',text:'所有電源來源清楚標示：台電進線（電壓/容量/進線方式）、緊急發電機、UPS各系統',basis:'屋內線路裝置規則；電業法'},
+          {id:'ps02',sev:'A',text:'主斷路器（ACB/MCCB）IC值 ≥ 該點Isc，附短路電流計算書，各節點Isc值標示',basis:'屋內線路裝置規則；IEC 60947'},
+          {id:'ps03',sev:'A',text:'上下游斷路器保護協調：TCC曲線圖已完成，上下游不重疊（選擇性協調）',basis:'IEC 60947；工程規範'},
+          {id:'ps04',sev:'A',text:'所有負載分路標示：負載名稱、容量（kW/kVA）、電流（A）、電纜規格、斷路器規格',basis:'屋內線路裝置規則'},
+          {id:'ps05',sev:'A',text:'計量設備位置標示：台電計量CT/PT、用戶內部電能表、諧波分析儀（如有）',basis:'電業法；電力設施裝置規則'},
+          {id:'ps06',sev:'A',text:'ATS/STS自動切換開關標示：切換邏輯、切換時間、優先順序（市電→發電機→UPS）',basis:'各類場所消防安全設備設置標準'},
+          {id:'ps07',sev:'A',text:'升位圖各樓層盤體名稱（MDB/SDB/DP/MCC）、編號唯一不重複，位置與平面圖一致',basis:'圖說管理規範'},
+          {id:'ps08',sev:'A',text:'N（中性線）/PE（接地線）分開標示，TN-S系統確認全程N與PE不合用',basis:'IEC 60364-1；屋內線路裝置規則'},
+          {id:'ps09',sev:'B',text:'備用迴路標示（SPARE）數量及容量，供未來擴充使用，與負載計算書餘裕值一致',basis:'圖說管理規範'},
+          {id:'ps10',sev:'B',text:'功率因數改善設備（電容器）標示位置、容量（kVAR），避免過補償（>0.95）',basis:'台電供電契約；電業法'},
+          {id:'ps11',sev:'B',text:'諧波源設備（VFD/UPS/整流器）標示，並確認諧波抑制措施（濾波器/隔離變壓器）',basis:'IEC 61000-3-2；台電法規'},
+          {id:'ps12',sev:'B',text:'圖面圖例完整，各符號代表之設備一致性，圖號版次與各相關圖說同步更新',basis:'圖說管理規範'},
+        ]
+      },
+      {
+        id:'pw-solar', name:'④ 太陽能系統', icon:'☀️',
+        items:[
+          {id:'pso01',sev:'A',text:'太陽能板容量（kWp）與逆變器（Inverter）額定容量對應，DC/AC轉換率計算書標示',basis:'IEC 61215；CNS 15114'},
+          {id:'pso02',sev:'A',text:'DC側電壓（Voc×串列數）不超過逆變器最大輸入電壓，防反接二極體設計確認',basis:'IEC 62109；CNS'},
+          {id:'pso03',sev:'A',text:'孤島效應保護（Anti-islanding）設計確認，市電停電時DC側安全斷開機制',basis:'CNS 15932；台電併聯規定'},
+          {id:'pso04',sev:'A',text:'DC側接地（負接地/正接地/浮接）方式標示，AC側接地符合屋內線路裝置規則',basis:'IEC 60364-7-712；CNS'},
+          {id:'pso05',sev:'A',text:'DC側電纜選用太陽能專用電纜（UV抗候/耐高溫），過電流保護（DC熔絲/DC斷路器）設置',basis:'IEC 62930；NEC 690'},
+          {id:'pso06',sev:'A',text:'台電併聯申請相關：計量電表（發電量/售電量）位置、保護電驛（過/低電壓、頻率）設定',basis:'台電再生能源設置規定'},
+          {id:'pso07',sev:'B',text:'太陽能板支架結構耐風速計算（台灣≥60m/s），支架接地及防雷設計',basis:'建築技術規則；CNS 15114'},
+          {id:'pso08',sev:'B',text:'監控系統（MPPT追蹤效率、發電量記錄）設計，遠端監控通訊介面標示',basis:'IEC 61724；業主需求'},
+          {id:'pso09',sev:'C',text:'陰影分析（周邊遮蔽物影響）確認，串並聯設計最佳化，建議各串列設Optimizer',basis:'ASHRAE；設計最佳化'},
+        ]
+      },
+      {
+        id:'pw-detail', name:'⑤ 大樣圖詳細圖', icon:'🔍',
+        items:[
+          {id:'pd01',sev:'A',text:'電管/電纜穿越防火牆、防火樓板之防火填塞大樣圖：材料品牌、施工工法、防火時效標示',basis:'建築技術規則設備篇；消防法；00702 §07840'},
+          {id:'pd02',sev:'A',text:'接地系統大樣：接地棒埋設方式、熱熔接接頭工法（Cadweld）、接地銅排安裝、保護管規格',basis:'00702 §16061；屋內線路裝置規則'},
+          {id:'pd03',sev:'A',text:'屋外設備基座大樣：排水孔位置、密封防水工法、設備固定方式、接地連接',basis:'建築技術規則；設備規範'},
+          {id:'pd04',sev:'A',text:'防爆設備安裝大樣：導管密封接頭（Seal Fitting）位置（距防爆設備≤450mm）、充填方式',basis:'IEC 60079-14；CNS 3376'},
+          {id:'pd05',sev:'B',text:'Cable Tray/線梯支撐大樣：支撐間距（≤1.5m水平/≤3m垂直）、吊架規格、與結構接合方式',basis:'NEC 392；NEMA VE1'},
+          {id:'pd06',sev:'B',text:'BUSWAY管道間安裝大樣：Spring Hanger彈簧吊架規格、穿樓板框架補強、防水密封環',basis:'NEC 368；設備廠商規範'},
+          {id:'pd07',sev:'B',text:'配電盤/MCC基礎大樣：槽鋼基礎規格（100×50×5mm）、水平度要求、地腳螺栓',basis:'00702 §16401；CNS 13542'},
+          {id:'pd08',sev:'B',text:'電管彎管/轉彎半徑大樣：最小彎曲半徑（≥6倍管外徑），管口護口設置',basis:'屋內線路裝置規則；NEC 358'},
+          {id:'pd09',sev:'C',text:'標示牌大樣：尺寸、字體、顏色規定（一般白底黑字、緊急白底紅字），固定方式',basis:'00702 §16010'},
+        ]
+      },
+      {
+        id:'pw-facade', name:'⑥ 外牆燈系統', icon:'🏙️',
+        items:[
+          {id:'pf01',sev:'A',text:'所有屋外燈具IP等級 ≥ IP65（防塵防噴水），濱海或腐蝕環境需IP66以上或不鏽鋼材質',basis:'IEC 60529；CNS'},
+          {id:'pf02',sev:'A',text:'屋外電纜型式選用屋外型（UV抗候PVC/PE護套），不得使用一般屋內型CV電線',basis:'屋內線路裝置規則屋外配線規定'},
+          {id:'pf03',sev:'A',text:'屋外配管管材為熱浸鍍鋅鋼管（HDG）或RGS，管口設防水彎頭（Weatherproof Fitting）',basis:'屋內線路裝置規則；CNS'},
+          {id:'pf04',sev:'A',text:'所有接線箱、拉線箱為防水型（IP54以上），電管接頭使用防水型密封接頭',basis:'IEC 60529；CNS'},
+          {id:'pf05',sev:'A',text:'外牆燈接地保護：每組燈具獨立PE接地線，接地線截面積符合規定，截面積標示',basis:'IEC 60364-5-54；屋內線路裝置規則'},
+          {id:'pf06',sev:'A',text:'LED驅動器（Driver）安裝於室內或有防水盒保護，驅動器電壓等級與燈具額定一致',basis:'IEC 61347；CNS'},
+          {id:'pf07',sev:'B',text:'控制系統：定時控制/感應控制/智慧調光控制方式標示，控制器位置及訊號線路規格',basis:'節能設計規範；業主需求'},
+          {id:'pf08',sev:'B',text:'光害防制：燈具出光角度、遮光板設計，符合環保署光害管制要求（夜間關燈時間）',basis:'光害防制法規；環保法規'},
+          {id:'pf09',sev:'B',text:'廣告燈箱/招牌燈：負載容量計算書，迴路設獨立斷路器，廣告燈申請許可確認',basis:'建築法；廣告物管理辦法'},
+          {id:'pf10',sev:'C',text:'免工具維護設計：燈具更換高度評估，危險高度（>3m）燈具建議設安全繩扣',basis:'職業安全衛生規定'},
+        ]
+      },
+      {
+        id:'pw-genset', name:'⑦ 緊急發電機系統', icon:'🔋',
+        items:[
+          {id:'pg01',sev:'A',text:'⚠️ 燃料儲量 ≥8小時（消防法強制），業主規範00702 §16231日用箱僅2小時，以消防法為準',basis:'消防法；各類場所消防安全設備設置標準'},
+          {id:'pg02',sev:'A',text:'發電機容量計算書：含馬達啟動衝擊電流（最大單台啟動電流疊加），計算書與SLD容量一致',basis:'00702 §16231；IEC 60034'},
+          {id:'pg03',sev:'A',text:'ATS自動切換開關：切換時間 ≤10秒（消防法），半導體廠確認是否需 ≤8秒，型式（機械/固態）',basis:'消防法；各類場所消防安全設備設置標準'},
+          {id:'pg04',sev:'A',text:'發電機接地：第二種接地（系統接地），接地電阻依 V/Ig 計算，接地銅排位置標示',basis:'屋內線路裝置規則第27條'},
+          {id:'pg05',sev:'A',text:'緊急發電機機房：通風量計算（散熱+燃燒空氣），進排氣口位置，防火牆區劃',basis:'建築技術規則；消防法'},
+          {id:'pg06',sev:'A',text:'排氣管路：消音器型式（住宅區型，消音率≥20dBA），排氣管保溫（防燙），出口位置',basis:'00702 §16231；噪音管制法'},
+          {id:'pg07',sev:'A',text:'燃料儲存槽：防漏設計（圍堰容積≥110%油箱容量），溢油感測器，加油口防雨加鎖',basis:'水污染防治法；消防法'},
+          {id:'pg08',sev:'B',text:'發電機廠內試驗記錄要求：25%/50%/75%/100%各連續2小時，頻率穩定度≤0.25%，電壓穩定度≤2%',basis:'00702 §16231'},
+          {id:'pg09',sev:'B',text:'機房噪音量測點（機房外1m）≤80dB(A)（00702規定），隔音設計說明',basis:'00702 §16231；噪音管制法'},
+          {id:'pg10',sev:'B',text:'冷卻系統：風冷式確認進排氣通道不短路，水冷式散熱器位置，停機冷卻延遲運轉功能',basis:'00702 §16231；設備廠商規範'},
+          {id:'pg11',sev:'B',text:'發電機品牌：引擎限定CUMMINS/CAT/MTU，發電機頭限定MARATHON/STAMFORD/CAT（00702）',basis:'00702 §16231'},
+          {id:'pg12',sev:'C',text:'自動週期性試運轉：建議設定每月自動試車30分鐘，試車紀錄系統，遠端監控介面',basis:'維護管理規範；業主需求'},
+        ]
+      }
+    ]
+  },
+  {
+    id:'elv', num:2, icon:'📡', name:'弱電系統', color:'#8b5cf6', bg:'#f5f3ff',
+    expandable:false,
+    items:[
+      {id:'e01',sev:'A',text:'強弱電纜路實體分隔（不同Tray或不同管路），弱電Tray與強電Tray間距 ≥150mm',basis:'EMC工程規範；SEMI E78'},
+      {id:'e02',sev:'A',text:'屏蔽電纜（ESD/EMC用途）標示STP/FTP型式，屏蔽層接地方式標示（單端或雙端），不可兩端同時接地至不同接地點',basis:'SEMI E78；IEC 61000'},
+      {id:'e03',sev:'A',text:'ESD靜電接地路徑完整，接地電阻 ≤1Ω（ANSI/ESD S6.1），ESD接地與電力接地系統獨立分開',basis:'ANSI/ESD S6.1；SEMI S2'},
+      {id:'e04',sev:'A',text:'弱電盤體接地線規格標示（儀控/ESD/電力接地各自分開，回路至獨立接地系統）',basis:'SEMI S2；00702 §16061'},
+      {id:'e05',sev:'B',text:'弱電電纜型式完整標示（Cat.6/Cat.6A/OM3光纖/同軸/屏蔽對絞線），並標示用途及最高頻率',basis:'TIA/EIA-568；ISO 11801'},
+      {id:'e06',sev:'B',text:'半導體廠：SEMI S2 EPO緊急斷電迴路完整性確認，設備洩漏電流 ≤3.5mA',basis:'SEMI S2'},
+      {id:'e07',sev:'B',text:'半導體廠：SEMI F47電壓驟降耐受（50%降落0.2s / 70%降落0.5s / 80%降落1s）於圖說確認',basis:'SEMI F47'},
+      {id:'e08',sev:'C',text:'弱電橋架填充率 ≤50%，各類訊號線路分槽規劃，預留未來30%擴充空間',basis:'TIA-569'},
+    ]
+  },
+  {
+    id:'water', num:3, icon:'💧', name:'給水系統', color:'#06b6d4', bg:'#ecfeff',
+    expandable:false,
+    items:[
+      {id:'w01',sev:'A',text:'末端最低服務水壓 ≥1kgf/cm²（98kPa），水壓計算書標示各樓層末端水壓值',basis:'建築物給水排水設備設計及裝置規則'},
+      {id:'w02',sev:'A',text:'靜水壓 ≤5kgf/cm²（490kPa），超過需設PRV減壓閥，圖說標示PRV位置及設定壓力值',basis:'建築物給水排水設備設計及裝置規則'},
+      {id:'w03',sev:'A',text:'飲用水管與非飲用水管（紫色標示）完全分離，非飲用水支管設逆止閥防回流污染',basis:'建築物給水排水設備設計及裝置規則'},
+      {id:'w04',sev:'A',text:'屋頂水箱容量 ≥1日用水量；地下蓄水池容量為日用水量4/10~6/10，圖說標示容量值（m³）',basis:'建築物給水排水設備設計及裝置規則'},
+      {id:'w05',sev:'A',text:'儲水槽附屬配件齊全標示：通氣管、溢水管、排水管、可加鎖人孔、液位計（缺一即退件）',basis:'建築物給水排水設備設計及裝置規則'},
+      {id:'w06',sev:'B',text:'管材依安裝環境正確選用（屋外/直埋/屋內/高溫），埋設管路標示覆土深度及保護方式',basis:'CNS標準；各管材規範'},
+      {id:'w07',sev:'B',text:'試壓規格標示（工作壓力×1.5倍，保壓時間≥24hr），沖洗及消毒程序說明',basis:'施工規範'},
+      {id:'w08',sev:'B',text:'主要閥門（截止/球/閘閥）位置完整標示，維護操作空間淨距確認（閥室尺寸）',basis:'施工維護規範'},
+    ]
+  },
+  {
+    id:'drain', num:4, icon:'🔄', name:'排水系統', color:'#64748b', bg:'#f8fafc',
+    expandable:false,
+    items:[
+      {id:'d01',sev:'A',text:'排水橫管坡度：75mm管 ≥1/50；100mm管 ≥1/100；100mm以上 ≥1/200（圖說需標示坡度值）',basis:'建築物給水排水設備設計及裝置規則'},
+      {id:'d02',sev:'A',text:'污水管（含糞便）與廢水管（洗滌/空調冷凝水）分流配管，進化糞池前完全分流',basis:'建築物給水排水設備設計及裝置規則；下水道法'},
+      {id:'d03',sev:'A',text:'每一衛生設備均設獨立存水彎（防臭氣），存水彎型式及水封深度（≥50mm）標示',basis:'建築物給水排水設備設計及裝置規則'},
+      {id:'d04',sev:'A',text:'通氣管頂端高出屋頂 ≥600mm，遠離進氣口及開窗，頂端加裝防蟲網',basis:'建築物給水排水設備設計及裝置規則'},
+      {id:'d05',sev:'A',text:'廠房/實驗室酸鹼廢水管材確認耐腐蝕性（PP/PVDF/316L不鏽鋼），與一般排水完全分流',basis:'勞工安全衛生規定；環保法規'},
+      {id:'d06',sev:'B',text:'清潔口位置標示（排水橫管每15m一個，轉彎90°處設置），維護可達性確認',basis:'建築物給水排水設備設計及裝置規則'},
+      {id:'d07',sev:'B',text:'排水管管徑依排水單位數（DFU）計算，計算書與圖說管徑一致，截流器/油脂截留器設置',basis:'建築物給水排水設備設計及裝置規則'},
+    ]
+  },
+  {
+    id:'fire', num:5, icon:'🔥', name:'消防系統', color:'#ef4444', bg:'#fef2f2',
+    expandable:false,
+    items:[
+      {id:'f01',sev:'A',text:'⚠️ 緊急發電機燃料儲量 ≥8小時（消防法），業主規範00702 §16231僅要求2小時，法規優先',basis:'消防法；各類場所消防安全設備設置標準'},
+      {id:'f02',sev:'A',text:'消防/緊急迴路電纜標示耐燃等級（FR/FRNC/FP），不得使用一般CV電線',basis:'消防法；各類場所消防安全設備設置標準'},
+      {id:'f03',sev:'A',text:'消防幫浦雙電源供電（一般電源＋緊急電源），ATS自動切換，切換時間標示',basis:'各類場所消防安全設備設置標準'},
+      {id:'f04',sev:'A',text:'緊急發電機啟動時間 ≤10秒（消防法），半導體廠確認業主規範是否需 ≤8秒',basis:'消防法；各類場所消防安全設備設置標準'},
+      {id:'f05',sev:'A',text:'室內消防栓：水箱容量 ≥1.2m³，幫浦流量 ≥130L/min，末端壓力 ≥1.7kgf/cm²',basis:'各類場所消防安全設備設置標準'},
+      {id:'f06',sev:'A',text:'緊急照明備用時間 ≥30分鐘，緊急出口指示燈設置位置及數量符合規定',basis:'各類場所消防安全設備設置標準'},
+      {id:'f07',sev:'B',text:'消防配管尺寸、灑水頭間距（標準型3.6×3.6m/快速反應型3.0×3.0m）、迴路編號完整標示',basis:'各類場所消防安全設備設置標準'},
+      {id:'f08',sev:'B',text:'消防設備電源線路與一般電源線路物理隔離，消防系統不因一般系統故障而失效',basis:'各類場所消防安全設備設置標準'},
+    ]
+  },
+  {
+    id:'hvac', num:6, icon:'❄️', name:'空調系統', color:'#0ea5e9', bg:'#f0f9ff',
+    expandable:false,
+    items:[
+      {id:'h01',sev:'A',text:'換氣次數符合場所規定（辦公室≥6次/hr；餐廳≥12次/hr；廚房≥30次/hr），圖說標示換氣量計算',basis:'建築技術規則建築設備篇；室內空氣品質管理法'},
+      {id:'h02',sev:'A',text:'每人外氣量（辦公室≥20m³/hr；餐廳≥25m³/hr），外氣比例 ≥送風量15%',basis:'建築技術規則建築設備篇'},
+      {id:'h03',sev:'A',text:'室內空氣品質（公告場所）：CO₂≤1000ppm；PM2.5≤35μg/m³；TVOC≤0.56mg/m³；CO≤9ppm',basis:'室內空氣品質管理法'},
+      {id:'h04',sev:'A',text:'冷媒管保溫規格標示（管徑/保溫材厚度/防潮層），防結露計算確認',basis:'ASHRAE；設備廠商規範'},
+      {id:'h05',sev:'B',text:'冷凝水排水坡度 ≥1/100，排水管末端接存水彎，排水量計算標示',basis:'空調設備安裝規範'},
+      {id:'h06',sev:'B',text:'空調設備電源容量（kW/kVA/FLA）與動力圖說核對一致，啟動電流標示',basis:'電氣設備安裝規範'},
+      {id:'h07',sev:'B',text:'室外機位置確認：通風不短路回流、與建築開窗距離足夠、噪音防護措施標示',basis:'設備廠商規範；噪音管制法'},
+      {id:'h08',sev:'C',text:'節能設計：VFD變頻驅動標示、COP/EER值標示、台灣能源效率標章等級',basis:'能源管理法；台灣能源之星'},
+    ]
+  },
+  {
+    id:'vent', num:7, icon:'💨', name:'通風系統', color:'#10b981', bg:'#ecfdf5',
+    expandable:false,
+    items:[
+      {id:'v01',sev:'A',text:'換氣次數符合規定（廁所≥15次/hr；停車場≥10次/hr，含CO濃度聯動），並標示計算依據',basis:'建築技術規則建築設備篇'},
+      {id:'v02',sev:'A',text:'機械排煙量：防煙區劃內 ≥1m³/min/m²樓地板面積，排煙口位置及有效面積標示',basis:'建築技術規則建築設備篇'},
+      {id:'v03',sev:'A',text:'防火閘門（Fire Damper）設置於所有穿越防火區劃的風管，電動型標示控制方式及聯動訊號',basis:'建築技術規則建築設備篇；消防法'},
+      {id:'v04',sev:'A',text:'停車場CO感測器聯動排風機控制圖說標示，CO濃度設定值（通常25/50ppm兩段連動）',basis:'建築技術規則建築設備篇；職業安全衛生規則'},
+      {id:'v05',sev:'B',text:'風管材質依安裝位置選用（廚房油煙：不鏽鋼；屋外：鍍鋅防腐；一般室內：鍍鋅薄鋼板）',basis:'SMACNA；CNS'},
+      {id:'v06',sev:'B',text:'風管支撐間距符合規定（矩形風管≤3m，圓形≤4m），屋外風管防腐及保溫處理標示',basis:'SMACNA；設備規範'},
+      {id:'v07',sev:'C',text:'噪音管制：進排氣口消音器設置，機房隔音設計，鄰地界音量符合環境噪音標準',basis:'噪音管制法'},
+    ]
+  },
+  {
+    id:'grnd', num:8, icon:'🌍', name:'避雷接地系統', color:'#f59e0b', bg:'#fffbeb',
+    expandable:false,
+    items:[
+      {id:'g01',sev:'A',text:'接地電阻值：00702業主規範要求 ≤10Ω（法規第三種 ≤100Ω，業主規範更嚴，以10Ω為準）',basis:'屋內線路裝置規則第26-31條；00702 §16061'},
+      {id:'g02',sev:'A',text:'接地棒規格：銅包鋼棒，直徑19mm，長3m（00702 §16061），不得以鍍鋅鋼棒替代',basis:'00702 §16061；CNS'},
+      {id:'g03',sev:'A',text:'地下接地棒連接工法：熱熔接（Cadweld/Thermic Welding），不得使用一般焊接或壓接',basis:'00702 §16061'},
+      {id:'g04',sev:'A',text:'ESD靜電接地電阻 ≤1Ω（ANSI/ESD S6.1），ESD接地與電力接地系統完全獨立分開',basis:'ANSI/ESD S6.1；SEMI S2'},
+      {id:'g05',sev:'A',text:'避雷針規格：銅棒直徑 ≥12mm（建築技術規則），支架耐風速 ≥60m/sec（00702 §16061）',basis:'建築技術規則第22條；00702 §16061'},
+      {id:'g06',sev:'A',text:'特別第三種接地（150V以上低壓設備機殼）≤10Ω，與系統接地分開標示',basis:'屋內線路裝置規則第29條'},
+      {id:'g07',sev:'B',text:'接地棒埋設：地面下至少3m或地下水位以下，多棒並設間距 ≥2m，連接線 ≥30mm²',basis:'00702 §16061'},
+      {id:'g08',sev:'B',text:'地面接地導線保護管：地面上2.5m/地下0.6m段以PVC管保護，接地排絕緣顏色PVC綠色',basis:'00702 §16061；CNS 5202'},
+      {id:'g09',sev:'B',text:'接地系統圖與SLD、動力圖說核對一致：接地點位置、接地線截面積、接地型式（TN-S/TT/IT）',basis:'IEC 60364-5-54'},
+      {id:'g10',sev:'B',text:'測試時機標注：乾燥天氣下進行，雨後至少1週後測試（避免濕土影響接地電阻讀值）',basis:'00702 §16061'},
+    ]
+  }
+];
+
+// ═══════════════════════════════════════════════
+// 狀態
+// ═══════════════════════════════════════════════
+const KEY='mep_v3';
+let S={
+  sys:'',        // 目前選中的 parent系統 id
+  sub:'',        // 目前選中的 sub系統 id（expandable才有）
+  expanded:{},   // {sysId: true/false}
+  chk:{},        // {itemId: 'pass'|'issue'|'na'|''}
+  note:{},       // {itemId: string}
+  sig:{}         // {subId|sysId: {designer,checker,date}}
+};
+
+// ═══════════════════════════════════════════════
+// LocalStorage
+// ═══════════════════════════════════════════════
+function save(){
+  localStorage.setItem(KEY,JSON.stringify({
+    sys:S.sys,sub:S.sub,expanded:S.expanded,
+    chk:S.chk,note:S.note,sig:S.sig,
+    proj:{name:g('projectName').value,rev:g('drawingRev').value,date:g('checkDate').value},
+    ts:new Date().toISOString()
+  }));
+}
+function loadSaved(){try{return JSON.parse(localStorage.getItem(KEY));}catch(e){return null;}}
+function applyData(d){
+  S.sys=d.sys||'';S.sub=d.sub||'';S.expanded=d.expanded||{};
+  S.chk=d.chk||{};S.note=d.note||{};S.sig=d.sig||{};
+  if(d.proj){g('projectName').value=d.proj.name||'';g('drawingRev').value=d.proj.rev||'';g('checkDate').value=d.proj.date||'';}
+}
+
+// ═══════════════════════════════════════════════
+// 統計
+// ═══════════════════════════════════════════════
+function getItems(target){ // target = sys obj or sub obj
+  return target.items||[];
+}
+function calcStats(items){
+  let done=0,issues=0;
+  items.forEach(i=>{const s=S.chk[i.id]||'';if(s)done++;if(s==='issue')issues++;});
+  return{total:items.length,done,issues,pct:items.length?Math.round(done/items.length*100):0};
+}
+function sysAllItems(sys){
+  if(sys.expandable) return sys.subs.flatMap(s=>s.items);
+  return sys.items||[];
+}
+function overallStats(){
+  let t=0,d=0;
+  DATA.forEach(sys=>{const items=sysAllItems(sys);const st=calcStats(items);t+=st.total;d+=st.done;});
+  return{pct:t?Math.round(d/t*100):0};
+}
+
+// ═══════════════════════════════════════════════
+// 渲染 Sidebar
+// ═══════════════════════════════════════════════
+function renderSB(){
+  g('sbNav').innerHTML=DATA.map(sys=>{
+    const isAct=S.sys===sys.id;
+    const isExp=S.expanded[sys.id];
+    const items=sysAllItems(sys);
+    const st=calcStats(items);
+    let html=`<div class="nav-item${isAct&&!sys.expandable?' active':isAct?' sub-active':''}" onclick="clickParent('${sys.id}')">
+      <div class="nav-ic" style="background:${sys.bg};color:${sys.color}">${sys.icon}</div>
+      <div class="nav-ct">
+        <div class="nav-nm">${sys.num}. ${sys.name}</div>
+        <div class="nav-pw">
+          <div class="nav-pb"><div class="nav-pf" style="width:${st.pct}%;background:${sys.color}"></div></div>
+          <div class="nav-pt">${st.done}/${st.total}</div>
+        </div>
+      </div>
+      ${sys.expandable?`<span class="nav-arrow${isExp?' open':''}">▶</span>`:''}
+    </div>`;
+    if(sys.expandable){
+      html+=`<div class="sub-nav${isExp?' open':''}">`;
+      sys.subs.forEach(sub=>{
+        const ss=calcStats(sub.items);
+        const isSubAct=S.sub===sub.id;
+        html+=`<div class="sub-item${isSubAct?' active':''}" onclick="clickSub('${sys.id}','${sub.id}')">
+          <div class="sub-dot"></div>
+          <span class="sub-nm">${sub.name}</span>
+          <span class="sub-cnt">${ss.done}/${ss.total}</span>
+        </div>`;
+      });
+      html+='</div>';
+    }
+    return html;
+  }).join('');
+  const ov=overallStats();
+  g('ovPct').textContent=ov.pct+'%';
+  g('ovFill').style.width=ov.pct+'%';
+}
+
+// ═══════════════════════════════════════════════
+// 渲染主內容
+// ═══════════════════════════════════════════════
+function renderMain(){
+  const banner=`<div class="page-banner">
+    <div><div class="banner-title">機水電設計圖說 自主檢查項目及確認系統</div>
+    <div class="banner-sub">MEP Drawing Self-Inspection &amp; Confirmation System</div></div>
+    <div class="banner-badge">送審前核對</div>
+  </div>`;
+
+  if(!S.sys){
+    g('mainContent').innerHTML=banner+`<div class="welcome">
+      <div class="welcome-ic">📋</div>
+      <div class="welcome-t">請從左側選擇系統開始核對</div>
+      <div class="welcome-s">點選左側任一系統或子項目，右側將顯示對應的自主檢查表</div>
+    </div>`;
+    return;
+  }
+  const sys=DATA.find(s=>s.id===S.sys);
+  if(!sys) return;
+
+  // Expandable + 無子項選中 → 顯示子系統概覽
+  if(sys.expandable&&!S.sub){
+    const cards=sys.subs.map(sub=>{
+      const ss=calcStats(sub.items);
+      return`<div class="sub-card${ss.pct===100?' done':''}" onclick="clickSub('${sys.id}','${sub.id}')">
+        <div class="sub-card-ic">${sub.icon}</div>
+        <div class="sub-card-nm">${sub.name}</div>
+        <div class="sub-card-prog">
+          <div class="sc-bar"><div class="sc-fill" style="width:${ss.pct}%;background:${sys.color}"></div></div>
+          <div class="sc-pct">${ss.pct}%</div>
+        </div>
+        <div class="sub-card-cnt">共${ss.total}項・完成${ss.done}項${ss.issues>0?'・⚠️'+ss.issues+'問題':''}</div>
+      </div>`;
+    }).join('');
+    g('mainContent').innerHTML=banner+`<div class="sys-overview">${cards}</div>`;
+    return;
+  }
+
+  // 取得要顯示的項目清單
+  let items,title,icon,color,bg,sigKey;
+  if(sys.expandable&&S.sub){
+    const sub=sys.subs.find(s=>s.id===S.sub);
+    if(!sub) return;
+    items=sub.items; title=`${sys.name} ▸ ${sub.name}`;
+    icon=sub.icon; color=sys.color; bg=sys.bg; sigKey=sub.id;
+  } else {
+    items=sys.items||[]; title=sys.name;
+    icon=sys.icon; color=sys.color; bg=sys.bg; sigKey=sys.id;
+  }
+
+  const st=calcStats(items);
+  const C=2*Math.PI*20;
+  const off=C*(1-st.pct/100);
+  const passN=items.filter(i=>(S.chk[i.id]||'')==='pass').length;
+  const naN=items.filter(i=>(S.chk[i.id]||'')==='na').length;
+  const todoN=items.filter(i=>!(S.chk[i.id]||'')).length;
+
+  const itemsH=items.map((item,idx)=>{
+    const s=S.chk[item.id]||'';
+    const n=S.note[item.id]||'';
+    const hasNote=n.trim().length>0;
+    let cls=`cl-item s${item.sev==='A'?'a':item.sev==='B'?'b2':'c'}`;
+    if(s==='pass')cls+=' s-pass';
+    if(s==='issue')cls+=' s-issue';
+    if(s==='na')cls+=' s-na';
+    const bt=item.sev==='A'?'A 必修正':item.sev==='B'?'B 建議確認':'C 建議優化';
+    // 列印用狀態標籤
+    const plCls=s==='pass'?'pl-pass':s==='issue'?'pl-issue':s==='na'?'pl-na':'pl-todo';
+    const plTxt=s==='pass'?'✓ 符合':s==='issue'?'✗ 有問題':s==='na'?'— 不適用':'□ 待核對';
+    return`<div class="${cls}" id="ci-${item.id}">
+      <div class="item-row">
+        <div class="status-btns">
+          <button class="sb3${s==='pass'?' ap':''}" onclick="setS('${item.id}','pass')" title="符合">✓</button>
+          <button class="sb3${s==='issue'?' ai':''}" onclick="setS('${item.id}','issue')" title="有問題">✗</button>
+          <button class="sb3${s==='na'?' an':''}" onclick="setS('${item.id}','na')" title="不適用">—</button>
+        </div>
+        <div class="item-ct">
+          <div class="item-hdr">
+            <span class="badge b${item.sev.toLowerCase()}">${bt}</span>
+            <span class="print-lbl ${plCls}">${plTxt}</span>
+          </div>
+          <div class="item-txt">${item.text}</div>
+          <div class="item-basis">📋 ${item.basis}</div>
+          <div class="item-foot">
+            <button class="note-tog" onclick="togNote('${item.id}')">${hasNote?'📝 已有備註':'＋ 新增備註'}</button>
+          </div>
+          <div class="note-area${(hasNote||s==='issue')?' show':''}" id="na-${item.id}">
+            <textarea class="note-ta" placeholder="審查備註、問題說明、修正要求..."
+              oninput="saveNote('${item.id}',this.value)">${esc(n)}</textarea>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  const sig=S.sig[sigKey]||{};
+  g('mainContent').innerHTML=banner+`
+    <div class="legend">
+      <span style="color:var(--g600);font-weight:600">操作：</span>
+      <div class="li">✓ 符合</div><div class="li">✗ 有問題（填備註）</div><div class="li">— 不適用</div>
+      <span class="ldiv">|</span>
+      <div class="li"><span class="badge ba">A 必修正</span></div>
+      <div class="li"><span class="badge bb">B 建議確認</span></div>
+      <div class="li"><span class="badge bc">C 建議優化</span></div>
+    </div>
+    <div class="sys-hdr">
+      <div class="sys-ic" style="background:${bg}">${icon}</div>
+      <div class="sys-hdr-ct">
+        <div class="sys-title">${title}</div>
+        <div class="sys-meta">共 ${st.total} 個核對項目・已完成 ${st.done} 項${st.issues>0?' ・⚠️ '+st.issues+' 項有問題':' ・無問題'}</div>
+      </div>
+      <div class="sys-right">
+        <div class="stats">
+          <div class="stat"><div class="stat-v" style="color:#10b981">${passN}</div><div class="stat-l">符合</div></div>
+          <div class="stat"><div class="stat-v" style="color:#ef4444">${st.issues}</div><div class="stat-l">問題</div></div>
+          <div class="stat"><div class="stat-v" style="color:#94a3b8">${naN}</div><div class="stat-l">不適用</div></div>
+        </div>
+        <div class="circ">
+          <svg width="50" height="50" viewBox="0 0 50 50">
+            <circle cx="25" cy="25" r="20" fill="none" stroke="#e2e8f0" stroke-width="4"/>
+            <circle cx="25" cy="25" r="20" fill="none" stroke="${color}" stroke-width="4"
+              stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}"
+              stroke-linecap="round" style="transition:stroke-dashoffset .3s"/>
+          </svg>
+          <div class="circ-txt">${st.pct}%</div>
+        </div>
+      </div>
+    </div>
+    <div class="print-sum">
+      <div class="ps-cell ps-total"><span class="ps-num">${st.total}</span><span class="ps-lbl">總計項目</span></div>
+      <div class="ps-cell ps-pass"><span class="ps-num">${passN}</span><span class="ps-lbl">✓ 符合</span></div>
+      <div class="ps-cell ps-issue"><span class="ps-num">${st.issues}</span><span class="ps-lbl">✗ 有問題</span></div>
+      <div class="ps-cell ps-na"><span class="ps-num">${naN}</span><span class="ps-lbl">— 不適用</span></div>
+      <div class="ps-cell ps-todo"><span class="ps-num">${todoN}</span><span class="ps-lbl">□ 待核對</span></div>
+    </div>
+    <div class="cl-list">${itemsH}</div>
+    <div class="sig-sec">
+      <div class="sig-title">📋 本項目核對簽署 — ${title}</div>
+      <div class="sig-grid">
+        <div class="sig-f"><label>設計工程師</label>
+          <input class="sig-in" type="text" placeholder="姓名" value="${esc(sig.designer||'')}"
+            onchange="saveSig('${sigKey}','designer',this.value)"></div>
+        <div class="sig-f"><label>複核工程師</label>
+          <input class="sig-in" type="text" placeholder="姓名" value="${esc(sig.checker||'')}"
+            onchange="saveSig('${sigKey}','checker',this.value)"></div>
+        <div class="sig-f"><label>核對日期</label>
+          <input class="sig-in" type="date" value="${esc(sig.date||'')}"
+            onchange="saveSig('${sigKey}','date',this.value)"></div>
+      </div>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════
+// 操作
+// ═══════════════════════════════════════════════
+function clickParent(id){
+  if(S.sys===id){
+    // 已選中：toggle expand
+    S.expanded[id]=!S.expanded[id];
+  } else {
+    S.sys=id; S.sub='';
+    const sys=DATA.find(s=>s.id===id);
+    if(sys&&sys.expandable) S.expanded[id]=true;
+  }
+  renderSB(); renderMain(); save();
+}
+
+function clickSub(sysId,subId){
+  S.sys=sysId; S.sub=subId; S.expanded[sysId]=true;
+  renderSB(); renderMain(); save();
+}
+
+function setS(id,val){
+  S.chk[id]=S.chk[id]===val?'':val;
+  if(S.chk[id]==='issue'){const a=document.getElementById('na-'+id);if(a)a.classList.add('show');}
+  renderSB(); renderMain(); save();
+  setTimeout(()=>{const e=document.getElementById('ci-'+id);if(e)e.scrollIntoView({behavior:'smooth',block:'nearest'});},60);
+}
+
+function saveNote(id,val){S.note[id]=val;save();}
+function togNote(id){const a=document.getElementById('na-'+id);if(a)a.classList.toggle('show');}
+function saveSig(k,f,v){if(!S.sig[k])S.sig[k]={};S.sig[k][f]=v;save();}
+function exportPrint(){window.print();}
+
+function confirmReset(){
+  if(confirm('⚠️ 確定要清除所有核對紀錄？\n此操作無法復原。')){
+    S={sys:'',sub:'',expanded:{},chk:{},note:{},sig:{}};
+    g('projectName').value='';g('drawingRev').value='';g('checkDate').value='';
+    localStorage.removeItem(KEY);
+    renderSB();renderMain();toast('✅ 已重置所有核對資料');
+  }
+}
+
+function restoreSession(){
+  const d=loadSaved();if(d){applyData(d);}
+  g('restoreModal').classList.add('hidden');
+  renderSB();renderMain();toast('✅ 已恢復上次作業');
+}
+function startFresh(){
+  g('restoreModal').classList.add('hidden');
+  g('checkDate').value=new Date().toISOString().split('T')[0];
+  renderSB();renderMain();
+}
+
+// ═══════════════════════════════════════════════
+// 工具
+// ═══════════════════════════════════════════════
+function g(id){return document.getElementById(id);}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function toast(msg){const t=g('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+
+// ═══════════════════════════════════════════════
+// 初始化（冷啟動）
+// ═══════════════════════════════════════════════
+function init(){
+  const d=loadSaved();
+  if(d&&d.ts){
+    const ts=new Date(d.ts);
+    g('restoreDesc').textContent=`上次儲存：${ts.toLocaleString('zh-TW')}\n專案：${d.proj?.name||'（未命名）'}  版次：${d.proj?.rev||'—'}`;
+    g('restoreModal').classList.remove('hidden');
+  } else {
+    g('checkDate').value=new Date().toISOString().split('T')[0];
+  }
+  renderSB();renderMain();
+  ['projectName','drawingRev','checkDate'].forEach(id=>g(id).addEventListener('change',save));
+}
+init();
+</script>
+</body>
+</html>

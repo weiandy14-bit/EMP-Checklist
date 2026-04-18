@@ -587,12 +587,12 @@ const DATA = [
           {id:'pg11',sev:'B',text:'發電機品牌：引擎限定CUMMINS/CAT/MTU，發電機頭限定MARATHON/STAMFORD/CAT（00702）',basis:'00702 §16231'},
           {id:'pg12',sev:'C',text:'自動週期性試運轉：建議設定每月自動試車30分鐘，試車紀錄系統，遠端監控介面',basis:'維護管理規範；業主需求'},
         ]
-      }
+      },
     ]
   },
   {
     id:'elv', num:2, icon:'📡', name:'弱電系統', color:'#8b5cf6', bg:'#f5f3ff',
-    expandable:false,
+    expandable: false,
     items:[
       {id:'e01',sev:'A',text:'強弱電纜路實體分隔（不同Tray或不同管路），弱電Tray與強電Tray間距 ≥150mm',basis:'EMC工程規範；SEMI E78'},
       {id:'e02',sev:'A',text:'屏蔽電纜（ESD/EMC用途）標示STP/FTP型式，屏蔽層接地方式標示（單端或雙端），不可兩端同時接地至不同接地點',basis:'SEMI E78；IEC 61000'},
@@ -606,7 +606,7 @@ const DATA = [
   },
   {
     id:'water', num:3, icon:'💧', name:'給水系統', color:'#06b6d4', bg:'#ecfeff',
-    expandable:false,
+    expandable: false,
     items:[
       {id:'w01',sev:'A',text:'末端最低服務水壓 ≥1kgf/cm²（98kPa），水壓計算書標示各樓層末端水壓值',basis:'建築物給水排水設備設計及裝置規則'},
       {id:'w02',sev:'A',text:'靜水壓 ≤5kgf/cm²（490kPa），超過需設PRV減壓閥，圖說標示PRV位置及設定壓力值',basis:'建築物給水排水設備設計及裝置規則'},
@@ -620,7 +620,7 @@ const DATA = [
   },
   {
     id:'drain', num:4, icon:'🔄', name:'排水系統', color:'#64748b', bg:'#f8fafc',
-    expandable:false,
+    expandable: false,
     items:[
       {id:'d01',sev:'A',text:'排水橫管坡度：75mm管 ≥1/50；100mm管 ≥1/100；100mm以上 ≥1/200（圖說需標示坡度值）',basis:'建築物給水排水設備設計及裝置規則'},
       {id:'d02',sev:'A',text:'污水管（含糞便）與廢水管（洗滌/空調冷凝水）分流配管，進化糞池前完全分流',basis:'建築物給水排水設備設計及裝置規則；下水道法'},
@@ -633,7 +633,7 @@ const DATA = [
   },
   {
     id:'fire', num:5, icon:'🔥', name:'消防系統', color:'#ef4444', bg:'#fef2f2',
-    expandable:false,
+    expandable: false,
     items:[
       {id:'f01',sev:'A',text:'⚠️ 緊急發電機燃料儲量 ≥8小時（消防法），業主規範00702 §16231僅要求2小時，法規優先',basis:'消防法；各類場所消防安全設備設置標準'},
       {id:'f02',sev:'A',text:'消防/緊急迴路電纜標示耐燃等級（FR/FRNC/FP），不得使用一般CV電線',basis:'消防法；各類場所消防安全設備設置標準'},
@@ -647,7 +647,7 @@ const DATA = [
   },
   {
     id:'hvac', num:6, icon:'❄️', name:'空調系統', color:'#0ea5e9', bg:'#f0f9ff',
-    expandable:false,
+    expandable: false,
     items:[
       {id:'h01',sev:'A',text:'換氣次數符合場所規定（辦公室≥6次/hr；餐廳≥12次/hr；廚房≥30次/hr），圖說標示換氣量計算',basis:'建築技術規則建築設備篇；室內空氣品質管理法'},
       {id:'h02',sev:'A',text:'每人外氣量（辦公室≥20m³/hr；餐廳≥25m³/hr），外氣比例 ≥送風量15%',basis:'建築技術規則建築設備篇'},
@@ -661,7 +661,7 @@ const DATA = [
   },
   {
     id:'vent', num:7, icon:'💨', name:'通風系統', color:'#10b981', bg:'#ecfdf5',
-    expandable:false,
+    expandable: false,
     items:[
       {id:'v01',sev:'A',text:'換氣次數符合規定（廁所≥15次/hr；停車場≥10次/hr，含CO濃度聯動），並標示計算依據',basis:'建築技術規則建築設備篇'},
       {id:'v02',sev:'A',text:'機械排煙量：防煙區劃內 ≥1m³/min/m²樓地板面積，排煙口位置及有效面積標示',basis:'建築技術規則建築設備篇'},
@@ -674,7 +674,7 @@ const DATA = [
   },
   {
     id:'grnd', num:8, icon:'🌍', name:'避雷接地系統', color:'#f59e0b', bg:'#fffbeb',
-    expandable:false,
+    expandable: false,
     items:[
       {id:'g01',sev:'A',text:'接地電阻值：00702業主規範要求 ≤10Ω（法規第三種 ≤100Ω，業主規範更嚴，以10Ω為準）',basis:'屋內線路裝置規則第26-31條；00702 §16061'},
       {id:'g02',sev:'A',text:'接地棒規格：銅包鋼棒，直徑19mm，長3m（00702 §16061），不得以鍍鋅鋼棒替代',basis:'00702 §16061；CNS'},
@@ -687,7 +687,7 @@ const DATA = [
       {id:'g09',sev:'B',text:'接地系統圖與SLD、動力圖說核對一致：接地點位置、接地線截面積、接地型式（TN-S/TT/IT）',basis:'IEC 60364-5-54'},
       {id:'g10',sev:'B',text:'測試時機標注：乾燥天氣下進行，雨後至少1週後測試（避免濕土影響接地電阻讀值）',basis:'00702 §16061'},
     ]
-  }
+  },
 ];
 
 // ═══════════════════════════════════════════════

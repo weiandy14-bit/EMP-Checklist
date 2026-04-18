@@ -90,6 +90,11 @@ body{font-family:'Segoe UI',-apple-system,'微軟正黑體',sans-serif;
 .sub-cnt{font-size:10px;color:#374151;flex-shrink:0}
 .sub-item.active .sub-cnt{color:#6b7280}
 
+/* 系統權限鎖定 */
+.nav-item.locked{opacity:.38;cursor:default;pointer-events:none}
+.nav-item.locked:hover{background:transparent}
+.lock-ic{font-size:12px;color:#4a5568;flex-shrink:0;margin-left:2px}
+
 /* Sidebar footer */
 .sb-foot{padding:12px;border-top:1px solid #2d3748}
 .ov-lbl{display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;margin-bottom:4px}
@@ -226,6 +231,35 @@ body{font-family:'Segoe UI',-apple-system,'微軟正黑體',sans-serif;
   transform:translateY(8px);opacity:0;transition:all .2s;z-index:200;pointer-events:none}
 .toast.show{transform:translateY(0);opacity:1}
 
+/* 登入畫面 */
+#loginScreen{position:fixed;inset:0;background:linear-gradient(135deg,#1e2d3d 0%,#2563eb 100%);
+  z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-box{background:#fff;border-radius:16px;padding:28px 26px;width:100%;max-width:380px;
+  box-shadow:0 25px 60px rgba(0,0,0,.35)}
+.login-logo{width:48px;height:48px;background:linear-gradient(135deg,#3b82f6,#1d4ed8);
+  border-radius:12px;display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:22px;font-weight:700;margin:0 auto 14px}
+.login-title{font-size:15.5px;font-weight:700;color:var(--g800);text-align:center;margin-bottom:3px}
+.login-sub{font-size:11.5px;color:var(--g400);text-align:center;margin-bottom:18px}
+.acct-list{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;max-height:260px;overflow-y:auto}
+.acct-row{display:flex;align-items:center;gap:8px;padding:10px 11px;background:var(--g50);
+  border-radius:var(--r);border:1px solid var(--g200)}
+.acct-av{width:34px;height:34px;border-radius:50%;
+  background:linear-gradient(135deg,#3b82f6,#6366f1);
+  display:flex;align-items:center;justify-content:center;color:#fff;
+  font-size:14px;font-weight:700;flex-shrink:0}
+.acct-nm{font-size:13px;font-weight:600;color:var(--g700);flex:1;min-width:0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.acct-pw{border:1px solid var(--g200);border-radius:5px;padding:4px 7px;font-size:12px;
+  width:86px;font-family:inherit;color:var(--g700)}
+.acct-pw:focus{outline:none;border-color:var(--pr)}
+.login-div{display:flex;align-items:center;gap:8px;margin:12px 0;font-size:11px;color:var(--g300)}
+.login-div::before,.login-div::after{content:'';flex:1;height:1px;background:var(--g200)}
+.new-acct-form{display:flex;flex-direction:column;gap:7px}
+.new-acct-form input{border:1px solid var(--g200);border-radius:6px;padding:7px 10px;
+  font-size:12.5px;font-family:inherit;color:var(--g700);width:100%}
+.new-acct-form input:focus{outline:none;border-color:var(--pr)}
+
 /* 紀錄管理 */
 .btn-rec{background:#fff;border:1px solid var(--g200);color:var(--g600)}
 .btn-rec:hover{background:var(--g100);color:var(--g800)}
@@ -320,6 +354,25 @@ body{font-family:'Segoe UI',-apple-system,'微軟正黑體',sans-serif;
 </head>
 <body>
 
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">M</div>
+    <div class="login-title">機水電設計圖說 自主檢查系統</div>
+    <div class="login-sub">選擇帳號登入，或建立新帳號</div>
+    <div id="acctList" class="acct-list"></div>
+    <div class="login-div">或</div>
+    <div class="new-acct-form">
+      <input type="text" id="newAcctName" placeholder="新帳號名稱（例：王大明）" maxlength="20">
+      <input type="password" id="newAcctPwd" placeholder="設定密碼（可留空）" maxlength="30"
+        onkeydown="if(event.key==='Enter')createAcct()">
+      <button class="btn btn-p" onclick="createAcct()" style="width:100%;padding:8px 0;font-size:13px">建立帳號並登入</button>
+    </div>
+    <div style="margin-top:12px;font-size:10px;color:var(--g300);text-align:center">
+      ⚠ 本機帳號・資料存於此瀏覽器・非加密儲存
+    </div>
+  </div>
+</div>
+
 <header class="hdr">
   <div class="hdr-l">
     <div class="logo">M</div>
@@ -345,6 +398,17 @@ body{font-family:'Segoe UI',-apple-system,'微軟正黑體',sans-serif;
     </div>
     <button class="btn btn-p" onclick="exportPrint()">🖨 列印/PDF</button>
     <button class="btn btn-d" onclick="confirmReset()">↺ 重置</button>
+    <div id="userBadge" style="display:none;align-items:center;gap:7px;padding:5px 12px;
+      background:var(--g50);border:1px solid var(--g200);border-radius:20px;flex-shrink:0">
+      <span id="badgeIcon" style="font-size:13px">👤</span>
+      <span id="badgeName" style="font-size:12px;font-weight:600;color:var(--g700)"></span>
+      <button id="adminBtn" onclick="openAdminPanel()" style="display:none;background:none;border:none;
+        cursor:pointer;font-size:11px;color:var(--pr);padding:0 0 0 2px;font-family:inherit"
+        title="帳號與系統權限管理">⚙ 管理</button>
+      <button onclick="logout()" style="background:none;border:none;cursor:pointer;
+        font-size:11px;color:var(--g400);padding:0 0 0 2px;font-family:inherit"
+        title="登出">登出</button>
+    </div>
   </div>
 </header>
 
@@ -375,6 +439,19 @@ body{font-family:'Segoe UI',-apple-system,'微軟正黑體',sans-serif;
     <div class="modal-acts">
       <button class="btn-out" onclick="startFresh()">重新開始</button>
       <button class="btn btn-p" onclick="restoreSession()">繼續上次作業</button>
+    </div>
+  </div>
+</div>
+<div class="modal-ov hidden" id="adminModal">
+  <div class="modal" style="max-width:560px;width:95%">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <div class="modal-title">⚙ 帳號與系統權限管理</div>
+      <button class="btn-out" onclick="g('adminModal').classList.add('hidden')" style="padding:3px 9px">✕</button>
+    </div>
+    <div style="font-size:11px;color:var(--g400);margin-bottom:12px">管理員專用・勾選代表該帳號可存取此系統</div>
+    <div id="adminAcctList" style="max-height:440px;overflow-y:auto;display:flex;flex-direction:column;gap:10px"></div>
+    <div class="modal-acts" style="margin-top:12px;border-top:1px solid var(--g100);padding-top:10px">
+      <button class="btn-out" onclick="g('adminModal').classList.add('hidden')">關閉</button>
     </div>
   </div>
 </div>
@@ -616,7 +693,7 @@ const DATA = [
 // ═══════════════════════════════════════════════
 // 狀態
 // ═══════════════════════════════════════════════
-const KEY='mep_v3';
+let KEY='mep_v3';
 let S={
   sys:'',        // 目前選中的 parent系統 id
   sub:'',        // 目前選中的 sub系統 id（expandable才有）
@@ -659,9 +736,17 @@ function sysAllItems(sys){
   if(sys.expandable) return sys.subs.flatMap(s=>s.items);
   return sys.items||[];
 }
+function canAccessSys(sysId){
+  if(!CURR_ACCT)return true;
+  if(CURR_ACCT.isAdmin)return true;
+  return(CURR_ACCT.systems||[]).includes(sysId);
+}
 function overallStats(){
   let t=0,d=0;
-  DATA.forEach(sys=>{const items=sysAllItems(sys);const st=calcStats(items);t+=st.total;d+=st.done;});
+  DATA.forEach(sys=>{
+    if(!canAccessSys(sys.id))return;
+    const items=sysAllItems(sys);const st=calcStats(items);t+=st.total;d+=st.done;
+  });
   return{pct:t?Math.round(d/t*100):0};
 }
 
@@ -674,18 +759,20 @@ function renderSB(){
     const isExp=S.expanded[sys.id];
     const items=sysAllItems(sys);
     const st=calcStats(items);
-    let html=`<div class="nav-item${isAct&&!sys.expandable?' active':isAct?' sub-active':''}" onclick="clickParent('${sys.id}')">
+    const ok=canAccessSys(sys.id);
+    const actCls=ok?(isAct&&!sys.expandable?' active':isAct?' sub-active':''):'';
+    let html=`<div class="nav-item${actCls}${ok?'':' locked'}" ${ok?`onclick="clickParent('${sys.id}')"`:''}>
       <div class="nav-ic" style="background:${sys.bg};color:${sys.color}">${sys.icon}</div>
       <div class="nav-ct">
         <div class="nav-nm">${sys.num}. ${sys.name}</div>
         <div class="nav-pw">
           <div class="nav-pb"><div class="nav-pf" style="width:${st.pct}%;background:${sys.color}"></div></div>
-          <div class="nav-pt">${st.done}/${st.total}</div>
+          <div class="nav-pt">${ok?st.done+'/'+st.total:'🔒'}</div>
         </div>
       </div>
-      ${sys.expandable?`<span class="nav-arrow${isExp?' open':''}">▶</span>`:''}
+      ${ok&&sys.expandable?`<span class="nav-arrow${isExp?' open':''}">▶</span>`:!ok?'<span class="lock-ic">🔒</span>':''}
     </div>`;
-    if(sys.expandable){
+    if(sys.expandable&&ok){
       html+=`<div class="sub-nav${isExp?' open':''}">`;
       sys.subs.forEach(sub=>{
         const ss=calcStats(sub.items);
@@ -918,9 +1005,163 @@ function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').repl
 function toast(msg){const t=g('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 
 // ═══════════════════════════════════════════════
+// 帳號系統
+// ═══════════════════════════════════════════════
+const ACCT_KEY='mep_accts_v1';
+const SESS_KEY='mep_sess_v1';
+let CURR_ACCT=null;
+
+function loadAccts(){try{return JSON.parse(localStorage.getItem(ACCT_KEY))||[];}catch(e){return[];}}
+function saveAccts(a){localStorage.setItem(ACCT_KEY,JSON.stringify(a));}
+
+function _renderAcctList(){
+  const accts=loadAccts();
+  if(accts.length===0){
+    g('acctList').innerHTML='<div style="text-align:center;color:#94a3b8;font-size:11.5px;padding:8px 0">尚無帳號，請建立第一個</div>';
+    return;
+  }
+  g('acctList').innerHTML=accts.map(a=>`
+    <div class="acct-row">
+      <div class="acct-av" style="${a.isAdmin?'background:linear-gradient(135deg,#f59e0b,#d97706)':''}">${a.isAdmin?'👑':esc(a.name.charAt(0))}</div>
+      <div class="acct-nm">${esc(a.name)}${a.isAdmin?'<span style="font-size:9.5px;color:#d97706;margin-left:4px;font-weight:700">管理員</span>':''}</div>
+      <input class="acct-pw" type="password" id="pw-${a.id}"
+        placeholder="${a.hasPwd?'密碼':'（無密碼）'}" ${!a.hasPwd?'disabled':''}
+        onkeydown="if(event.key==='Enter')doLogin('${a.id}')">
+      <button class="btn btn-p" onclick="doLogin('${a.id}')"
+        style="padding:4px 10px;font-size:11.5px;flex-shrink:0">登入</button>
+    </div>`).join('');
+}
+
+// SHA-256 密碼雜湊（Web Crypto API）
+const PWD_SALT='mep_chk_2026_s';
+async function hashPwd(pwd){
+  if(!pwd)return'';
+  const buf=await crypto.subtle.digest('SHA-256',
+    new TextEncoder().encode(pwd+PWD_SALT));
+  return[...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+async function createAcct(){
+  const name=g('newAcctName').value.trim();
+  const pwd=g('newAcctPwd').value;
+  if(!name){alert('請輸入帳號名稱');return;}
+  const accts=loadAccts();
+  if(accts.find(a=>a.name===name)){alert('此名稱已存在');return;}
+  const id=Date.now().toString();
+  const isFirstAcct=accts.length===0;
+  const hashed=await hashPwd(pwd);
+  accts.push({id,name,pwd:hashed,hasPwd:pwd.length>0,isAdmin:isFirstAcct,systems:[]});
+  saveAccts(accts);
+  await doLogin(id,pwd);
+}
+
+async function doLogin(id,passArg){
+  const acct=loadAccts().find(a=>a.id===id);
+  if(!acct){alert('帳號不存在');return;}
+  if(acct.hasPwd){
+    const input=passArg!==undefined?passArg:(g('pw-'+id)?.value||'');
+    const hashed=await hashPwd(input);
+    if(hashed!==acct.pwd){alert('❌ 密碼錯誤');return;}
+  }
+  CURR_ACCT=acct;
+  KEY='mep_v3_'+id;
+  RKEY='mep_records_v3_'+id;
+  localStorage.setItem(SESS_KEY,id);
+  // 隱藏登入畫面
+  g('loginScreen').style.display='none';
+  // 顯示使用者標記（管理員加皇冠）
+  g('badgeIcon').textContent=acct.isAdmin?'👑':'👤';
+  g('badgeName').textContent=acct.name;
+  g('userBadge').style.display='inline-flex';
+  g('adminBtn').style.display=acct.isAdmin?'inline':'none';
+  // 載入此帳號上次資料（靜默恢復）
+  const saved=loadSaved();
+  if(saved&&saved.ts){applyData(saved);}
+  else{g('checkDate').value=new Date().toISOString().split('T')[0];}
+  renderSB();renderMain();
+}
+
+function delAcct(id){
+  const accts=loadAccts();
+  const a=accts.find(x=>x.id===id);
+  if(!confirm(`確定刪除帳號「${a?.name||id}」？此帳號所有資料將一併清除。`))return;
+  saveAccts(accts.filter(x=>x.id!==id));
+  localStorage.removeItem('mep_v3_'+id);
+  localStorage.removeItem('mep_records_v3_'+id);
+  if(localStorage.getItem(SESS_KEY)===id)localStorage.removeItem(SESS_KEY);
+  _renderAcctList();
+  toast('🗑 已刪除帳號');
+}
+
+function logout(){
+  if(!confirm('確定要登出？'))return;
+  save();
+  CURR_ACCT=null;
+  localStorage.removeItem(SESS_KEY);
+  KEY='mep_v3'; RKEY='mep_records_v3';
+  S={sys:'',sub:'',expanded:{},chk:{},note:{},sig:{}};
+  g('projectName').value='';g('drawingRev').value='';g('checkDate').value='';
+  g('userBadge').style.display='none';
+  g('adminBtn').style.display='none';
+  g('newAcctName').value='';g('newAcctPwd').value='';
+  _renderAcctList();
+  g('loginScreen').style.display='flex';
+}
+
+// ═══════════════════════════════════════════════
+// 管理員：帳號與系統權限管理
+// ═══════════════════════════════════════════════
+function openAdminPanel(){
+  if(!CURR_ACCT?.isAdmin){toast('⛔ 僅管理員可操作');return;}
+  _renderAdminAcctList();
+  g('adminModal').classList.remove('hidden');
+}
+
+function _renderAdminAcctList(){
+  const others=loadAccts().filter(a=>!a.isAdmin);
+  if(others.length===0){
+    g('adminAcctList').innerHTML=`<div style="text-align:center;color:#94a3b8;padding:20px 0">
+      尚無其他帳號<br><span style="font-size:10.5px">請先在登入畫面建立成員帳號</span></div>`;
+    return;
+  }
+  g('adminAcctList').innerHTML=others.map(a=>{
+    const sysCks=DATA.map(sys=>{
+      const checked=(a.systems||[]).includes(sys.id);
+      return`<label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;
+        padding:3px 0;user-select:none">
+        <input type="checkbox" onchange="toggleSysAccess('${a.id}','${sys.id}',this.checked)"
+          ${checked?'checked':''}
+          style="width:14px;height:14px;cursor:pointer;accent-color:var(--pr)">
+        <span>${sys.icon} ${sys.name}</span>
+      </label>`;
+    }).join('');
+    return`<div style="padding:13px;background:var(--g50);border-radius:var(--r);border:1px solid var(--g200)">
+      <div style="display:flex;align-items:center;gap:9px;margin-bottom:10px">
+        <div class="acct-av">${esc(a.name.charAt(0))}</div>
+        <div style="font-size:13px;font-weight:600;color:var(--g700);flex:1">${esc(a.name)}</div>
+        <button class="btn-out" onclick="delAcct('${a.id}');_renderAdminAcctList()"
+          style="padding:3px 9px;font-size:11px" title="刪除此帳號">🗑 刪除</button>
+      </div>
+      <div style="font-size:10.5px;color:var(--g500);margin-bottom:6px;font-weight:600">可存取系統：</div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:2px 12px">${sysCks}</div>
+    </div>`;
+  }).join('');
+}
+
+function toggleSysAccess(acctId,sysId,checked){
+  let accts=loadAccts();
+  const idx=accts.findIndex(a=>a.id===acctId);
+  if(idx<0)return;
+  if(!accts[idx].systems)accts[idx].systems=[];
+  if(checked){if(!accts[idx].systems.includes(sysId))accts[idx].systems.push(sysId);}
+  else{accts[idx].systems=accts[idx].systems.filter(s=>s!==sysId);}
+  saveAccts(accts);
+}
+
+// ═══════════════════════════════════════════════
 // 多份紀錄管理
 // ═══════════════════════════════════════════════
-const RKEY='mep_records_v3';
+let RKEY='mep_records_v3';
 function loadRecords(){try{return JSON.parse(localStorage.getItem(RKEY))||[];}catch(e){return[];}}
 function saveRecs(recs){localStorage.setItem(RKEY,JSON.stringify(recs));}
 
@@ -1030,16 +1271,17 @@ function importJSON(e){
 // 初始化（冷啟動）
 // ═══════════════════════════════════════════════
 function init(){
-  const d=loadSaved();
-  if(d&&d.ts){
-    const ts=new Date(d.ts);
-    g('restoreDesc').textContent=`上次儲存：${ts.toLocaleString('zh-TW')}\n專案：${d.proj?.name||'（未命名）'}  版次：${d.proj?.rev||'—'}`;
-    g('restoreModal').classList.remove('hidden');
-  } else {
-    g('checkDate').value=new Date().toISOString().split('T')[0];
-  }
   renderSB();renderMain();
   ['projectName','drawingRev','checkDate'].forEach(id=>g(id).addEventListener('change',save));
+  _renderAcctList();
+  // 嘗試自動恢復上次 session
+  const sessId=localStorage.getItem(SESS_KEY);
+  if(sessId){
+    const acct=loadAccts().find(a=>a.id===sessId);
+    if(acct&&!acct.hasPwd){doLogin(sessId,'');return;} // 無密碼帳號自動登入
+    // 有密碼帳號：停在登入畫面等待輸入
+  }
+  // 若沒有 session 或需要密碼，顯示登入畫面（已是預設狀態）
 }
 init();
 </script>

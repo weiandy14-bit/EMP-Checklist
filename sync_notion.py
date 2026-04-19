@@ -30,7 +30,7 @@ NOTION_VER  = "2022-06-28"
 # 系統 metadata（與 index.html 同步）
 SYS_META = {
     "電力系統":     dict(id="power", num=1, icon="⚡",  color="#3b82f6", bg="#eff6ff", expandable=True),
-    "弱電系統":     dict(id="elv",   num=2, icon="📡",  color="#8b5cf6", bg="#f5f3ff", expandable=False),
+    "弱電系統":     dict(id="elv",   num=2, icon="📡",  color="#8b5cf6", bg="#f5f3ff", expandable=True),
     "給水系統":     dict(id="water", num=3, icon="💧",  color="#06b6d4", bg="#ecfeff", expandable=False),
     "排水系統":     dict(id="drain", num=4, icon="🔄",  color="#64748b", bg="#f8fafc", expandable=False),
     "消防系統":     dict(id="fire",  num=5, icon="🔥",  color="#ef4444", bg="#fef2f2", expandable=False),
@@ -39,15 +39,27 @@ SYS_META = {
     "避雷接地系統": dict(id="grnd",  num=8, icon="🌍",  color="#f59e0b", bg="#fffbeb", expandable=False),
 }
 
-# 子系統 metadata（僅電力系統有）
-SUB_META = {
-    "動力系統":        dict(id="pw-motor",  icon="⚙️",  name="① 動力系統"),
-    "照明系統":        dict(id="pw-light",  icon="💡",  name="② 照明系統"),
-    "系統單線・升位圖": dict(id="pw-sld",   icon="📊",  name="③ 系統單線・升位圖"),
-    "太陽能系統":      dict(id="pw-solar",  icon="☀️",  name="④ 太陽能系統"),
-    "大樣圖詳細圖":    dict(id="pw-detail", icon="🔍",  name="⑤ 大樣圖詳細圖"),
-    "外牆燈系統":      dict(id="pw-facade", icon="🏙️", name="⑥ 外牆燈系統"),
-    "緊急發電機系統":  dict(id="pw-genset", icon="🔋",  name="⑦ 緊急發電機系統"),
+# 子系統 metadata（依系統分組，expandable=True 的系統才需要）
+SYS_SUB_META: dict[str, dict] = {
+    "電力系統": {
+        "動力系統":        dict(id="pw-motor",  icon="⚙️",  name="① 動力系統"),
+        "照明系統":        dict(id="pw-light",  icon="💡",  name="② 照明系統"),
+        "系統單線・升位圖": dict(id="pw-sld",   icon="📊",  name="③ 系統單線・升位圖"),
+        "太陽能系統":      dict(id="pw-solar",  icon="☀️",  name="④ 太陽能系統"),
+        "大樣圖詳細圖":    dict(id="pw-detail", icon="🔍",  name="⑤ 大樣圖詳細圖"),
+        "外牆燈系統":      dict(id="pw-facade", icon="🏙️", name="⑥ 外牆燈系統"),
+        "緊急發電機系統":  dict(id="pw-genset", icon="🔋",  name="⑦ 緊急發電機系統"),
+    },
+    "弱電系統": {
+        "電信設備工程":         dict(id="elv-tel",    icon="📞",  name="① 電信設備工程"),
+        "光纖設備工程":         dict(id="elv-fib",    icon="🔆",  name="② 光纖設備工程"),
+        "電視共同天線設備工程": dict(id="elv-tv",     icon="📺",  name="③ 電視共同天線設備工程"),
+        "鋁製電纜線架工程":     dict(id="elv-tray",   icon="🔩",  name="④ 鋁製電纜線架工程"),
+        "監視系統設備工程":     dict(id="elv-cctv",   icon="📷",  name="⑤ 監視系統設備工程"),
+        "停管設備工程":         dict(id="elv-park",   icon="🅿️", name="⑥ 停管設備工程"),
+        "門禁管制系統工程":     dict(id="elv-access", icon="🔐",  name="⑦ 門禁管制系統工程"),
+        "中央監控系統設備工程": dict(id="elv-bms",    icon="🖥️", name="⑧ 中央監控系統設備工程"),
+    },
 }
 
 # 嚴重性 SELECT 值對應
@@ -216,11 +228,12 @@ def build_data_js(notion_data: dict) -> str:
         lines.append(f"    expandable: {exp_str},")
 
         if meta["expandable"]:
-            # 有子系統 → subs 陣列
-            sub_order = list(SUB_META.keys())
+            # 有子系統 → subs 陣列（依 SYS_SUB_META 中該系統的順序）
+            sub_meta_map = SYS_SUB_META.get(sys_name, {})
+            sub_order    = list(sub_meta_map.keys())
             lines.append(f"    subs:[")
             for sub_name in sub_order:
-                sub_meta = SUB_META[sub_name]
+                sub_meta = sub_meta_map[sub_name]
                 items    = sys_dict.get(sub_name, [])
                 if not items:
                     continue

@@ -31,7 +31,7 @@ NOTION_VER  = "2022-06-28"
 SYS_META = {
     "電力系統":     dict(id="power", num=1, icon="⚡",  color="#3b82f6", bg="#eff6ff", expandable=True),
     "弱電系統":     dict(id="elv",   num=2, icon="📡",  color="#8b5cf6", bg="#f5f3ff", expandable=True),
-    "給水系統":     dict(id="water", num=3, icon="💧",  color="#06b6d4", bg="#ecfeff", expandable=False),
+    "給水系統":     dict(id="water", num=3, icon="💧",  color="#06b6d4", bg="#ecfeff", expandable=True),
     "排水系統":     dict(id="drain", num=4, icon="🔄",  color="#64748b", bg="#f8fafc", expandable=False),
     "消防系統":     dict(id="fire",  num=5, icon="🔥",  color="#ef4444", bg="#fef2f2", expandable=False),
     "空調系統":     dict(id="hvac",  num=6, icon="❄️",  color="#0ea5e9", bg="#f0f9ff", expandable=False),
@@ -59,6 +59,14 @@ SYS_SUB_META: dict[str, dict] = {
         "停管設備工程":         dict(id="elv-park",   icon="🅿️", name="⑥ 停管設備工程"),
         "門禁管制系統工程":     dict(id="elv-access", icon="🔐",  name="⑦ 門禁管制系統工程"),
         "中央監控系統設備工程": dict(id="elv-bms",    icon="🖥️", name="⑧ 中央監控系統設備工程"),
+    },
+    "給水系統": {
+        "衛生器具":         dict(id="wt-fixture", icon="🚿",  name="① 衛生器具"),
+        "給水設備工程":     dict(id="wt-supply",  icon="🔧",  name="② 給水設備工程"),
+        "組合式水箱系統":   dict(id="wt-tank",    icon="🗄️", name="③ 組合式水箱系統"),
+        "雨水回收設備工程": dict(id="wt-rain",    icon="🌧️", name="④ 雨水回收設備工程"),
+        "油脂截留設備工程": dict(id="wt-grease",  icon="🍳",  name="⑤ 油脂截留設備工程"),
+        "垃圾冷藏設備工程": dict(id="wt-gcold",   icon="🧊",  name="⑥ 垃圾冷藏設備工程"),
     },
 }
 

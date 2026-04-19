@@ -470,6 +470,43 @@ body{font-family:'Segoe UI',-apple-system,'微軟正黑體',sans-serif;
 </div>
 <div class="toast" id="toast"></div>
 
+<!-- ── 列印設定 Modal ── -->
+<div class="modal-ov hidden" id="printModal">
+  <div class="modal" style="min-width:360px;max-width:480px;width:92%">
+    <div class="modal-title">🖨 列印 / PDF 報告設定</div>
+    <div style="display:grid;gap:10px;margin:14px 0">
+      <div class="pf" style="flex-direction:column;align-items:stretch">
+        <label style="font-size:11px;color:var(--g500);margin-bottom:4px">工程名稱</label>
+        <input type="text" id="pm-projName" placeholder="請輸入工程名稱"
+          style="border:1px solid var(--g200);border-radius:6px;padding:6px 10px;font-family:inherit;font-size:12px;width:100%">
+      </div>
+      <div class="pf" style="flex-direction:column;align-items:stretch">
+        <label style="font-size:11px;color:var(--g500);margin-bottom:4px">項目</label>
+        <input type="text" id="pm-projItem" placeholder="例：電氣工程 / 給排水工程 / 消防工程"
+          style="border:1px solid var(--g200);border-radius:6px;padding:6px 10px;font-family:inherit;font-size:12px;width:100%">
+      </div>
+      <div class="pf" style="flex-direction:column;align-items:stretch">
+        <label style="font-size:11px;color:var(--g500);margin-bottom:4px">操作人員</label>
+        <input type="text" id="pm-operator" placeholder="姓名"
+          style="border:1px solid var(--g200);border-radius:6px;padding:6px 10px;font-family:inherit;font-size:12px;width:100%">
+      </div>
+      <div class="pf" style="flex-direction:column;align-items:stretch">
+        <label style="font-size:11px;color:var(--g500);margin-bottom:4px">顯示範圍</label>
+        <select id="pm-show"
+          style="border:1px solid var(--g200);border-radius:6px;padding:6px 10px;font-family:inherit;font-size:12px;width:100%;background:#fff">
+          <option value="checked">已核對的項目（符合＋有問題＋不適用）</option>
+          <option value="issue">僅顯示「有問題」項目</option>
+          <option value="all">全部項目（共 130 項）</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-acts">
+      <button class="btn-out" onclick="g('printModal').classList.add('hidden')">取消</button>
+      <button class="btn btn-p" onclick="doPrint()">🖨 產生報告</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ═══════════════════════════════════════════════
 // 資料定義
@@ -975,7 +1012,129 @@ function setS(id,val){
 function saveNote(id,val){S.note[id]=val;save();}
 function togNote(id){const a=document.getElementById('na-'+id);if(a)a.classList.toggle('show');}
 function saveSig(k,f,v){if(!S.sig[k])S.sig[k]={};S.sig[k][f]=v;save();}
-function exportPrint(){window.print();}
+function exportPrint(){
+  g('pm-projName').value = g('projectName').value;
+  g('pm-projItem').value = '';
+  g('pm-operator').value = g('badgeName').textContent.trim();
+  g('printModal').classList.remove('hidden');
+}
+
+function doPrint(){
+  const projName  = g('pm-projName').value.trim()  || '（未填寫）';
+  const projItem  = g('pm-projItem').value.trim()   || '—';
+  const operator  = g('pm-operator').value.trim()   || '—';
+  const showMode  = g('pm-show').value;              // 'checked'|'issue'|'all'
+  const drawingRev= g('drawingRev').value.trim()    || '—';
+  const checkDate = g('checkDate').value            || new Date().toISOString().split('T')[0];
+  g('printModal').classList.add('hidden');
+
+  // ── 彙整各系統已篩選項目 ──
+  let totPass=0,totIssue=0,totNa=0,totTodo=0;
+  let sections='';
+
+  DATA.forEach(sys=>{
+    let allItems=[];
+    if(sys.expandable){
+      sys.subs.forEach(sub=>sub.items.forEach(i=>allItems.push({...i,_sub:sub.name})));
+    } else {
+      allItems=sys.items.map(i=>({...i,_sub:''}));
+    }
+
+    // 統計（全系統，不受篩選影響）
+    let sPass=0,sIssue=0,sNa=0,sTodo=0;
+    allItems.forEach(i=>{
+      const s=S.chk[i.id]||'';
+      if(s==='pass')sPass++;else if(s==='issue')sIssue++;else if(s==='na')sNa++;else sTodo++;
+    });
+    totPass+=sPass;totIssue+=sIssue;totNa+=sNa;totTodo+=sTodo;
+
+    // 依篩選條件過濾顯示項目
+    const filtered=allItems.filter(i=>{
+      const s=S.chk[i.id]||'';
+      if(showMode==='issue')   return s==='issue';
+      if(showMode==='checked') return s!=='';
+      return true;
+    });
+    if(!filtered.length) return;
+
+    const rows=filtered.map(item=>{
+      const s=S.chk[item.id]||'';
+      const note=S.note[item.id]||'';
+      const sCls=s==='pass'?'sp':s==='issue'?'si':s==='na'?'sn':'';
+      const sTxt=s==='pass'?'✓ 符合':s==='issue'?'✗ 有問題':s==='na'?'— 不適用':'□ 待核對';
+      const sevCls=item.sev==='A'?'sa':item.sev==='B'?'sb':'sc';
+      const subSpan=item._sub?`<span style="color:#64748b;font-size:9px">[${esc(item._sub)}]</span><br>`:'';
+      const noteHtml=note?`<div class="nt">備註：${esc(note)}</div>`:'';
+      return `<tr><td class="tid">${esc(item.id)}</td><td class="${sevCls}">${esc(item.sev)}</td>`+
+             `<td>${subSpan}${esc(item.text)}${noteHtml}</td>`+
+             `<td class="bas">${esc(item.basis||'')}</td><td class="${sCls}">${sTxt}</td></tr>`;
+    }).join('');
+
+    sections+=`<div class="sh">${esc(sys.icon)} ${esc(sys.name)}`+
+      `<span class="sm"> 符合 ${sPass}／問題 ${sIssue}／不適用 ${sNa}／待核對 ${sTodo}</span></div>`+
+      `<table><thead><tr><th style="width:44px">項目ID</th><th style="width:24px">嚴重</th>`+
+      `<th>核對項目</th><th style="width:120px">法規依據</th><th style="width:60px">狀態</th></tr></thead>`+
+      `<tbody>${rows}</tbody></table>`;
+  });
+
+  const total=totPass+totIssue+totNa+totTodo;
+  const modeLabel=showMode==='issue'?'（僅有問題項目）':showMode==='checked'?'（已核對項目）':'（全部項目）';
+
+  const html=`<!DOCTYPE html><html lang="zh-TW"><head><meta charset="UTF-8">
+<title>機水電自主檢查報告</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"微軟正黑體",Arial,sans-serif;font-size:11px;color:#111}
+.rt{font-size:15px;font-weight:800;text-align:center;padding:8px 0 5px;border-bottom:3px solid #1e3a5f;margin-bottom:7px}
+.ri{display:grid;grid-template-columns:2fr 1fr 1.5fr 1fr;border:1.5px solid #1e3a5f;border-radius:4px;overflow:hidden;margin-bottom:8px}
+.rc{padding:5px 9px;border-right:1px solid #ccc}.rc:last-child{border-right:none}
+.rl{font-size:9px;color:#555;margin-bottom:1px}.rv{font-size:12px;font-weight:700}
+.su{display:flex;border:1.5px solid #1e3a5f;border-radius:4px;overflow:hidden;margin-bottom:10px}
+.sc2{flex:1;padding:5px 8px;text-align:center;border-right:1px solid rgba(255,255,255,.3)}.sc2:last-child{border-right:none}
+.sn2{font-size:16px;font-weight:800;display:block}.sl{font-size:9px;display:block}
+.st{background:#1e3a5f;color:#fff}.sp2{background:#065f46;color:#fff}
+.si2{background:#991b1b;color:#fff}.sn3{background:#374151;color:#fff}.sd{background:#92400e;color:#fff}
+.sh{background:#1e3a5f;color:#fff;padding:4px 8px;font-weight:700;font-size:11px;margin:8px 0 0;border-radius:3px 3px 0 0}
+.sm{font-weight:400;font-size:9px;opacity:.8;margin-left:8px}
+table{width:100%;border-collapse:collapse;margin-bottom:4px}
+th{background:#e8edf5;font-size:9px;padding:3px 5px;border:1px solid #ccc;text-align:left}
+td{font-size:10px;padding:3px 5px;border:1px solid #ddd;vertical-align:top}
+tr{break-inside:avoid}
+.tid{text-align:center;color:#64748b}.bas{font-size:9px;color:#555}
+.sp{background:#dcfce7;color:#15803d;font-weight:700;text-align:center}
+.si{background:#fee2e2;color:#b91c1c;font-weight:700;text-align:center}
+.sn{background:#f3f4f6;color:#6b7280;font-weight:700;text-align:center}
+.sa{background:#fee2e2;color:#b91c1c;font-weight:700;text-align:center}
+.sb{background:#fef9c3;color:#92400e;font-weight:700;text-align:center}
+.sc{background:#eff6ff;color:#1d4ed8;font-weight:700;text-align:center}
+.nt{color:#555;font-size:9px;font-style:italic;margin-top:2px}
+.ft{margin-top:10px;border-top:1px solid #ccc;padding-top:5px;font-size:9px;color:#888;text-align:right}
+@page{margin:12mm;size:A4}
+</style></head><body>
+<div class="rt">機水電設計圖說　自主檢查報告　${modeLabel}</div>
+<div class="ri">
+  <div class="rc"><div class="rl">工程名稱</div><div class="rv">${esc(projName)}</div></div>
+  <div class="rc"><div class="rl">項目</div><div class="rv">${esc(projItem)}</div></div>
+  <div class="rc"><div class="rl">版次／核對日期</div><div class="rv">${esc(drawingRev)} ／ ${esc(checkDate)}</div></div>
+  <div class="rc"><div class="rl">操作人員</div><div class="rv">${esc(operator)}</div></div>
+</div>
+<div class="su">
+  <div class="sc2 st"><span class="sn2">${total}</span><span class="sl">總計項目</span></div>
+  <div class="sc2 sp2"><span class="sn2">${totPass}</span><span class="sl">✓ 符合</span></div>
+  <div class="sc2 si2"><span class="sn2">${totIssue}</span><span class="sl">✗ 有問題</span></div>
+  <div class="sc2 sn3"><span class="sn2">${totNa}</span><span class="sl">— 不適用</span></div>
+  <div class="sc2 sd"><span class="sn2">${totTodo}</span><span class="sl">□ 待核對</span></div>
+</div>
+${sections}
+<div class="ft">列印時間：${new Date().toLocaleString('zh-TW')}　／　機水電設計圖說自主檢查系統</div>
+</body></html>`;
+
+  const win=window.open('','_blank');
+  if(!win){alert('請允許此網站開啟彈出視窗，再重試一次。');return;}
+  win.document.write(html);
+  win.document.close();
+  setTimeout(()=>{win.focus();win.print();},400);
+}
 
 function confirmReset(){
   if(confirm('⚠️ 確定要清除所有核對紀錄？\n此操作無法復原。')){

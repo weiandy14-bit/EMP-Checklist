@@ -32,7 +32,7 @@ SYS_META = {
     "電力系統":     dict(id="power", num=1, icon="⚡",  color="#3b82f6", bg="#eff6ff", expandable=True),
     "弱電系統":     dict(id="elv",   num=2, icon="📡",  color="#8b5cf6", bg="#f5f3ff", expandable=True),
     "給水系統":     dict(id="water", num=3, icon="💧",  color="#06b6d4", bg="#ecfeff", expandable=True),
-    "排水系統":     dict(id="drain", num=4, icon="🔄",  color="#64748b", bg="#f8fafc", expandable=False),
+    "排水系統":     dict(id="drain", num=4, icon="🔄",  color="#64748b", bg="#f8fafc", expandable=True),
     "消防系統":     dict(id="fire",  num=5, icon="🔥",  color="#ef4444", bg="#fef2f2", expandable=False),
     "空調系統":     dict(id="hvac",  num=6, icon="❄️",  color="#0ea5e9", bg="#f0f9ff", expandable=False),
     "通風系統":     dict(id="vent",  num=7, icon="💨",  color="#10b981", bg="#ecfdf5", expandable=False),
@@ -67,6 +67,10 @@ SYS_SUB_META: dict[str, dict] = {
         "雨水回收設備工程": dict(id="wt-rain",    icon="🌧️", name="④ 雨水回收設備工程"),
         "油脂截留設備工程": dict(id="wt-grease",  icon="🍳",  name="⑤ 油脂截留設備工程"),
         "垃圾冷藏設備工程": dict(id="wt-gcold",   icon="🧊",  name="⑥ 垃圾冷藏設備工程"),
+    },
+    "排水系統": {
+        "排水設備工程":     dict(id="dr-drain", icon="🪣",  name="① 排水設備工程"),
+        "空調冷凝排水系統": dict(id="dr-cond",  icon="💦",  name="② 空調冷凝排水系統"),
     },
 }
 

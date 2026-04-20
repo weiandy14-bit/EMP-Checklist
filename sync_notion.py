@@ -34,7 +34,7 @@ SYS_META = {
     "給水系統":     dict(id="water", num=3, icon="💧",  color="#06b6d4", bg="#ecfeff", expandable=True),
     "排水系統":     dict(id="drain", num=4, icon="🔄",  color="#64748b", bg="#f8fafc", expandable=True),
     "消防系統":     dict(id="fire",  num=5, icon="🔥",  color="#ef4444", bg="#fef2f2", expandable=True),
-    "空調系統":     dict(id="hvac",  num=6, icon="❄️",  color="#0ea5e9", bg="#f0f9ff", expandable=False),
+    "空調系統":     dict(id="hvac",  num=6, icon="❄️",  color="#0ea5e9", bg="#f0f9ff", expandable=True),
     "通風系統":     dict(id="vent",  num=7, icon="💨",  color="#10b981", bg="#ecfdf5", expandable=False),
     "避雷接地系統": dict(id="grnd",  num=8, icon="🌍",  color="#f59e0b", bg="#fffbeb", expandable=False),
 }
@@ -71,6 +71,17 @@ SYS_SUB_META: dict[str, dict] = {
     "排水系統": {
         "排水設備工程":     dict(id="dr-drain", icon="🪣",  name="① 排水設備工程"),
         "空調冷凝排水系統": dict(id="dr-cond",  icon="💦",  name="② 空調冷凝排水系統"),
+    },
+    "空調系統": {
+        "空調水系統":         dict(id="hv-water", icon="🌊",  name="① 空調水系統"),
+        "空調風系統":         dict(id="hv-air",   icon="💨",  name="② 空調風系統"),
+        "圖說設備規格表":     dict(id="hv-spec",  icon="📋",  name="③ 圖說設備規格表"),
+        "系統、升位、施工大樣圖": dict(id="hv-dwg", icon="📐", name="④ 系統、升位、施工大樣圖"),
+        "控制圖、IO點位表":   dict(id="hv-ctrl",  icon="🗂️", name="⑤ 控制圖、IO點位表"),
+        "空調自動控制(監控)": dict(id="hv-auto",  icon="🖥️", name="⑥ 空調自動控制（監控）"),
+        "噪音防制":           dict(id="hv-noise", icon="🔇",  name="⑦ 噪音防制"),
+        "變頻多聯空調設備":   dict(id="hv-vrf",   icon="🔄",  name="⑧ 變頻多聯空調設備"),
+        "可變風量控制系統":   dict(id="hv-vav",   icon="🌬️", name="⑨ 可變風量控制系統"),
     },
     "消防系統": {
         "消防栓及連結送水設備": dict(id="ff-hydrant", icon="🚒",  name="① 消防栓及連結送水設備"),

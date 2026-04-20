@@ -33,7 +33,7 @@ SYS_META = {
     "弱電系統":     dict(id="elv",   num=2, icon="📡",  color="#8b5cf6", bg="#f5f3ff", expandable=True),
     "給水系統":     dict(id="water", num=3, icon="💧",  color="#06b6d4", bg="#ecfeff", expandable=True),
     "排水系統":     dict(id="drain", num=4, icon="🔄",  color="#64748b", bg="#f8fafc", expandable=True),
-    "消防系統":     dict(id="fire",  num=5, icon="🔥",  color="#ef4444", bg="#fef2f2", expandable=False),
+    "消防系統":     dict(id="fire",  num=5, icon="🔥",  color="#ef4444", bg="#fef2f2", expandable=True),
     "空調系統":     dict(id="hvac",  num=6, icon="❄️",  color="#0ea5e9", bg="#f0f9ff", expandable=False),
     "通風系統":     dict(id="vent",  num=7, icon="💨",  color="#10b981", bg="#ecfdf5", expandable=False),
     "避雷接地系統": dict(id="grnd",  num=8, icon="🌍",  color="#f59e0b", bg="#fffbeb", expandable=False),
@@ -71,6 +71,20 @@ SYS_SUB_META: dict[str, dict] = {
     "排水系統": {
         "排水設備工程":     dict(id="dr-drain", icon="🪣",  name="① 排水設備工程"),
         "空調冷凝排水系統": dict(id="dr-cond",  icon="💦",  name="② 空調冷凝排水系統"),
+    },
+    "消防系統": {
+        "消防栓及連結送水設備": dict(id="ff-hydrant", icon="🚒",  name="① 消防栓及連結送水設備"),
+        "採水系統設備":         dict(id="ff-intake",  icon="💧",  name="② 採水系統設備"),
+        "火警設備":             dict(id="ff-alarm",   icon="🔔",  name="③ 火警設備"),
+        "緊急廣播設備":         dict(id="ff-pa",      icon="📢",  name="④ 緊急廣播設備"),
+        "標示設備及避難器具設備": dict(id="ff-sign",  icon="🚪",  name="⑤ 標示設備及避難器具設備"),
+        "自動灑水設備":         dict(id="ff-sprink",  icon="💦",  name="⑥ 自動灑水設備"),
+        "泡沫滅火設備":         dict(id="ff-foam",    icon="🧯",  name="⑦ 泡沫滅火設備"),
+        "排煙設備":             dict(id="ff-smoke",   icon="💨",  name="⑧ 排煙設備"),
+        "消防無線電通訊設備":   dict(id="ff-radio",   icon="📡",  name="⑨ 消防無線電通訊設備"),
+        "固定式放水型設備":     dict(id="ff-fixed",   icon="🔫",  name="⑩ 固定式放水型設備"),
+        "移動式放水型設備":     dict(id="ff-mobile",  icon="🚿",  name="⑪ 移動式放水型設備"),
+        "防火填塞":             dict(id="ff-seal",    icon="🧱",  name="⑬ 防火填塞"),
     },
 }
 

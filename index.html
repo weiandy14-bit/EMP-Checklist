@@ -282,6 +282,60 @@ body{font-family:'Segoe UI',-apple-system,'微軟正黑體',sans-serif;
 .welcome-t{font-size:17px;font-weight:700;color:var(--g700)}
 .welcome-s{font-size:12.5px;color:var(--g400);max-width:320px;line-height:1.6}
 
+/* ── 搜尋 ── */
+.search-wrap{position:relative;display:flex;align-items:center}
+.search-inp{border:1px solid var(--g200);border-radius:20px;padding:5px 12px 5px 30px;
+  font-size:12px;color:var(--g700);background:var(--g50);font-family:inherit;
+  width:160px;transition:all .2s}
+.search-inp:focus{outline:none;border-color:var(--pr);background:#fff;width:200px}
+.search-inp::-webkit-search-cancel-button{cursor:pointer}
+.search-ic-lbl{position:absolute;left:9px;font-size:12px;color:var(--g400);pointer-events:none;line-height:1}
+
+/* 搜尋結果面板 */
+.srch-panel{background:#fff;border-radius:var(--r);padding:14px 18px;box-shadow:var(--sh);margin-bottom:10px}
+.srch-hd{font-size:13px;font-weight:700;color:var(--g700);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.srch-item{background:var(--g50);border-radius:6px;padding:10px 12px;margin-bottom:6px;
+  cursor:pointer;transition:all .15s;border:1px solid transparent}
+.srch-item:hover{border-color:var(--pr);background:#fff;box-shadow:var(--sh)}
+.srch-path{font-size:10.5px;color:var(--g400);margin-bottom:3px}
+.srch-txt{font-size:12.5px;color:var(--g700);line-height:1.5}
+.srch-hl{background:#fef08a;border-radius:2px;font-weight:600;padding:0 1px}
+.srch-basis{font-size:10.5px;color:var(--g400);margin-top:3px}
+.srch-empty{text-align:center;padding:30px 20px;color:var(--g400);font-size:12.5px}
+
+/* 問題匯總 nav */
+.iss-nav{display:flex;align-items:center;padding:9px 12px;cursor:pointer;
+  transition:all .15s;gap:9px;position:relative;border-bottom:1px solid #2d3748}
+.iss-nav:hover{background:var(--sbh)}
+.iss-nav.active{background:rgba(239,68,68,.15)}
+.iss-nav.active::before{content:'';position:absolute;left:0;top:0;bottom:0;
+  width:3px;background:#ef4444;border-radius:0 2px 2px 0}
+.iss-ic{width:24px;height:24px;border-radius:5px;background:#fef2f2;
+  display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.iss-nm{font-size:12px;font-weight:500;color:#94a3b8;flex:1}
+.iss-nav.active .iss-nm{color:#fca5a5}
+.iss-badge{font-size:10px;background:#ef4444;color:#fff;border-radius:10px;
+  padding:1px 7px;flex-shrink:0;font-weight:700}
+.iss-badge.zero{background:#374151}
+
+/* 問題匯總主內容 */
+.iss-group{background:#fff;border-radius:var(--r);padding:13px 16px;box-shadow:var(--sh);margin-bottom:10px}
+.iss-group-hd{font-size:13px;font-weight:700;color:var(--g700);margin-bottom:9px;
+  padding-bottom:7px;border-bottom:1px solid var(--g100);
+  display:flex;align-items:center;gap:7px}
+.iss-row{background:#fff7f7;border-radius:6px;padding:9px 12px;margin-bottom:6px;
+  border-left:3px solid #ef4444;cursor:pointer;transition:border-color .15s}
+.iss-row:hover{border-left-color:#b91c1c}
+.iss-row-hd{display:flex;align-items:center;gap:6px;margin-bottom:3px;flex-wrap:wrap}
+.iss-row-txt{font-size:12.5px;color:var(--g700);line-height:1.5}
+.iss-row-note{font-size:11px;color:#b91c1c;margin-top:5px;padding:4px 9px;
+  background:#fee2e2;border-radius:4px}
+.iss-row-basis{font-size:10.5px;color:var(--g400);margin-top:3px}
+.iss-empty-box{text-align:center;padding:50px 20px}
+.iss-empty-ic{font-size:44px;margin-bottom:10px}
+.iss-empty-t{font-size:15px;font-weight:700;color:var(--g600)}
+.iss-empty-s{font-size:12px;color:var(--g400);margin-top:5px}
+
 /* ── 列印狀態標籤（螢幕隱藏，列印顯示）── */
 .print-lbl{display:none}
 .print-sum{display:none}
@@ -390,6 +444,11 @@ body{font-family:'Segoe UI',-apple-system,'微軟正黑體',sans-serif;
       <div class="pf"><label>核對日期</label>
         <input type="date" id="checkDate"></div>
     </div>
+    <div class="search-wrap" style="margin:0 6px">
+      <span class="search-ic-lbl">🔍</span>
+      <input class="search-inp" id="searchBox" type="search" placeholder="搜尋項目..."
+        oninput="doSearch(this.value)" onsearch="doSearch(this.value)">
+    </div>
     <div style="display:flex;gap:5px;align-items:center;border-left:1px solid var(--g200);padding-left:8px">
       <button class="btn btn-rec" onclick="saveAsRecord()" title="儲存目前進度為一筆紀錄">💾 儲存</button>
       <button class="btn btn-rec" onclick="openRecordManager()" title="管理所有已儲存的紀錄">📂 紀錄</button>
@@ -414,6 +473,11 @@ body{font-family:'Segoe UI',-apple-system,'微軟正黑體',sans-serif;
 
 <div class="body">
   <aside class="sb">
+    <div id="issNav" class="iss-nav" onclick="clickIssues()">
+      <div class="iss-ic">⚠️</div>
+      <span class="iss-nm">問題匯總</span>
+      <span class="iss-badge zero" id="issBadge">0</span>
+    </div>
     <div class="sb-sec">系統分類</div>
     <nav class="sb-nav" id="sbNav"></nav>
     <div class="sb-foot">
@@ -1031,12 +1095,13 @@ const DATA = [
 // ═══════════════════════════════════════════════
 let KEY='mep_v3';
 let S={
-  sys:'',        // 目前選中的 parent系統 id
+  sys:'',        // 目前選中的 parent系統 id（'__issues__'=問題匯總）
   sub:'',        // 目前選中的 sub系統 id（expandable才有）
   expanded:{},   // {sysId: true/false}
   chk:{},        // {itemId: 'pass'|'issue'|'na'|''}
   note:{},       // {itemId: string}
-  sig:{}         // {subId|sysId: {designer,checker,date}}
+  sig:{},        // {subId|sysId: {designer,checker,date}}
+  search:''      // 搜尋關鍵字
 };
 
 // ═══════════════════════════════════════════════
@@ -1126,6 +1191,14 @@ function renderSB(){
   const ov=overallStats();
   g('ovPct').textContent=ov.pct+'%';
   g('ovFill').style.width=ov.pct+'%';
+  // 問題匯總 nav 狀態
+  const issN=countAllIssues();
+  const issNavEl=g('issNav');
+  if(issNavEl){
+    issNavEl.classList.toggle('active',S.sys==='__issues__');
+    const badge=g('issBadge');
+    if(badge){badge.textContent=issN;badge.className='iss-badge'+(issN===0?' zero':'');}
+  }
 }
 
 // ═══════════════════════════════════════════════
@@ -1138,6 +1211,23 @@ function renderMain(){
     <div class="banner-badge">送審前核對</div>
   </div>`;
 
+  // ── 搜尋結果視圖 ──
+  if(S.search&&S.search.length>0){
+    g('mainContent').innerHTML=banner+renderSearchView(S.search);
+    return;
+  }
+  // ── 問題匯總視圖 ──
+  if(S.sys==='__issues__'){
+    const issN=countAllIssues();
+    g('mainContent').innerHTML=banner+`<div class="sys-hdr" style="margin-bottom:10px">
+      <div class="sys-ic" style="background:#fef2f2">⚠️</div>
+      <div class="sys-hdr-ct">
+        <div class="sys-title">問題匯總</div>
+        <div class="sys-meta">共 ${issN} 個問題項目・點擊可跳至該項目</div>
+      </div>
+    </div>`+renderIssuesView();
+    return;
+  }
   if(!S.sys){
     g('mainContent').innerHTML=banner+`<div class="welcome">
       <div class="welcome-ic">📋</div>
@@ -1285,8 +1375,8 @@ function renderMain(){
 // 操作
 // ═══════════════════════════════════════════════
 function clickParent(id){
+  S.search=''; if(g('searchBox'))g('searchBox').value='';
   if(S.sys===id){
-    // 已選中：toggle expand
     S.expanded[id]=!S.expanded[id];
   } else {
     S.sys=id; S.sub='';
@@ -1297,8 +1387,120 @@ function clickParent(id){
 }
 
 function clickSub(sysId,subId){
+  S.search=''; if(g('searchBox'))g('searchBox').value='';
   S.sys=sysId; S.sub=subId; S.expanded[sysId]=true;
   renderSB(); renderMain(); save();
+}
+
+function clickIssues(){
+  S.sys='__issues__'; S.sub=''; S.search='';
+  if(g('searchBox'))g('searchBox').value='';
+  renderSB(); renderMain(); save();
+}
+
+// ─── 搜尋 ───────────────────────────────────────
+function doSearch(q){
+  S.search=q.trim();
+  if(S.search) S.sys='__search__';
+  renderSB(); renderMain();
+}
+
+function renderSearchView(q){
+  const lower=q.toLowerCase();
+  const results=[];
+  DATA.forEach(sys=>{
+    const allItems=sys.expandable?sys.subs.flatMap(sub=>sub.items.map(i=>({...i,_sub:sub.name,_subId:sub.id}))):
+      (sys.items||[]).map(i=>({...i,_sub:'',_subId:''}));
+    allItems.forEach(item=>{
+      if(item.text.toLowerCase().includes(lower)||item.basis.toLowerCase().includes(lower)||item.id.toLowerCase().includes(lower)){
+        results.push({sys,item});
+      }
+    });
+  });
+  if(!results.length) return`<div class="srch-panel"><div class="srch-hd">🔍 搜尋「${esc(q)}」</div><div class="srch-empty">找不到相關項目，請換個關鍵字試試</div></div>`;
+  const re=new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi');
+  const hl=txt=>esc(txt).replace(re,m=>`<span class="srch-hl">${m}</span>`);
+  const rows=results.map(({sys,item})=>{
+    const s=S.chk[item.id]||'';
+    const n=S.note[item.id]||'';
+    const bt=item.sev==='A'?'A 必修正':item.sev==='B'?'B 建議確認':'C 建議優化';
+    const bc=`b${item.sev.toLowerCase()}`;
+    const stTxt=s==='pass'?'✓ 符合':s==='issue'?'✗ 有問題':s==='na'?'— 不適用':'□ 待核對';
+    const path=item._sub?`${sys.name} ▸ ${item._sub}`:sys.name;
+    return`<div class="srch-item" onclick="navToItem('${sys.id}','${item._subId}','${item.id}')">
+      <div class="srch-path">${sys.icon} ${esc(path)}</div>
+      <div class="srch-txt">${hl(item.text)}</div>
+      <div class="srch-basis">📋 ${hl(item.basis)}</div>
+      <div style="display:flex;gap:6px;margin-top:5px;align-items:center;flex-wrap:wrap">
+        <span class="badge ${bc}">${bt}</span>
+        <span style="font-size:10.5px;color:var(--g500)">${stTxt}</span>
+        ${n?`<span style="font-size:10.5px;color:#b91c1c">📝 有備註</span>`:''}
+      </div>
+    </div>`;
+  }).join('');
+  return`<div class="srch-panel"><div class="srch-hd">🔍 搜尋「${esc(q)}」・找到 ${results.length} 項</div>${rows}</div>`;
+}
+
+function navToItem(sysId,subId,itemId){
+  S.search=''; if(g('searchBox'))g('searchBox').value='';
+  S.sys=sysId; S.sub=subId||''; S.expanded[sysId]=true;
+  renderSB(); renderMain(); save();
+  setTimeout(()=>{const el=g('ci-'+itemId);if(el)el.scrollIntoView({behavior:'smooth',block:'center'});},120);
+}
+
+// ─── 問題匯總 ────────────────────────────────────
+function countAllIssues(){
+  let n=0;
+  DATA.forEach(sys=>sysAllItems(sys).forEach(i=>{if((S.chk[i.id]||'')==='issue')n++;}));
+  return n;
+}
+
+function renderIssuesView(){
+  const groups=[];
+  DATA.forEach(sys=>{
+    const rows=[];
+    if(sys.expandable){
+      sys.subs.forEach(sub=>{
+        sub.items.forEach(item=>{
+          if((S.chk[item.id]||'')==='issue') rows.push({item,subName:sub.name,subId:sub.id});
+        });
+      });
+    } else {
+      (sys.items||[]).forEach(item=>{
+        if((S.chk[item.id]||'')==='issue') rows.push({item,subName:'',subId:''});
+      });
+    }
+    if(rows.length) groups.push({sys,rows});
+  });
+
+  if(!groups.length) return`<div class="iss-empty-box">
+    <div class="iss-empty-ic">🎉</div>
+    <div class="iss-empty-t">目前沒有問題項目</div>
+    <div class="iss-empty-s">所有已核對項目均符合，繼續加油！</div>
+  </div>`;
+
+  return groups.map(({sys,rows})=>{
+    const rowsH=rows.map(({item,subName,subId})=>{
+      const n=S.note[item.id]||'';
+      const bt=item.sev==='A'?'A 必修正':item.sev==='B'?'B 建議確認':'C 建議優化';
+      const bc=`b${item.sev.toLowerCase()}`;
+      return`<div class="iss-row" onclick="navToItem('${sys.id}','${subId}','${item.id}')">
+        <div class="iss-row-hd">
+          <span class="badge ${bc}">${bt}</span>
+          ${subName?`<span style="font-size:10.5px;color:var(--g500)">${esc(subName)}</span>`:''}
+          <span style="font-size:10.5px;color:var(--g400);margin-left:auto">${esc(item.id)}</span>
+        </div>
+        <div class="iss-row-txt">${esc(item.text)}</div>
+        <div class="iss-row-basis">📋 ${esc(item.basis)}</div>
+        ${n?`<div class="iss-row-note">📝 ${esc(n)}</div>`:''}
+      </div>`;
+    }).join('');
+    return`<div class="iss-group">
+      <div class="iss-group-hd">${sys.icon} ${esc(sys.name)}
+        <span class="iss-badge" style="display:inline-block">${rows.length}</span>
+      </div>${rowsH}
+    </div>`;
+  }).join('');
 }
 
 function setS(id,val){

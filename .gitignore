@@ -1,3 +1,12 @@
 .DS_Store
 Thumbs.db
 *.log
+# Claude 工作階段資料
+.claude/
+# Notion 快取
+.report_db_id
+# Python 快取
+__pycache__/
+*.pyc
+# 測試報告 JSON
+report_*.json

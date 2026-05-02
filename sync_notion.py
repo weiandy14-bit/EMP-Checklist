@@ -13,6 +13,7 @@ sync_notion.py
     --db-id     指定 Notion 資料庫 ID（預設已內建）
 """
 
+import io
 import os
 import re
 import sys
@@ -21,6 +22,8 @@ import argparse
 import urllib.request
 import urllib.error
 from pathlib import Path
+
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 
 # ─── 設定 ──────────────────────────────────────────────────────────────────
 DB_ID       = "bc49a5edcbef4dd1b0ce16a3b52d8b6c"
@@ -35,8 +38,6 @@ SYS_META = {
     "排水系統":     dict(id="drain", num=4, icon="🔄",  color="#64748b", bg="#f8fafc", expandable=True),
     "消防系統":     dict(id="fire",  num=5, icon="🔥",  color="#ef4444", bg="#fef2f2", expandable=True),
     "空調系統":     dict(id="hvac",  num=6, icon="❄️",  color="#0ea5e9", bg="#f0f9ff", expandable=True),
-    "通風系統":     dict(id="vent",  num=7, icon="💨",  color="#10b981", bg="#ecfdf5", expandable=False),
-    "避雷接地系統": dict(id="grnd",  num=8, icon="🌍",  color="#f59e0b", bg="#fffbeb", expandable=False),
 }
 
 # 子系統 metadata（依系統分組，expandable=True 的系統才需要）
@@ -49,6 +50,7 @@ SYS_SUB_META: dict[str, dict] = {
         "大樣圖詳細圖":    dict(id="pw-detail", icon="🔍",  name="⑤ 大樣圖詳細圖"),
         "外牆燈系統":      dict(id="pw-facade", icon="🏙️", name="⑥ 外牆燈系統"),
         "緊急發電機系統":  dict(id="pw-genset", icon="🔋",  name="⑦ 緊急發電機系統"),
+        "避雷接地系統":    dict(id="pw-grnd",   icon="🌍",  name="⑧ 避雷接地系統"),
     },
     "弱電系統": {
         "電信設備工程":         dict(id="elv-tel",    icon="📞",  name="① 電信設備工程"),

@@ -18,17 +18,23 @@ body{font-family:'Segoe UI',-apple-system,'微軟正黑體',sans-serif;
   background:var(--g50);color:var(--g800);height:100vh;overflow:hidden;
   display:flex;flex-direction:column;font-size:14px}
 
-/* ── Header ── */
-.hdr{background:#fff;border-bottom:1px solid var(--g200);padding:0 18px;
-  height:56px;display:flex;align-items:center;justify-content:space-between;
-  flex-shrink:0;box-shadow:var(--sh);z-index:10}
-.hdr-l{display:flex;align-items:center;gap:10px}
+/* ── Header（雙排版）── */
+.hdr{background:#fff;border-bottom:1px solid var(--g200);
+  flex-shrink:0;box-shadow:var(--sh);z-index:10;display:flex;flex-direction:column}
+/* 上排：Logo ＋ 標題 ＋ 使用者 */
+.hdr-top{padding:0 18px;height:50px;display:flex;align-items:center;
+  justify-content:space-between;gap:12px}
+/* 下排：輸入欄 ＋ 搜尋 ＋ 按鈕 */
+.hdr-bot{padding:0 18px;min-height:40px;display:flex;align-items:center;
+  gap:8px;background:var(--g50);border-top:1px solid var(--g100);flex-wrap:wrap}
+.hdr-l{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.hdr-acts{display:flex;gap:5px;align-items:center;margin-left:auto;flex-shrink:0;
+  border-left:1px solid var(--g200);padding-left:8px}
 .logo{width:32px;height:32px;background:linear-gradient(135deg,#3b82f6,#1d4ed8);
   border-radius:7px;display:flex;align-items:center;justify-content:center;
   color:#fff;font-size:15px;font-weight:700;flex-shrink:0}
 .app-t{font-size:13.5px;font-weight:700;color:var(--g800)}
 .app-s{font-size:10.5px;color:var(--g500)}
-.hdr-r{display:flex;align-items:center;gap:10px}
 .pf{display:flex;flex-direction:column;align-items:flex-end}
 .pf label{font-size:9.5px;color:var(--g400);text-transform:uppercase;letter-spacing:.05em}
 .pf input{border:none;border-bottom:1px solid var(--g200);padding:1px 3px;
@@ -120,6 +126,14 @@ body{font-family:'Segoe UI',-apple-system,'微軟正黑體',sans-serif;
 .banner-sub{color:#93c5fd;font-size:11px;margin-top:2px}
 .banner-badge{background:rgba(255,255,255,.15);color:#fff;padding:4px 12px;
   border-radius:20px;font-size:11px;font-weight:600}
+/* Breadcrumb nav */
+.breadcrumb{display:flex;align-items:center;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.bc-btn{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:6px;
+  font-size:11.5px;font-weight:500;cursor:pointer;border:1px solid var(--g200);
+  background:#fff;color:var(--g600);transition:all .15s;font-family:inherit}
+.bc-btn:hover{background:var(--g50);border-color:var(--pr);color:var(--pr)}
+.bc-sep{color:var(--g300);font-size:11px}
+.bc-cur{font-size:11.5px;color:var(--g500);padding:5px 4px}
 
 /* System overview card (shown when parent selected, no sub) */
 .sys-overview{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-bottom:4px}
@@ -282,6 +296,32 @@ body{font-family:'Segoe UI',-apple-system,'微軟正黑體',sans-serif;
 .welcome-t{font-size:17px;font-weight:700;color:var(--g700)}
 .welcome-s{font-size:12.5px;color:var(--g400);max-width:320px;line-height:1.6}
 
+/* ── 系統完成率儀表板 ── */
+.dash-ov{background:#fff;border-radius:var(--r);padding:14px 18px;box-shadow:var(--sh);margin-bottom:14px}
+.dash-ov-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.dash-ov-lbl{font-size:12px;color:var(--g600);font-weight:500}
+.dash-ov-pct{font-weight:700;color:var(--pr);font-size:15px}
+.dash-ov-bar{height:7px;background:var(--g100);border-radius:4px;overflow:hidden}
+.dash-ov-fill{height:100%;border-radius:4px;transition:width .4s;background:linear-gradient(90deg,var(--pr),#34d399)}
+.sd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:12px}
+.sd-card{position:relative;background:#fff;border-radius:var(--r);padding:16px;box-shadow:var(--sh);
+  cursor:pointer;transition:all .18s;border:2px solid transparent;
+  border-top:3px solid var(--sd-clr,var(--pr))}
+.sd-card:hover{box-shadow:var(--sh2);transform:translateY(-2px);border-color:var(--sd-clr,var(--pr))}
+.sd-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.sd-ic{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:21px;flex-shrink:0}
+.sd-pct-big{font-size:24px;font-weight:800;line-height:1}
+.sd-nm{font-size:12.5px;font-weight:700;color:var(--g700);margin-bottom:8px;padding-right:20px}
+.sd-bar-bg{height:5px;background:var(--g100);border-radius:3px;overflow:hidden;margin-bottom:8px}
+.sd-bar-fill{height:100%;border-radius:3px;transition:width .4s}
+.sd-stats{display:flex;gap:4px;flex-wrap:wrap;font-size:10px}
+.sd-st{padding:2px 5px;border-radius:3px;font-weight:500}
+.sd-st.pass{color:#16a34a;background:#f0fdf4}
+.sd-st.issue{color:#dc2626;background:#fef2f2}
+.sd-st.na{color:#6b7280;background:#f3f4f6}
+.sd-st.tot{color:#9ca3af;font-weight:400}
+.sd-done-badge{position:absolute;top:8px;right:8px;font-size:14px}
+
 /* ── 搜尋 ── */
 .search-wrap{position:relative;display:flex;align-items:center}
 .search-inp{border:1px solid var(--g200);border-radius:20px;padding:5px 12px 5px 30px;
@@ -345,7 +385,9 @@ body{font-family:'Segoe UI',-apple-system,'微軟正黑體',sans-serif;
   *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;color-adjust:exact !important}
 
   body{height:auto;overflow:visible}
-  .hdr{display:flex !important;box-shadow:none;border-bottom:2px solid #1e3a5f;margin-bottom:6px}
+  .hdr{display:flex !important;flex-direction:column;box-shadow:none;border-bottom:2px solid #1e3a5f;margin-bottom:6px}
+  .hdr-top{height:auto;padding:6px 18px}
+  .hdr-bot{display:none !important}
   .hdr .btn,.hdr .btn-d{display:none !important}
   .sb,.legend,.modal-ov,.toast{display:none !important}
   .body{display:block}
@@ -404,6 +446,96 @@ body{font-family:'Segoe UI',-apple-system,'微軟正黑體',sans-serif;
   .cl-list{gap:4px}
   @page{margin:14mm;size:A4}
 }
+
+/* ══════════════════════════════════════════════
+   RWD 響應式佈局
+   ══════════════════════════════════════════════ */
+
+/* Hamburger — 預設隱藏（桌面不需要） */
+.mob-menu-btn{
+  display:none;background:none;border:none;cursor:pointer;
+  font-size:20px;color:var(--g600);padding:4px 6px;border-radius:6px;
+  line-height:1;flex-shrink:0;
+}
+.mob-menu-btn:hover{background:var(--g100)}
+
+/* Sidebar overlay（手機點擊背景關閉） */
+.sb-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:99;
+}
+.sb-overlay.show{display:block}
+
+/* ── 平板（≤ 1100px）──────────────────────────── */
+@media(max-width:1100px){
+  .sb{width:195px}
+  .pf input{width:110px}
+  .pf input[id=drawingRev]{width:55px}
+  .pf input[type=date]{width:105px}
+  .search-inp{width:130px}
+}
+
+/* ── 小平板（≤ 900px）────────────────────────── */
+@media(max-width:900px){
+  .hdr-bot{height:auto;padding:6px 14px;gap:6px;flex-wrap:wrap}
+  .hdr-acts{margin-left:0;border-left:none;padding-left:0;flex-wrap:wrap}
+  .pf-group{width:100%;justify-content:flex-start !important}
+  .pf input{width:130px}
+  .pf input[id=drawingRev]{width:65px}
+  .pf input[type=date]{width:120px}
+  .search-wrap{flex:1;min-width:160px}
+  .search-inp{width:100% !important}
+  .sb{width:185px}
+  .main{padding:12px}
+}
+
+/* ── 手機（≤ 640px）──────────────────────────── */
+@media(max-width:640px){
+  /* Header 上排 */
+  .hdr-top{padding:0 12px;height:46px}
+  .hdr-l{gap:8px}
+  .app-s{display:none}
+  .app-t{font-size:12.5px}
+  .mob-menu-btn{display:flex;align-items:center;justify-content:center}
+
+  /* Header 下排 */
+  .hdr-bot{padding:5px 12px;gap:5px}
+  .pf-group{gap:6px !important}
+  .pf input{width:95px;font-size:11px}
+  .pf input[id=drawingRev]{width:48px}
+  .pf input[type=date]{width:106px}
+  .pf label{font-size:8.5px}
+  .search-wrap{flex:1;min-width:120px}
+  .search-inp{width:100% !important;font-size:12px}
+  .hdr-acts{gap:4px}
+
+  /* 按鈕群組縮小 */
+  .btn{padding:4px 9px;font-size:11px}
+  .btn-p{padding:5px 10px}
+
+  /* Sidebar：抽屜式，預設收起 */
+  .sb{
+    position:fixed;left:-230px;top:0;bottom:0;
+    z-index:100;transition:left .25s ease;
+    box-shadow:none;width:230px;
+  }
+  .sb.mob-open{left:0;box-shadow:6px 0 24px rgba(0,0,0,.35)}
+
+  /* 主內容全寬 */
+  .main{padding:10px}
+  .sys-overview{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+  .sd-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+  .stats{gap:8px}
+  .stat-v{font-size:15px}
+}
+
+/* ── 超小手機（≤ 400px）──────────────────────── */
+@media(max-width:400px){
+  .pf-group{flex-wrap:wrap !important;gap:5px !important}
+  .pf input{width:105px}
+  .hdr-acts{flex-wrap:wrap}
+  .sys-overview{grid-template-columns:1fr 1fr}
+  .sd-grid{grid-template-columns:1fr 1fr}
+}
 </style>
 </head>
 <body>
@@ -428,35 +560,16 @@ body{font-family:'Segoe UI',-apple-system,'微軟正黑體',sans-serif;
 </div>
 
 <header class="hdr">
-  <div class="hdr-l">
-    <div class="logo">M</div>
-    <div>
-      <div class="app-t">機水電設計圖說 自主檢查系統</div>
-      <div class="app-s">MEP Drawing Self-Inspection System</div>
+  <!-- ── 上排：Logo ＋ 系統名稱 ＋ 使用者標章 ── -->
+  <div class="hdr-top">
+    <div class="hdr-l">
+      <button class="mob-menu-btn" onclick="toggleSidebar()" title="開啟/關閉選單">☰</button>
+      <div class="logo" onclick="goHome()" title="回首頁" style="cursor:pointer">M</div>
+      <div onclick="goHome()" title="回首頁" style="cursor:pointer">
+        <div class="app-t">機水電設計圖說 自主檢查系統</div>
+        <div class="app-s">MEP Drawing Self-Inspection System</div>
+      </div>
     </div>
-  </div>
-  <div class="hdr-r">
-    <div style="display:flex;gap:10px;align-items:center">
-      <div class="pf"><label>專案名稱</label>
-        <input type="text" id="projectName" placeholder="請輸入專案名稱"></div>
-      <div class="pf"><label>版次</label>
-        <input type="text" id="drawingRev" placeholder="Rev.__"></div>
-      <div class="pf"><label>核對日期</label>
-        <input type="date" id="checkDate"></div>
-    </div>
-    <div class="search-wrap" style="margin:0 6px">
-      <span class="search-ic-lbl">🔍</span>
-      <input class="search-inp" id="searchBox" type="search" placeholder="搜尋項目..."
-        oninput="doSearch(this.value)" onsearch="doSearch(this.value)">
-    </div>
-    <div style="display:flex;gap:5px;align-items:center;border-left:1px solid var(--g200);padding-left:8px">
-      <button class="btn btn-rec" onclick="saveAsRecord()" title="儲存目前進度為一筆紀錄">💾 儲存</button>
-      <button class="btn btn-rec" onclick="openRecordManager()" title="管理所有已儲存的紀錄">📂 紀錄</button>
-      <button class="btn btn-rec" onclick="exportJSON()" title="匯出為 JSON 檔（可換電腦使用）">📤 匯出</button>
-      <label class="btn btn-rec" title="從 JSON 檔匯入" style="cursor:pointer;display:inline-flex;align-items:center;gap:3px">📥 匯入<input type="file" id="importFileInput" accept=".json" onchange="importJSON(event)" style="display:none"></label>
-    </div>
-    <button class="btn btn-p" onclick="exportPrint()">🖨 列印/PDF</button>
-    <button class="btn btn-d" onclick="confirmReset()">↺ 重置</button>
     <div id="userBadge" style="display:none;align-items:center;gap:7px;padding:5px 12px;
       background:var(--g50);border:1px solid var(--g200);border-radius:20px;flex-shrink:0">
       <span id="badgeIcon" style="font-size:13px">👤</span>
@@ -469,10 +582,36 @@ body{font-family:'Segoe UI',-apple-system,'微軟正黑體',sans-serif;
         title="登出">登出</button>
     </div>
   </div>
+  <!-- ── 下排：專案欄位 ＋ 搜尋 ＋ 功能按鈕 ── -->
+  <div class="hdr-bot">
+    <div class="pf-group" style="display:flex;gap:10px;align-items:center">
+      <div class="pf"><label>專案名稱</label>
+        <input type="text" id="projectName" placeholder="請輸入專案名稱"></div>
+      <div class="pf"><label>版次</label>
+        <input type="text" id="drawingRev" placeholder="Rev.__"></div>
+      <div class="pf"><label>核對日期</label>
+        <input type="date" id="checkDate"></div>
+    </div>
+    <div class="search-wrap" style="margin:0 4px">
+      <span class="search-ic-lbl">🔍</span>
+      <input class="search-inp" id="searchBox" type="search" placeholder="搜尋項目..."
+        oninput="doSearch(this.value)" onsearch="doSearch(this.value)">
+    </div>
+    <div class="hdr-acts">
+      <button class="btn btn-rec" onclick="saveAsRecord()" title="儲存目前進度為一筆紀錄">💾 儲存</button>
+      <button class="btn btn-rec" onclick="openRecordManager()" title="管理所有已儲存的紀錄">📂 紀錄</button>
+      <button class="btn btn-rec" onclick="exportJSON()" title="匯出為 JSON 檔（可換電腦使用）">📤 匯出</button>
+      <label class="btn btn-rec" title="從 JSON 檔匯入" style="cursor:pointer;display:inline-flex;align-items:center;gap:3px">📥 匯入<input type="file" id="importFileInput" accept=".json" onchange="importJSON(event)" style="display:none"></label>
+      <button id="reportBtn" class="btn btn-rec" onclick="exportReportJSON()" style="display:none;background:#f0fdf4;color:#16a34a;border-color:#86efac;padding:5px 9px;font-size:11.5px" title="將本次檢查結果匯出 JSON，再執行 push_report.bat 送至 Notion">📋 傳送</button>
+      <button class="btn btn-p" onclick="exportPrint()">🖨 列印/PDF</button>
+      <button class="btn btn-d" onclick="confirmReset()">↺ 重置</button>
+    </div>
+  </div>
 </header>
 
+<div id="sbOverlay" class="sb-overlay" onclick="toggleSidebar()"></div>
 <div class="body">
-  <aside class="sb">
+  <aside class="sb" id="sidebar">
     <div id="issNav" class="iss-nav" onclick="clickIssues()">
       <div class="iss-ic">⚠️</div>
       <span class="iss-nm">問題匯總</span>
@@ -687,6 +826,21 @@ const DATA = [
           {id:'pg10',sev:'B',text:'冷卻系統：風冷式確認進排氣通道不短路，水冷式散熱器位置，停機冷卻延遲運轉功能',basis:'00702 §16231；設備廠商規範'},
           {id:'pg11',sev:'B',text:'發電機品牌：引擎限定CUMMINS/CAT/MTU，發電機頭限定MARATHON/STAMFORD/CAT（00702）',basis:'00702 §16231'},
           {id:'pg12',sev:'C',text:'自動週期性試運轉：建議設定每月自動試車30分鐘，試車紀錄系統，遠端監控介面',basis:'維護管理規範；業主需求'},
+        ]
+      },
+      {
+        id:'pw-grnd', name:'⑧ 避雷接地系統', icon:'🌍',
+        items:[
+          {id:'g01',sev:'A',text:'接地電阻值：00702業主規範要求 ≤10Ω（法規第三種 ≤100Ω，業主規範更嚴，以10Ω為準）',basis:'用戶用電設備裝置規則第26-31條；00702 §16061'},
+          {id:'g02',sev:'A',text:'接地棒規格：銅包鋼棒，直徑19mm，長3m（00702 §16061），不得以鍍鋅鋼棒替代',basis:'00702 §16061；CNS'},
+          {id:'g03',sev:'A',text:'地下接地棒連接工法：熱熔接（Cadweld/Thermic Welding），不得使用一般焊接或壓接',basis:'00702 §16061'},
+          {id:'g04',sev:'A',text:'ESD靜電接地電阻 ≤1Ω（ANSI/ESD S6.1），ESD接地與電力接地系統完全獨立分開',basis:'ANSI/ESD S6.1；SEMI S2'},
+          {id:'g05',sev:'A',text:'避雷針規格：銅棒直徑 ≥12mm（建築技術規則），支架耐風速 ≥60m/sec（00702 §16061）',basis:'建築技術規則第22條；00702 §16061'},
+          {id:'g06',sev:'A',text:'特別第三種接地（150V以上低壓設備機殼）≤10Ω，與系統接地分開標示',basis:'用戶用電設備裝置規則第29條'},
+          {id:'g07',sev:'B',text:'接地棒埋設：地面下至少3m或地下水位以下，多棒並設間距 ≥2m，連接線 ≥30mm²',basis:'00702 §16061'},
+          {id:'g08',sev:'B',text:'地面接地導線保護管：地面上2.5m/地下0.6m段以PVC管保護，接地排絕緣顏色PVC綠色',basis:'00702 §16061；CNS 5202'},
+          {id:'g09',sev:'B',text:'接地系統圖與SLD、動力圖說核對一致：接地點位置、接地線截面積、接地型式（TN-S/TT/IT）',basis:'IEC 60364-5-54'},
+          {id:'g10',sev:'B',text:'測試時機標注：乾燥天氣下進行，雨後至少1週後測試（避免濕土影響接地電阻讀值）',basis:'00702 §16061'},
         ]
       },
     ]
@@ -1059,35 +1213,6 @@ const DATA = [
       },
     ]
   },
-  {
-    id:'vent', num:7, icon:'💨', name:'通風系統', color:'#10b981', bg:'#ecfdf5',
-    expandable: false,
-    items:[
-      {id:'v01',sev:'A',text:'換氣次數符合規定（廁所≥15次/hr；停車場≥10次/hr，含CO濃度聯動），並標示計算依據',basis:'建築技術規則建築設備篇'},
-      {id:'v02',sev:'A',text:'機械排煙量：防煙區劃內 ≥1m³/min/m²樓地板面積，排煙口位置及有效面積標示',basis:'建築技術規則建築設備篇'},
-      {id:'v03',sev:'A',text:'防火閘門（Fire Damper）設置於所有穿越防火區劃的風管，電動型標示控制方式及聯動訊號',basis:'建築技術規則建築設備篇；消防法'},
-      {id:'v04',sev:'A',text:'停車場CO感測器聯動排風機控制圖說標示，CO濃度設定值（通常25/50ppm兩段連動）',basis:'建築技術規則建築設備篇；職業安全衛生規則'},
-      {id:'v05',sev:'B',text:'風管材質依安裝位置選用（廚房油煙：不鏽鋼；屋外：鍍鋅防腐；一般室內：鍍鋅薄鋼板）',basis:'SMACNA；CNS'},
-      {id:'v06',sev:'B',text:'風管支撐間距符合規定（矩形風管≤3m，圓形≤4m），屋外風管防腐及保溫處理標示',basis:'SMACNA；設備規範'},
-      {id:'v07',sev:'C',text:'噪音管制：進排氣口消音器設置，機房隔音設計，鄰地界音量符合環境噪音標準',basis:'噪音管制法'},
-    ]
-  },
-  {
-    id:'grnd', num:8, icon:'🌍', name:'避雷接地系統', color:'#f59e0b', bg:'#fffbeb',
-    expandable: false,
-    items:[
-      {id:'g01',sev:'A',text:'接地電阻值：00702業主規範要求 ≤10Ω（法規第三種 ≤100Ω，業主規範更嚴，以10Ω為準）',basis:'用戶用電設備裝置規則第26-31條；00702 §16061'},
-      {id:'g02',sev:'A',text:'接地棒規格：銅包鋼棒，直徑19mm，長3m（00702 §16061），不得以鍍鋅鋼棒替代',basis:'00702 §16061；CNS'},
-      {id:'g03',sev:'A',text:'地下接地棒連接工法：熱熔接（Cadweld/Thermic Welding），不得使用一般焊接或壓接',basis:'00702 §16061'},
-      {id:'g04',sev:'A',text:'ESD靜電接地電阻 ≤1Ω（ANSI/ESD S6.1），ESD接地與電力接地系統完全獨立分開',basis:'ANSI/ESD S6.1；SEMI S2'},
-      {id:'g05',sev:'A',text:'避雷針規格：銅棒直徑 ≥12mm（建築技術規則），支架耐風速 ≥60m/sec（00702 §16061）',basis:'建築技術規則第22條；00702 §16061'},
-      {id:'g06',sev:'A',text:'特別第三種接地（150V以上低壓設備機殼）≤10Ω，與系統接地分開標示',basis:'用戶用電設備裝置規則第29條'},
-      {id:'g07',sev:'B',text:'接地棒埋設：地面下至少3m或地下水位以下，多棒並設間距 ≥2m，連接線 ≥30mm²',basis:'00702 §16061'},
-      {id:'g08',sev:'B',text:'地面接地導線保護管：地面上2.5m/地下0.6m段以PVC管保護，接地排絕緣顏色PVC綠色',basis:'00702 §16061；CNS 5202'},
-      {id:'g09',sev:'B',text:'接地系統圖與SLD、動力圖說核對一致：接地點位置、接地線截面積、接地型式（TN-S/TT/IT）',basis:'IEC 60364-5-54'},
-      {id:'g10',sev:'B',text:'測試時機標注：乾燥天氣下進行，雨後至少1週後測試（避免濕土影響接地電阻讀值）',basis:'00702 §16061'},
-    ]
-  },
 ];
 
 // ═══════════════════════════════════════════════
@@ -1211,15 +1336,39 @@ function renderMain(){
     <div class="banner-badge">送審前核對</div>
   </div>`;
 
+  // ── 麵包屑導覽列 ──
+  function mkBreadcrumb(){
+    const sys=S.sys&&S.sys!=='__issues__'&&S.sys!=='__search__'?DATA.find(s=>s.id===S.sys):null;
+    const sub=sys&&S.sub?sys.subs?.find(s=>s.id===S.sub):null;
+    if(!S.sys||S.sys==='__search__') return '';
+    let html=`<div class="breadcrumb">
+      <button class="bc-btn" onclick="goHome()" title="回首頁">🏠 首頁</button>`;
+    if(S.sys==='__issues__'){
+      html+=`<span class="bc-sep">›</span><span class="bc-cur">⚠️ 問題匯總</span>`;
+    } else if(sys){
+      if(sub){
+        html+=`<span class="bc-sep">›</span>
+          <button class="bc-btn" onclick="goBack()" title="回上一頁">${sys.icon} ${sys.name}</button>
+          <span class="bc-sep">›</span><span class="bc-cur">${sub.icon} ${sub.name}</span>`;
+      } else {
+        html+=`<span class="bc-sep">›</span><span class="bc-cur">${sys.icon} ${sys.name}</span>`;
+      }
+    }
+    html+=`</div>`;
+    return html;
+  }
+  const bc=mkBreadcrumb();
+
   // ── 搜尋結果視圖 ──
   if(S.search&&S.search.length>0){
-    g('mainContent').innerHTML=banner+renderSearchView(S.search);
+    const sbcHtml=`<div class="breadcrumb"><button class="bc-btn" onclick="goHome()">🏠 首頁</button><span class="bc-sep">›</span><span class="bc-cur">🔍 搜尋：${S.search}</span></div>`;
+    g('mainContent').innerHTML=banner+sbcHtml+renderSearchView(S.search);
     return;
   }
   // ── 問題匯總視圖 ──
   if(S.sys==='__issues__'){
     const issN=countAllIssues();
-    g('mainContent').innerHTML=banner+`<div class="sys-hdr" style="margin-bottom:10px">
+    g('mainContent').innerHTML=banner+bc+`<div class="sys-hdr" style="margin-bottom:10px">
       <div class="sys-ic" style="background:#fef2f2">⚠️</div>
       <div class="sys-hdr-ct">
         <div class="sys-title">問題匯總</div>
@@ -1229,11 +1378,40 @@ function renderMain(){
     return;
   }
   if(!S.sys){
-    g('mainContent').innerHTML=banner+`<div class="welcome">
-      <div class="welcome-ic">📋</div>
-      <div class="welcome-t">請從左側選擇系統開始核對</div>
-      <div class="welcome-s">點選左側任一系統或子項目，右側將顯示對應的自主檢查表</div>
+    const visSys=DATA.filter(sys=>canAccessSys(sys.id));
+    const ov=overallStats();
+    const lbl=CURR_ACCT?.isAdmin?'整體完成進度（全部系統）':'您負責系統的完成進度';
+    const ovH=`<div class="dash-ov">
+      <div class="dash-ov-row">
+        <span class="dash-ov-lbl">${lbl}</span>
+        <span class="dash-ov-pct">${ov.pct}%</span>
+      </div>
+      <div class="dash-ov-bar"><div class="dash-ov-fill" style="width:${ov.pct}%"></div></div>
     </div>`;
+    const cardsH=visSys.map(sys=>{
+      const items=sysAllItems(sys);
+      const st=calcStats(items);
+      const passN=items.filter(i=>(S.chk[i.id]||'')==='pass').length;
+      const issN=items.filter(i=>(S.chk[i.id]||'')==='issue').length;
+      const naN=items.filter(i=>(S.chk[i.id]||'')==='na').length;
+      const doneBadge=st.pct===100?'<span class="sd-done-badge">✅</span>':'';
+      return`<div class="sd-card" onclick="clickParent('${sys.id}')" style="--sd-clr:${sys.color}">
+        ${doneBadge}
+        <div class="sd-top">
+          <div class="sd-ic" style="background:${sys.bg}">${sys.icon}</div>
+          <div class="sd-pct-big" style="color:${sys.color}">${st.pct}%</div>
+        </div>
+        <div class="sd-nm">${sys.num}. ${sys.name}</div>
+        <div class="sd-bar-bg"><div class="sd-bar-fill" style="width:${st.pct}%;background:${sys.color}"></div></div>
+        <div class="sd-stats">
+          <span class="sd-st pass">✅ ${passN}</span>
+          ${issN>0?`<span class="sd-st issue">❌ ${issN}</span>`:''}
+          <span class="sd-st na">— ${naN}</span>
+          <span class="sd-st tot">/ ${st.total}</span>
+        </div>
+      </div>`;
+    }).join('');
+    g('mainContent').innerHTML=banner+ovH+`<div class="sd-grid">${cardsH}</div>`;
     return;
   }
   const sys=DATA.find(s=>s.id===S.sys);
@@ -1253,7 +1431,7 @@ function renderMain(){
         <div class="sub-card-cnt">共${ss.total}項・完成${ss.done}項${ss.issues>0?'・⚠️'+ss.issues+'問題':''}</div>
       </div>`;
     }).join('');
-    g('mainContent').innerHTML=banner+`<div class="sys-overview">${cards}</div>`;
+    g('mainContent').innerHTML=banner+bc+`<div class="sys-overview">${cards}</div>`;
     return;
   }
 
@@ -1315,7 +1493,7 @@ function renderMain(){
   }).join('');
 
   const sig=S.sig[sigKey]||{};
-  g('mainContent').innerHTML=banner+`
+  g('mainContent').innerHTML=banner+bc+`
     <div class="legend">
       <span style="color:var(--g600);font-weight:600">操作：</span>
       <div class="li">✓ 符合</div><div class="li">✗ 有問題（填備註）</div><div class="li">— 不適用</div>
@@ -1374,6 +1552,24 @@ function renderMain(){
 // ═══════════════════════════════════════════════
 // 操作
 // ═══════════════════════════════════════════════
+// 手機 Sidebar 開關
+// ═══════════════════════════════════════════════
+function toggleSidebar(){
+  const sb=g('sidebar');const ov=g('sbOverlay');
+  if(!sb||!ov)return;
+  const open=sb.classList.toggle('mob-open');
+  ov.classList.toggle('show',open);
+}
+function closeSidebarOnNav(){
+  // 手機點選項目後自動收起 sidebar
+  if(window.innerWidth<=640){
+    const sb=g('sidebar');const ov=g('sbOverlay');
+    if(sb)sb.classList.remove('mob-open');
+    if(ov)ov.classList.remove('show');
+  }
+}
+
+// ═══════════════════════════════════════════════
 function clickParent(id){
   S.search=''; if(g('searchBox'))g('searchBox').value='';
   if(S.sys===id){
@@ -1383,19 +1579,42 @@ function clickParent(id){
     const sys=DATA.find(s=>s.id===id);
     if(sys&&sys.expandable) S.expanded[id]=true;
   }
-  renderSB(); renderMain(); save();
+  renderSB(); renderMain(); save(); closeSidebarOnNav();
 }
 
 function clickSub(sysId,subId){
   S.search=''; if(g('searchBox'))g('searchBox').value='';
   S.sys=sysId; S.sub=subId; S.expanded[sysId]=true;
-  renderSB(); renderMain(); save();
+  renderSB(); renderMain(); save(); closeSidebarOnNav();
 }
 
 function clickIssues(){
   S.sys='__issues__'; S.sub=''; S.search='';
   if(g('searchBox'))g('searchBox').value='';
-  renderSB(); renderMain(); save();
+  renderSB(); renderMain(); save(); closeSidebarOnNav();
+}
+
+function goHome(){
+  S.sys=''; S.sub=''; S.search='';
+  if(g('searchBox'))g('searchBox').value='';
+  renderSB(); renderMain(); save(); closeSidebarOnNav();
+}
+
+function goBack(){
+  if(S.search){
+    S.search=''; if(g('searchBox'))g('searchBox').value='';
+    renderSB(); renderMain(); return;
+  }
+  if(S.sub){
+    // 子系統 → 上一層：系統概覽
+    S.sub='';
+    renderSB(); renderMain(); save(); return;
+  }
+  if(S.sys&&S.sys!=='__issues__'){
+    // 系統概覽 → 首頁
+    goHome(); return;
+  }
+  goHome();
 }
 
 // ─── 搜尋 ───────────────────────────────────────
@@ -1408,7 +1627,22 @@ function doSearch(q){
 function renderSearchView(q){
   const lower=q.toLowerCase();
   const results=[];
-  DATA.forEach(sys=>{
+
+  // ── 權限過濾 ──────────────────────────────────────────────────────────────
+  // 管理員：搜尋全部系統；操作者：只搜尋 canAccessSys() 回傳 true 的系統
+  const isAdmin=CURR_ACCT?.isAdmin===true;
+  const searchable=DATA.filter(sys=>canAccessSys(sys.id));
+
+  // 操作者尚未被分配任何系統
+  if(!isAdmin&&searchable.length===0){
+    return`<div class="srch-panel">
+      <div class="srch-hd">🔍 搜尋「${esc(q)}」</div>
+      <div class="srch-empty">⛔ 您尚未被分配任何系統<br>
+        <span style="font-size:11px;color:var(--g400)">請聯繫管理員設定您的系統存取權限</span></div>
+    </div>`;
+  }
+
+  searchable.forEach(sys=>{
     const allItems=sys.expandable?sys.subs.flatMap(sub=>sub.items.map(i=>({...i,_sub:sub.name,_subId:sub.id}))):
       (sys.items||[]).map(i=>({...i,_sub:'',_subId:''}));
     allItems.forEach(item=>{
@@ -1417,7 +1651,16 @@ function renderSearchView(q){
       }
     });
   });
-  if(!results.length) return`<div class="srch-panel"><div class="srch-hd">🔍 搜尋「${esc(q)}」</div><div class="srch-empty">找不到相關項目，請換個關鍵字試試</div></div>`;
+
+  // 標題加上範圍提示
+  const scopeHint=isAdmin
+    ?`（全系統）`
+    :`（${searchable.map(s=>s.name).join('・')}）`;
+
+  if(!results.length) return`<div class="srch-panel">
+    <div class="srch-hd">🔍 搜尋「${esc(q)}」<span style="font-size:10.5px;color:var(--g400);margin-left:6px">${scopeHint}</span></div>
+    <div class="srch-empty">找不到相關項目，請換個關鍵字試試</div></div>`;
+
   const re=new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi');
   const hl=txt=>esc(txt).replace(re,m=>`<span class="srch-hl">${m}</span>`);
   const rows=results.map(({sys,item})=>{
@@ -1438,7 +1681,10 @@ function renderSearchView(q){
       </div>
     </div>`;
   }).join('');
-  return`<div class="srch-panel"><div class="srch-hd">🔍 搜尋「${esc(q)}」・找到 ${results.length} 項</div>${rows}</div>`;
+  return`<div class="srch-panel">
+    <div class="srch-hd">🔍 搜尋「${esc(q)}」・找到 ${results.length} 項
+      <span style="font-size:10.5px;color:var(--g400);margin-left:6px">${scopeHint}</span></div>
+    ${rows}</div>`;
 }
 
 function navToItem(sysId,subId,itemId){
@@ -1514,9 +1760,40 @@ function saveNote(id,val){S.note[id]=val;save();}
 function togNote(id){const a=document.getElementById('na-'+id);if(a)a.classList.toggle('show');}
 function saveSig(k,f,v){if(!S.sig[k])S.sig[k]={};S.sig[k][f]=v;save();}
 function exportPrint(){
+  // ── 列印前驗證：每個系統/子系統的簽署欄（設計工程師 ＋ 複核工程師）都要填寫 ──
+  const missing=[];
+  DATA.forEach(sys=>{
+    if(!canAccessSys(sys.id)) return;
+    if(sys.expandable){
+      sys.subs.forEach(sub=>{
+        const sig=S.sig[sub.id]||{};
+        if(!(sig.designer||'').trim()||!(sig.checker||'').trim()){
+          missing.push(`${sys.icon} ${sys.name} ▸ ${sub.icon} ${sub.name}`);
+        }
+      });
+    } else {
+      const sig=S.sig[sys.id]||{};
+      if(!(sig.designer||'').trim()||!(sig.checker||'').trim()){
+        missing.push(`${sys.icon} ${sys.name}`);
+      }
+    }
+  });
+  if(missing.length>0){
+    alert('⚠️ 列印前請先完成以下項目的核對簽署\n（設計工程師 ＋ 複核工程師 均須填寫）：\n\n・' + missing.join('\n・'));
+    return;
+  }
   g('pm-projName').value = g('projectName').value;
   g('pm-projItem').value = '';
   g('pm-operator').value = g('badgeName').textContent.trim();
+  // 動態計算此使用者可存取的總項目數，更新下拉選項文字
+  let accessTotal=0;
+  DATA.forEach(sys=>{
+    if(!canAccessSys(sys.id)) return;
+    if(sys.expandable) sys.subs.forEach(sub=>accessTotal+=sub.items.length);
+    else accessTotal+=(sys.items||[]).length;
+  });
+  const allOpt=g('pm-show').querySelector('option[value="all"]');
+  if(allOpt) allOpt.textContent=`全部項目（共 ${accessTotal} 項）`;
   g('printModal').classList.remove('hidden');
 }
 
@@ -1529,11 +1806,12 @@ function doPrint(){
   const checkDate = g('checkDate').value            || new Date().toISOString().split('T')[0];
   g('printModal').classList.add('hidden');
 
-  // ── 彙整各系統已篩選項目 ──
+  // ── 彙整各系統已篩選項目（只處理有存取權限的系統）──
   let totPass=0,totIssue=0,totNa=0,totTodo=0;
   let sections='';
 
   DATA.forEach(sys=>{
+    if(!canAccessSys(sys.id)) return;   // ← 依權限過濾：操作者只看自己的系統
     let allItems=[];
     if(sys.expandable){
       sys.subs.forEach(sub=>sub.items.forEach(i=>allItems.push({...i,_sub:sub.name})));
@@ -1541,7 +1819,7 @@ function doPrint(){
       allItems=sys.items.map(i=>({...i,_sub:''}));
     }
 
-    // 統計（全系統，不受篩選影響）
+    // 統計（僅限有權限系統，不受篩選影響）
     let sPass=0,sIssue=0,sNa=0,sTodo=0;
     allItems.forEach(i=>{
       const s=S.chk[i.id]||'';
@@ -1581,6 +1859,49 @@ function doPrint(){
   const total=totPass+totIssue+totNa+totTodo;
   const modeLabel=showMode==='issue'?'（僅有問題項目）':showMode==='checked'?'（已核對項目）':'（全部項目）';
 
+  // ── 核對簽署彙總表（無論項目篩選，一律顯示）──
+  let sigRows='';
+  DATA.forEach(sys=>{
+    if(!canAccessSys(sys.id)) return;
+    if(sys.expandable){
+      sys.subs.forEach(sub=>{
+        const sig=S.sig[sub.id]||{};
+        const d=(sig.designer||'').trim();
+        const c=(sig.checker||'').trim();
+        const dt=(sig.date||'').trim();
+        sigRows+=`<tr>
+          <td class="sgn">${esc(sys.icon)} ${esc(sys.name)} ▸ ${esc(sub.icon)} ${esc(sub.name)}</td>
+          <td class="sgv${d?'':' empty'}">${esc(d)||'—'}</td>
+          <td class="sgv${c?'':' empty'}">${esc(c)||'—'}</td>
+          <td class="sgv${dt?'':' empty'}">${esc(dt)||'—'}</td>
+        </tr>`;
+      });
+    } else {
+      const sig=S.sig[sys.id]||{};
+      const d=(sig.designer||'').trim();
+      const c=(sig.checker||'').trim();
+      const dt=(sig.date||'').trim();
+      sigRows+=`<tr>
+        <td class="sgn">${esc(sys.icon)} ${esc(sys.name)}</td>
+        <td class="sgv${d?'':' empty'}">${esc(d)||'—'}</td>
+        <td class="sgv${c?'':' empty'}">${esc(c)||'—'}</td>
+        <td class="sgv${dt?'':' empty'}">${esc(dt)||'—'}</td>
+      </tr>`;
+    }
+  });
+  const sigBlock=`<div class="sg-sec">
+    <div class="sg-hd">📋 核對簽署</div>
+    <table class="sg-table">
+      <thead><tr>
+        <th style="width:38%">核對系統 ／ 子系統</th>
+        <th style="width:20%">設計工程師</th>
+        <th style="width:20%">複核工程師</th>
+        <th style="width:22%">核對日期</th>
+      </tr></thead>
+      <tbody>${sigRows}</tbody>
+    </table>
+  </div>`;
+
   const html=`<!DOCTYPE html><html lang="zh-TW"><head><meta charset="UTF-8">
 <title>機水電自主檢查報告</title>
 <style>
@@ -1610,6 +1931,14 @@ tr{break-inside:avoid}
 .sc{background:#eff6ff;color:#1d4ed8;font-weight:700;text-align:center}
 .nt{color:#555;font-size:9px;font-style:italic;margin-top:2px}
 .ft{margin-top:10px;border-top:1px solid #ccc;padding-top:5px;font-size:9px;color:#888;text-align:right}
+/* 核對簽署彙總表 */
+.sg-sec{margin-top:16px;padding-top:10px;border-top:2.5px solid #1e3a5f;page-break-inside:avoid}
+.sg-hd{font-weight:800;font-size:12px;margin-bottom:7px;display:flex;align-items:center;gap:5px}
+.sg-table{width:100%;border-collapse:collapse}
+.sg-table th{background:#1e3a5f;color:#fff;font-size:10px;padding:5px 8px;border:1px solid #1e3a5f;text-align:left}
+.sgn{font-size:10px;padding:6px 8px;border:1px solid #ccc;font-weight:600;background:#f8fafc;width:38%}
+.sgv{font-size:11px;padding:6px 8px;border:1px solid #ccc;min-width:70px}
+.sgv.empty{background:#fff8f8;color:#ccc}
 @page{margin:12mm;size:A4}
 </style></head><body>
 <div class="rt">機水電設計圖說　自主檢查報告　${modeLabel}</div>
@@ -1627,6 +1956,7 @@ tr{break-inside:avoid}
   <div class="sc2 sd"><span class="sn2">${totTodo}</span><span class="sl">□ 待核對</span></div>
 </div>
 ${sections}
+${sigBlock}
 <div class="ft">列印時間：${new Date().toLocaleString('zh-TW')}　／　機水電設計圖說自主檢查系統</div>
 </body></html>`;
 
@@ -1710,7 +2040,7 @@ async function createAcct(){
   const id=Date.now().toString();
   const isFirstAcct=accts.length===0;
   const hashed=await hashPwd(pwd);
-  accts.push({id,name,pwd:hashed,hasPwd:pwd.length>0,isAdmin:isFirstAcct,systems:[]});
+  accts.push({id,name,pwd:hashed,hasPwd:pwd.length>0,isAdmin:isFirstAcct,systems:[],canReport:false});
   saveAccts(accts);
   await doLogin(id,pwd);
 }
@@ -1734,6 +2064,7 @@ async function doLogin(id,passArg){
   g('badgeName').textContent=acct.name;
   g('userBadge').style.display='inline-flex';
   g('adminBtn').style.display=acct.isAdmin?'inline':'none';
+  g('reportBtn').style.display=(acct.isAdmin||acct.canReport)?'inline-flex':'none';
   // 載入此帳號上次資料（靜默恢復）
   const saved=loadSaved();
   if(saved&&saved.ts){applyData(saved);}
@@ -1763,6 +2094,7 @@ function logout(){
   g('projectName').value='';g('drawingRev').value='';g('checkDate').value='';
   g('userBadge').style.display='none';
   g('adminBtn').style.display='none';
+  g('reportBtn').style.display='none';
   g('newAcctName').value='';g('newAcctPwd').value='';
   _renderAcctList();
   g('loginScreen').style.display='flex';
@@ -1804,6 +2136,14 @@ function _renderAdminAcctList(){
       </div>
       <div style="font-size:10.5px;color:var(--g500);margin-bottom:6px;font-weight:600">可存取系統：</div>
       <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:2px 12px">${sysCks}</div>
+      <div style="margin-top:10px;padding-top:9px;border-top:1px solid var(--g200)">
+        <label style="display:flex;align-items:center;gap:7px;font-size:12px;cursor:pointer;user-select:none">
+          <input type="checkbox" onchange="toggleReportAccess('${a.id}',this.checked)"
+            ${a.canReport?'checked':''}
+            style="width:14px;height:14px;cursor:pointer;accent-color:#16a34a">
+          <span>📋 <strong>送出報告</strong>　允許此帳號將檢查結果送至 Notion</span>
+        </label>
+      </div>
     </div>`;
   }).join('');
 }
@@ -1816,6 +2156,65 @@ function toggleSysAccess(acctId,sysId,checked){
   if(checked){if(!accts[idx].systems.includes(sysId))accts[idx].systems.push(sysId);}
   else{accts[idx].systems=accts[idx].systems.filter(s=>s!==sysId);}
   saveAccts(accts);
+}
+
+function toggleReportAccess(acctId,checked){
+  let accts=loadAccts();
+  const idx=accts.findIndex(a=>a.id===acctId);
+  if(idx<0)return;
+  accts[idx].canReport=checked;
+  saveAccts(accts);
+}
+
+// ═══════════════════════════════════════════════
+// 送出報告（Cloudflare Worker → Notion）
+// ═══════════════════════════════════════════════
+function _buildReport(){
+  const proj=g('projectName').value.trim()||'未命名專案';
+  const rev=g('drawingRev').value.trim();
+  const date=g('checkDate').value;
+  let pass=0,issue=0,na=0,total=0;
+  DATA.forEach(sys=>sysAllItems(sys).forEach(i=>{
+    total++;
+    const s=S.chk[i.id]||'';
+    if(s==='pass')pass++;else if(s==='issue')issue++;else if(s==='na')na++;
+  }));
+  const pct=total?Math.round((pass+issue+na)/total*100):0;
+  const systems=DATA.map(sys=>{
+    const subs=sys.expandable
+      ?sys.subs.map(sub=>({
+          id:sub.id,name:sub.name,icon:sub.icon,
+          items:sub.items.map(i=>({
+            id:i.id,sev:i.sev,text:i.text,basis:i.basis,
+            status:S.chk[i.id]||'',note:S.note[i.id]||''
+          }))
+        }))
+      :[{id:sys.id,name:sys.name,icon:sys.icon,
+          items:(sys.items||[]).map(i=>({
+            id:i.id,sev:i.sev,text:i.text,basis:i.basis,
+            status:S.chk[i.id]||'',note:S.note[i.id]||''
+          }))}];
+    return{id:sys.id,name:sys.name,icon:sys.icon,expandable:sys.expandable,subs};
+  });
+  return{
+    meta:{proj,rev,date,submitter:CURR_ACCT?.name||'',
+      submittedAt:new Date().toISOString(),pct,pass,issue,na,total},
+    systems
+  };
+}
+
+function exportReportJSON(){
+  if(!CURR_ACCT?.isAdmin&&!CURR_ACCT?.canReport){
+    toast('⛔ 您沒有送出報告的權限');return;
+  }
+  const report=_buildReport();
+  const ts=new Date().toISOString().replace(/[:.]/g,'-').slice(0,19);
+  const blob=new Blob([JSON.stringify(report,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`report_${ts}.json`;
+  a.click();
+  toast('✅ 報告 JSON 已下載，請執行 push_report.bat');
 }
 
 // ═══════════════════════════════════════════════

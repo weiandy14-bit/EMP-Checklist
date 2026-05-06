@@ -376,6 +376,19 @@ body{font-family:'Segoe UI',-apple-system,'微軟正黑體',sans-serif;
 .iss-empty-t{font-size:15px;font-weight:700;color:var(--g600)}
 .iss-empty-s{font-size:12px;color:var(--g400);margin-top:5px}
 
+/* ── 全部標記列 ── */
+.sel-all-bar{display:flex;align-items:center;gap:7px;margin-bottom:8px;
+  padding:7px 13px;background:#fff;border-radius:var(--r);box-shadow:var(--sh);flex-wrap:wrap}
+.sel-all-lbl{font-size:11.5px;color:var(--g600);font-weight:600;flex-shrink:0}
+.sel-all-btns{display:flex;gap:5px;flex-wrap:wrap}
+.sa-btn{padding:4px 11px;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer;
+  border:1.5px solid var(--g200);background:#fff;font-family:inherit;transition:all .15s}
+.sa-btn:hover{box-shadow:var(--sh)}
+.sa-btn.pass{border-color:var(--ok);color:var(--ok)}.sa-btn.pass:hover{background:#f0fdf4}
+.sa-btn.issue{border-color:var(--er);color:var(--er)}.sa-btn.issue:hover{background:#fff7f7}
+.sa-btn.na{border-color:var(--g400);color:var(--g500)}.sa-btn.na:hover{background:var(--g100)}
+.sa-btn.undo{border-color:var(--g300);color:var(--g500)}.sa-btn.undo:hover{background:var(--g100)}
+
 /* ── 列印狀態標籤（螢幕隱藏，列印顯示）── */
 .print-lbl{display:none}
 .print-sum{display:none}
@@ -389,7 +402,7 @@ body{font-family:'Segoe UI',-apple-system,'微軟正黑體',sans-serif;
   .hdr-top{height:auto;padding:6px 18px}
   .hdr-bot{display:none !important}
   .hdr .btn,.hdr .btn-d{display:none !important}
-  .sb,.legend,.modal-ov,.toast{display:none !important}
+  .sb,.legend,.sel-all-bar,.modal-ov,.toast{display:none !important}
   .body{display:block}
   .main{overflow:visible;padding:4px 0}
   .page-banner{margin-bottom:8px;-webkit-print-color-adjust:exact !important}
@@ -1533,6 +1546,15 @@ function renderMain(){
       <div class="ps-cell ps-na"><span class="ps-num">${naN}</span><span class="ps-lbl">— 不適用</span></div>
       <div class="ps-cell ps-todo"><span class="ps-num">${todoN}</span><span class="ps-lbl">□ 待核對</span></div>
     </div>
+    <div class="sel-all-bar">
+      <span class="sel-all-lbl">全部標記為：</span>
+      <div class="sel-all-btns">
+        <button class="sa-btn pass" onclick="setAll('pass')">✓ 全部符合</button>
+        <button class="sa-btn issue" onclick="setAll('issue')">✗ 全部有問題</button>
+        <button class="sa-btn na" onclick="setAll('na')">— 全部不適用</button>
+        <button class="sa-btn undo" onclick="setAll('')">↺ 清除全部</button>
+      </div>
+    </div>
     <div class="cl-list">${itemsH}</div>
     <div class="sig-sec">
       <div class="sig-title">📋 本項目核對簽署 — ${title}</div>
@@ -1757,6 +1779,19 @@ function setS(id,val){
   setTimeout(()=>{const e=document.getElementById('ci-'+id);if(e)e.scrollIntoView({behavior:'smooth',block:'nearest'});},60);
 }
 
+function setAll(val){
+  const sys=DATA.find(s=>s.id===S.sys);
+  if(!sys) return;
+  let items=[];
+  if(sys.expandable&&S.sub){
+    const sub=sys.subs.find(s=>s.id===S.sub);
+    if(sub) items=sub.items;
+  } else {
+    items=sys.items||[];
+  }
+  items.forEach(item=>{S.chk[item.id]=val;});
+  renderSB(); renderMain(); save();
+}
 function saveNote(id,val){S.note[id]=val;save();}
 function togNote(id){const a=document.getElementById('na-'+id);if(a)a.classList.toggle('show');}
 function saveSig(k,f,v){if(!S.sig[k])S.sig[k]={};S.sig[k][f]=v;save();}

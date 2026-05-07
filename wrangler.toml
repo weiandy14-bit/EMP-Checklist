@@ -6,7 +6,7 @@ compatibility_date = "2024-01-01"
 [[kv_namespaces]]
 binding  = "MEP_KV"
 id       = ""          # 執行 `npx wrangler kv namespace create MEP_KV` 後填入
-preview_id = ""        # 執行 `npx wrangler kv namespace create MEP_KV --preview` 後填入
+preview_id = "e1526507d676405fa47a53993a12295e"
 
 [vars]
 # 公開變數（非機密）

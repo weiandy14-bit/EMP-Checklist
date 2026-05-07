@@ -1,0 +1,27 @@
+name = "mep-checklist"
+main = "worker.js"
+compatibility_date = "2024-09-23"
+
+# ── KV Namespaces ─────────────────────────────────────────────────────────
+# 建立方式：wrangler kv namespace create USERS
+#           wrangler kv namespace create PROJECTS
+#           wrangler kv namespace create STATE
+# 建立後把 id 填入下方
+
+[[kv_namespaces]]
+binding = "USERS"
+id = "REPLACE_WITH_USERS_KV_ID"
+
+[[kv_namespaces]]
+binding = "PROJECTS"
+id = "REPLACE_WITH_PROJECTS_KV_ID"
+
+[[kv_namespaces]]
+binding = "STATE"
+id = "REPLACE_WITH_STATE_KV_ID"
+
+# ── Secrets ───────────────────────────────────────────────────────────────
+# 設定方式（逐一執行）：
+#   wrangler secret put JWT_SECRET     ← 任意長字串（建議 32 字元以上）
+#   wrangler secret put NOTION_TOKEN   ← ntn_xxxx
+#   wrangler secret put NOTION_DB_ID   ← 報告用資料庫 32 碼 ID

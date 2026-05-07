@@ -1,5 +1,6 @@
 @echo off
 chcp 65001 >nul
+set NOTION_TOKEN=ntn_Y36273413268N3qINTubBtDxXTJUiBSr3w36Il3SNaK29v
 echo.
 echo ========================================
 echo   Notion to GitHub

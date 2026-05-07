@@ -1,0 +1,17 @@
+name       = "emp-checklist"
+main       = "worker.js"
+account_id = "279f7f87bea3686ee6abe620cbcf4b7b"
+compatibility_date = "2024-01-01"
+
+[[kv_namespaces]]
+binding  = "MEP_KV"
+id       = ""          # 執行 `npx wrangler kv namespace create MEP_KV` 後填入
+preview_id = ""        # 執行 `npx wrangler kv namespace create MEP_KV --preview` 後填入
+
+[vars]
+# 公開變數（非機密）
+ALLOWED_ORIGIN = "https://weiandy14-bit.github.io"
+
+# 機密變數請用 wrangler secret 指令設定，不要寫在這裡：
+#   npx wrangler secret put NOTION_TOKEN
+#   npx wrangler secret put JWT_SECRET

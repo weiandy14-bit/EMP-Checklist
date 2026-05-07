@@ -8,6 +8,7 @@ push_to_notion.py
 
 import io
 import json
+import os
 import sys
 import urllib.request
 import urllib.error
@@ -15,7 +16,12 @@ import urllib.error
 # Force UTF-8 stdout so Chinese characters and emojis print correctly on Windows
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 
-TOKEN  = "ntn_Y36273413268N3qINTubBtDxXTJUiBSr3w36Il3SNaK29v"
+TOKEN = os.environ.get("NOTION_TOKEN", "").strip()
+if not TOKEN:
+    print("❌ 請先設定環境變數 NOTION_TOKEN", file=sys.stderr)
+    print("   Windows: set NOTION_TOKEN=ntn_xxxx", file=sys.stderr)
+    print("   macOS/Linux: export NOTION_TOKEN=ntn_xxxx", file=sys.stderr)
+    sys.exit(1)
 DB_ID  = "bc49a5edcbef4dd1b0ce16a3b52d8b6c"
 VER    = "2022-06-28"
 

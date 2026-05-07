@@ -175,6 +175,16 @@ body{font-family:'Segoe UI',-apple-system,'微軟正黑體',sans-serif;
   justify-content:center;font-size:11px;font-weight:700;color:var(--g700)}
 
 /* Checklist */
+.batch-bar{display:flex;align-items:center;gap:8px;padding:8px 12px;
+  background:#fff;border-radius:var(--r);margin-bottom:8px;box-shadow:var(--sh);
+  flex-wrap:wrap}
+.batch-lbl{font-size:11.5px;color:var(--g500);flex:1;min-width:0}
+.batch-lbl strong{color:var(--g700)}
+.batch-btn{padding:4px 10px;border-radius:5px;font-size:11.5px;font-weight:600;
+  cursor:pointer;border:none;transition:all .15s;font-family:inherit}
+.batch-pass{background:#dcfce7;color:#15803d}.batch-pass:hover{background:#bbf7d0}
+.batch-na{background:#f1f5f9;color:var(--g600)}.batch-na:hover{background:#e2e8f0}
+.batch-clr{background:#fff;border:1px solid var(--g200);color:var(--g500)}.batch-clr:hover{background:var(--g100)}
 .cl-list{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
 .cl-item{background:#fff;border-radius:var(--r);padding:11px 13px;
   box-shadow:var(--sh);border-left:4px solid transparent;transition:all .15s}
@@ -389,7 +399,7 @@ body{font-family:'Segoe UI',-apple-system,'微軟正黑體',sans-serif;
   .hdr-top{height:auto;padding:6px 18px}
   .hdr-bot{display:none !important}
   .hdr .btn,.hdr .btn-d{display:none !important}
-  .sb,.legend,.modal-ov,.toast{display:none !important}
+  .sb,.legend,.batch-bar,.modal-ov,.toast{display:none !important}
   .body{display:block}
   .main{overflow:visible;padding:4px 0}
   .page-banner{margin-bottom:8px;-webkit-print-color-adjust:exact !important}
@@ -1533,6 +1543,12 @@ function renderMain(){
       <div class="ps-cell ps-na"><span class="ps-num">${naN}</span><span class="ps-lbl">— 不適用</span></div>
       <div class="ps-cell ps-todo"><span class="ps-num">${todoN}</span><span class="ps-lbl">□ 待核對</span></div>
     </div>
+    <div class="batch-bar">
+      <span class="batch-lbl">批次操作：<strong>${todoN}</strong> 項待核對</span>
+      <button class="batch-btn batch-pass" onclick="setAllS('${sigKey}','pass')" title="將所有待核對項目標為符合">✓ 全部符合</button>
+      <button class="batch-btn batch-na" onclick="setAllS('${sigKey}','na')" title="將所有待核對項目標為不適用">— 全部不適用</button>
+      <button class="batch-btn batch-clr" onclick="setAllS('${sigKey}','clr')" title="清除所有項目的狀態">↺ 清除全部</button>
+    </div>
     <div class="cl-list">${itemsH}</div>
     <div class="sig-sec">
       <div class="sig-title">📋 本項目核對簽署 — ${title}</div>
@@ -1755,6 +1771,23 @@ function setS(id,val){
   if(S.chk[id]==='issue'){const a=document.getElementById('na-'+id);if(a)a.classList.add('show');}
   renderSB(); renderMain(); save();
   setTimeout(()=>{const e=document.getElementById('ci-'+id);if(e)e.scrollIntoView({behavior:'smooth',block:'nearest'});},60);
+}
+
+function setAllS(sigKey,val){
+  const sys=DATA.find(s=>s.id===S.sys);
+  if(!sys) return;
+  let items;
+  if(sys.expandable&&S.sub){
+    const sub=sys.subs.find(s=>s.id===S.sub);
+    items=sub?sub.items:[];
+  } else {
+    items=sys.items||[];
+  }
+  items.forEach(i=>{
+    if(val==='clr') delete S.chk[i.id];
+    else S.chk[i.id]=val;
+  });
+  renderSB(); renderMain(); save();
 }
 
 function saveNote(id,val){S.note[id]=val;save();}

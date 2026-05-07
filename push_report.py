@@ -16,7 +16,12 @@ from pathlib import Path
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 
 # ─── 設定 ──────────────────────────────────────────────────────────────────
-TOKEN    = "ntn_Y36273413268N3qINTubBtDxXTJUiBSr3w36Il3SNaK29v"
+TOKEN = os.environ.get("NOTION_TOKEN", "").strip()
+if not TOKEN:
+    print("❌ 請先設定環境變數 NOTION_TOKEN", file=sys.stderr)
+    print("   Windows: set NOTION_TOKEN=ntn_xxxx", file=sys.stderr)
+    print("   macOS/Linux: export NOTION_TOKEN=ntn_xxxx", file=sys.stderr)
+    sys.exit(1)
 DB_ID    = "bc49a5edcbef4dd1b0ce16a3b52d8b6c"   # 原檢查項目資料庫
 VER      = "2022-06-28"
 SCRIPT_DIR = Path(__file__).parent

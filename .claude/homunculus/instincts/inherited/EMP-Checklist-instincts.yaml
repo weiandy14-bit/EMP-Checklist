@@ -1,0 +1,279 @@
+# Instincts generated from https://github.com/weiandy14-bit/EMP-Checklist
+# Generated: 2026-05-07T07:28:38.083Z
+# Version: 2.0
+# NOTE: This file supplements (does not replace) any existing curated instincts.
+# High-confidence manually curated instincts should be preserved alongside these.
+
+---
+id: EMP-Checklist-commit-length
+trigger: "when writing a commit message"
+confidence: 0.6
+domain: git
+source: repo-analysis
+source_repo: https://github.com/weiandy14-bit/EMP-Checklist
+---
+
+# EMP Checklist Commit Length
+
+## Action
+
+Write moderate-length commit messages (~53 characters)
+
+## Evidence
+
+- Average commit message length: 53 chars
+- Based on 3 commits
+
+---
+id: EMP-Checklist-naming-files
+trigger: "when creating a new file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/weiandy14-bit/EMP-Checklist
+---
+
+# EMP Checklist Naming Files
+
+## Action
+
+Use snake_case naming convention
+
+## Evidence
+
+- Analyzed file naming patterns in repository
+- Dominant pattern: snake_case
+
+---
+id: EMP-Checklist-import-relative
+trigger: "when importing modules"
+confidence: 0.75
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/weiandy14-bit/EMP-Checklist
+---
+
+# EMP Checklist Import Relative
+
+## Action
+
+Use relative imports for project files
+
+## Evidence
+
+- Import analysis shows relative import pattern
+- Example: import { x } from '../lib/x'
+
+---
+id: EMP-Checklist-export-style
+trigger: "when exporting from a module"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/weiandy14-bit/EMP-Checklist
+---
+
+# EMP Checklist Export Style
+
+## Action
+
+Prefer named exports
+
+## Evidence
+
+- Export pattern analysis
+- Dominant style: named
+
+---
+id: EMP-Checklist-test-separate
+trigger: "when writing tests"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/weiandy14-bit/EMP-Checklist
+---
+
+# EMP Checklist Test Separate
+
+## Action
+
+Place tests in the tests/ or __tests__/ directory, mirroring src structure
+
+## Evidence
+
+- Separate test directory pattern detected
+- Tests live in dedicated test folders
+
+---
+id: emp-checklist-instinct-file-naming
+trigger: "When creating a new Python file"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: weiandy14-bit/EMP-Checklist
+---
+
+# Emp Checklist Instinct File Naming
+
+## Action
+
+Name the file using snake_case
+
+## Evidence
+
+- Pattern in files: file naming convention set to snake_case
+
+---
+id: emp-checklist-instinct-function-naming
+trigger: "When defining a new function"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: weiandy14-bit/EMP-Checklist
+---
+
+# Emp Checklist Instinct Function Naming
+
+## Action
+
+Name the function using camelCase
+
+## Evidence
+
+- Pattern in codeStyle: functions use camelCase
+
+---
+id: emp-checklist-instinct-class-naming
+trigger: "When defining a new class"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: weiandy14-bit/EMP-Checklist
+---
+
+# Emp Checklist Instinct Class Naming
+
+## Action
+
+Name the class using PascalCase
+
+## Evidence
+
+- Pattern in codeStyle: classes use PascalCase
+
+---
+id: emp-checklist-instinct-constant-naming
+trigger: "When defining a constant"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: weiandy14-bit/EMP-Checklist
+---
+
+# Emp Checklist Instinct Constant Naming
+
+## Action
+
+Name the constant using SCREAMING_SNAKE_CASE
+
+## Evidence
+
+- Pattern in codeStyle: constants use SCREAMING_SNAKE_CASE
+
+---
+id: emp-checklist-instinct-import-style
+trigger: "When importing modules within the package"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: weiandy14-bit/EMP-Checklist
+---
+
+# Emp Checklist Instinct Import Style
+
+## Action
+
+Use relative imports
+
+## Evidence
+
+- Pattern in codeStyle: importStyle is relative
+
+---
+id: emp-checklist-instinct-export-style
+trigger: "When exporting functions or classes"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: weiandy14-bit/EMP-Checklist
+---
+
+# Emp Checklist Instinct Export Style
+
+## Action
+
+Use named exports
+
+## Evidence
+
+- Pattern in codeStyle: exportStyle is named
+
+---
+id: emp-checklist-instinct-git-commit-prefix
+trigger: "When writing a commit message for a security or maintenance change"
+confidence: 0.9
+domain: git
+source: repo-analysis
+source_repo: weiandy14-bit/EMP-Checklist
+---
+
+# Emp Checklist Instinct Git Commit Prefix
+
+## Action
+
+Prefix the commit message with 'security:' or 'chore:' as appropriate
+
+## Evidence
+
+- Seen in commit: 'security: replace hardcoded Notion tokens with env var'
+- Seen in commit: 'chore: add NOTION_TOKEN to bat files for one-click execution'
+
+---
+id: emp-checklist-instinct-git-commit-format
+trigger: "When writing any commit message"
+confidence: 0.8
+domain: git
+source: repo-analysis
+source_repo: weiandy14-bit/EMP-Checklist
+---
+
+# Emp Checklist Instinct Git Commit Format
+
+## Action
+
+Use a short prefix (e.g., 'security:', 'chore:') followed by a concise description (average 53 characters)
+
+## Evidence
+
+- Pattern in commits: prefixes and average length
+- Examples: 'security: replace hardcoded Notion tokens with env var'
+
+---
+id: emp-checklist-instinct-test-location
+trigger: "When adding new tests"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: weiandy14-bit/EMP-Checklist
+---
+
+# Emp Checklist Instinct Test Location
+
+## Action
+
+Place test files in a separate location from source files
+
+## Evidence
+
+- Pattern in architecture: testLocation is separate
+

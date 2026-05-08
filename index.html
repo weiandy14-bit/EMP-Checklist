@@ -2183,7 +2183,7 @@ async function doLogin() {
     });
     if (data.error) { showLoginErr(data.error === '密碼錯誤' ? '❌ 密碼錯誤' : data.error); return; }
     AUTH_TOKEN = data.token;
-    localStorage.setItem(JWT_KEY, AUTH_TOKEN);
+    sessionStorage.setItem(JWT_KEY, AUTH_TOKEN);
     applyLogin(data.user);
   } catch (e) {
     showLoginErr('網路錯誤，請稍後再試');
@@ -2222,7 +2222,7 @@ async function delAcct(id) {
 function logout() {
   if (!confirm('確定要登出？')) return;
   AUTH_TOKEN = null; CURR_ACCT = null; CURR_PROJ = null;
-  localStorage.removeItem(JWT_KEY);
+  sessionStorage.removeItem(JWT_KEY);
   S = { sys: '', sub: '', expanded: {}, chk: {}, note: {}, sig: {} };
   g('projectName').value = ''; g('drawingRev').value = ''; g('checkDate').value = '';
   g('userBadge').style.display = 'none';
@@ -2601,7 +2601,7 @@ function init(){
   renderSB(); renderMain();
   ['projectName','drawingRev','checkDate'].forEach(id=>g(id).addEventListener('change',save));
   // 嘗試從 localStorage JWT 自動恢復 session
-  const jwt = localStorage.getItem(JWT_KEY);
+  const jwt = sessionStorage.getItem(JWT_KEY);
   if (jwt) {
     try {
       const payload = JSON.parse(atob(jwt.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));
@@ -2612,7 +2612,7 @@ function init(){
         return;
       }
     } catch { /* JWT 損壞，清除 */ }
-    localStorage.removeItem(JWT_KEY);
+    sessionStorage.removeItem(JWT_KEY);
   }
   // 無有效 session，顯示登入畫面
 }

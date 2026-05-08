@@ -40,9 +40,13 @@ body{font-family:'Segoe UI',-apple-system,'微軟正黑體',sans-serif;
 .pf input{border:none;border-bottom:1px solid var(--g200);padding:1px 3px;
   font-size:12px;color:var(--g700);background:transparent;text-align:right;
   font-family:inherit;width:130px}
-.pf input[id=drawingRev]{width:65px}
-.pf input[type=date]{width:115px}
+.pf input[id=projectName]{width:290px;text-align:left}
+.pf input[type=date]{width:120px}
 .pf input:focus{outline:none;border-bottom-color:var(--pr)}
+.pf input[readonly]{color:var(--g500);cursor:default}
+.date-lock-btn{background:none;border:none;cursor:pointer;font-size:11px;
+  color:var(--g400);padding:0 2px;line-height:1;vertical-align:middle}
+.date-lock-btn:hover{color:var(--pr)}
 .btn{padding:5px 12px;border-radius:6px;font-size:12px;font-weight:600;
   cursor:pointer;border:none;transition:all .15s;font-family:inherit}
 .btn-p{background:var(--pr);color:#fff}.btn-p:hover{background:var(--prd)}
@@ -671,11 +675,14 @@ body{font-family:'Segoe UI',-apple-system,'微軟正黑體',sans-serif;
   <div class="hdr-bot">
     <div class="pf-group" style="display:flex;gap:10px;align-items:center">
       <div class="pf"><label>專案名稱</label>
-        <input type="text" id="projectName" placeholder="請輸入專案名稱"></div>
-      <div class="pf"><label>版次</label>
-        <input type="text" id="drawingRev" placeholder="Rev.__"></div>
+        <input type="text" id="projectName" placeholder="請輸入專案名稱" maxlength="40"></div>
+      <input type="hidden" id="drawingRev">
       <div class="pf"><label>核對日期</label>
-        <input type="date" id="checkDate"></div>
+        <div style="display:flex;align-items:center;gap:2px">
+          <input type="date" id="checkDate" onchange="onCheckDateChange()">
+          <button class="date-lock-btn" id="dateLockBtn" onclick="toggleDateLock()" title="點此解鎖日期" style="display:none">🔒</button>
+        </div>
+      </div>
     </div>
     <div class="search-wrap" style="margin:0 4px">
       <span class="search-ic-lbl">🔍</span>
@@ -2133,9 +2140,29 @@ function confirmReset(){
   if(confirm('⚠️ 確定要清除所有核對紀錄？\n此操作無法復原。')){
     S={sys:'',sub:'',expanded:{},chk:{},note:{},sig:{}};
     g('projectName').value='';g('drawingRev').value='';g('checkDate').value='';
+    _dateLocked=false;g('checkDate').readOnly=false;
+    g('dateLockBtn').style.display='none';g('dateLockBtn').textContent='🔒';
     localStorage.removeItem(KEY);
     renderSB();renderMain();toast('✅ 已重置所有核對資料');
   }
+}
+
+let _dateLocked = false;
+function onCheckDateChange(){
+  if(g('checkDate').value){
+    _dateLocked=true;
+    g('checkDate').readOnly=true;
+    g('dateLockBtn').style.display='inline';
+    g('dateLockBtn').textContent='🔒';
+    g('dateLockBtn').title='點此解鎖日期';
+  }
+  save();
+}
+function toggleDateLock(){
+  _dateLocked=!_dateLocked;
+  g('checkDate').readOnly=_dateLocked;
+  g('dateLockBtn').textContent=_dateLocked?'🔒':'🔓';
+  g('dateLockBtn').title=_dateLocked?'點此解鎖日期':'點此鎖定日期';
 }
 
 function restoreSession(){
@@ -2146,6 +2173,8 @@ function restoreSession(){
 function startFresh(){
   g('restoreModal').classList.add('hidden');
   g('checkDate').value=new Date().toISOString().split('T')[0];
+  _dateLocked=false;g('checkDate').readOnly=false;
+  g('dateLockBtn').style.display='none';g('dateLockBtn').textContent='🔒';
   renderSB();renderMain();
 }
 
@@ -2351,7 +2380,13 @@ async function enterProject(id) {
   // 更新 header 工程欄位
   g('projectName').value = CURR_PROJ.caseNo ? `${CURR_PROJ.caseNo} ${CURR_PROJ.name}` : CURR_PROJ.name;
   g('drawingRev').value  = state.proj?.rev  || '';
-  g('checkDate').value   = state.proj?.date || new Date().toISOString().split('T')[0];
+  const savedDate = state.proj?.date || '';
+  g('checkDate').value = savedDate || new Date().toISOString().split('T')[0];
+  _dateLocked = !!savedDate;
+  g('checkDate').readOnly = _dateLocked;
+  g('dateLockBtn').style.display = _dateLocked ? 'inline' : 'none';
+  g('dateLockBtn').textContent = '🔒';
+  g('dateLockBtn').title = '點此解鎖日期';
   // 切換畫面
   g('projectScreen').style.display = 'none';
   _dirty = false;

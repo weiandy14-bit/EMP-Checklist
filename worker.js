@@ -4,7 +4,7 @@
  *
  * Secrets（用 `npx wrangler secret put` 設定）：
  *   JWT_SECRET    — JWT 簽署用的隨機字串
- *   PWD_SALT      — 與前端相同：mep_chk_2026_s
+ *   PWD_SALT      — 密碼 hash 用的 salt（後端保管，前端不可見）
  *   NOTION_TOKEN  — Notion Integration Token
  *
  * Vars（wrangler.toml [vars]）：
@@ -39,7 +39,9 @@
  *   POST   /report/:projId      （有 canReport 或管理者）
  */
 
-const JWT_TTL = 7 * 24 * 3600;   // 7 天
+const JWT_TTL      = 8 * 3600;    // 8 小時
+const LOGIN_MAX    = 5;           // 最多失敗次數
+const LOCK_SEC     = 15 * 60;     // 鎖定 15 分鐘
 const NOTION_VER = '2022-06-28';
 
 // ════════════════════════════════════════════════════════════
@@ -153,6 +155,33 @@ async function getProjIndex(kv)  { return kvGetJSON(kv, 'proj_index', []); }
 async function getAcct(kv, id)   { return kvGetJSON(kv, `acct:${id}`); }
 async function getProj(kv, id)   { return kvGetJSON(kv, `proj:${id}`); }
 async function getState(kv, pid) { return kvGetJSON(kv, `state:${pid}`, { chk:{}, note:{}, sig:{} }); }
+
+// ════════════════════════════════════════════════════════════
+// Rate Limiting（登入失敗次數限制）
+// ════════════════════════════════════════════════════════════
+
+async function checkRateLimit(kv, ip) {
+  const key  = `rl:${ip}`;
+  const data = await kvGetJSON(kv, key, { count: 0, lockedUntil: 0 });
+  const now  = Math.floor(Date.now() / 1000);
+  if (data.lockedUntil > now) {
+    const mins = Math.ceil((data.lockedUntil - now) / 60);
+    throw new Error(`登入失敗次數過多，請 ${mins} 分鐘後再試`);
+  }
+}
+
+async function recordFailure(kv, ip) {
+  const key  = `rl:${ip}`;
+  const now  = Math.floor(Date.now() / 1000);
+  const data = await kvGetJSON(kv, key, { count: 0, lockedUntil: 0 });
+  data.count = (data.count || 0) + 1;
+  if (data.count >= LOGIN_MAX) data.lockedUntil = now + LOCK_SEC;
+  await kv.put(key, JSON.stringify(data), { expirationTtl: LOCK_SEC + 60 });
+}
+
+async function clearFailures(kv, ip) {
+  await kv.delete(`rl:${ip}`);
+}
 
 // ════════════════════════════════════════════════════════════
 // Notion
@@ -287,8 +316,9 @@ async function pushToNotion(kv, token, report) {
 async function handleBootstrap(req, env, cors) {
   const idx = await getAcctIndex(env.MEP_KV);
   if (idx.length > 0) return E('已有帳號，請用 /auth/login', 403, cors);
-  const { name, pwdHash } = await req.json();
-  if (!name || !pwdHash) return E('缺少 name 或 pwdHash', 400, cors);
+  const { name, password } = await req.json();
+  if (!name || !password) return E('缺少 name 或 password', 400, cors);
+  const pwdHash = await hashPwd(password, env.PWD_SALT);
   const id   = crypto.randomUUID();
   const acct = { id, name, pwdHash, isAdmin: true, systems: [], canReport: true };
   await kvPutJSON(env.MEP_KV, `acct:${id}`, acct);
@@ -301,14 +331,24 @@ async function handleBootstrap(req, env, cors) {
 }
 
 // POST /auth/login
-async function handleLogin(req, env, cors) {
-  const { name, pwdHash } = await req.json();
-  if (!name || !pwdHash) return E('缺少 name 或 pwdHash', 400, cors);
-  const idx  = await getAcctIndex(env.MEP_KV);
+async function handleLogin(req, env, cors, request) {
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  try { await checkRateLimit(env.MEP_KV, ip); } catch (e) { return E(e.message, 429, cors); }
+
+  const { name, password } = await req.json();
+  if (!name || !password) return E('缺少 name 或 password', 400, cors);
+
+  const idx = await getAcctIndex(env.MEP_KV);
   for (const id of idx) {
     const acct = await getAcct(env.MEP_KV, id);
     if (!acct || acct.name !== name) continue;
-    if (acct.pwdHash !== pwdHash) return E('密碼錯誤', 401, cors);
+    // 後端雜湊後比對（前端傳明文，HTTPS 保護傳輸）
+    const hash = await hashPwd(password, env.PWD_SALT);
+    if (acct.pwdHash !== hash) {
+      await recordFailure(env.MEP_KV, ip);
+      return E('密碼錯誤', 401, cors);
+    }
+    await clearFailures(env.MEP_KV, ip);
     const token = await jwtSign(
       { sub: id, name, isAdmin: acct.isAdmin, exp: Math.floor(Date.now()/1000) + JWT_TTL },
       env.JWT_SECRET
@@ -318,7 +358,8 @@ async function handleLogin(req, env, cors) {
       user: { id, name, isAdmin: acct.isAdmin, systems: acct.systems, canReport: acct.canReport }
     }, 200, cors);
   }
-  return E('帳號不存在', 401, cors);
+  await recordFailure(env.MEP_KV, ip);
+  return E('帳號不存在或密碼錯誤', 401, cors);
 }
 
 // GET /admin/accounts
@@ -335,13 +376,14 @@ async function handleGetAccounts(req, env, cors, user) {
 // POST /admin/accounts — 建立操作者帳號
 async function handleCreateAccount(req, env, cors, user) {
   if (!user?.isAdmin) return E('僅管理者可存取', 403, cors);
-  const { name, pwdHash, systems = [], canReport = false } = await req.json();
-  if (!name || !pwdHash) return E('缺少 name 或 pwdHash', 400, cors);
+  const { name, password, systems = [], canReport = false } = await req.json();
+  if (!name || !password) return E('缺少 name 或 password', 400, cors);
   const idx = await getAcctIndex(env.MEP_KV);
   for (const id of idx) {
     const a = await getAcct(env.MEP_KV, id);
     if (a?.name === name) return E('帳號名稱已存在', 409, cors);
   }
+  const pwdHash = await hashPwd(password, env.PWD_SALT);
   const id   = crypto.randomUUID();
   const acct = { id, name, pwdHash, isAdmin: false, systems, canReport };
   await kvPutJSON(env.MEP_KV, `acct:${id}`, acct);
@@ -467,7 +509,7 @@ export default {
     try {
       // ── Auth ──
       if (method === 'POST' && path === '/auth/bootstrap') return handleBootstrap(request, env, cors);
-      if (method === 'POST' && path === '/auth/login')     return handleLogin(request, env, cors);
+      if (method === 'POST' && path === '/auth/login')     return handleLogin(request, env, cors, request);
 
       // ── Admin / Accounts ──
       if (method === 'GET'    && path === '/admin/accounts') return handleGetAccounts(request, env, cors, user);

@@ -2158,15 +2158,6 @@ function toast(msg){const t=g('toast');t.textContent=msg;t.classList.add('show')
 // ═══════════════════════════════════════════════
 let CURR_ACCT = null;
 
-// SHA-256 密碼雜湊（與 Worker 一致）
-const PWD_SALT = 'mep_chk_2026_s';
-async function hashPwd(pwd) {
-  if (!pwd) return '';
-  const buf = await crypto.subtle.digest('SHA-256',
-    new TextEncoder().encode(pwd + PWD_SALT));
-  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
-}
-
 function showLoginErr(msg) {
   const e = g('loginErr');
   e.textContent = msg; e.style.display = 'block';
@@ -2191,10 +2182,9 @@ async function doLogin() {
   g('loginBtn').textContent = '登入中…'; g('loginBtn').disabled = true;
   g('loginErr').style.display = 'none';
   try {
-    const pwdHash = await hashPwd(pwd);
     const data = await api('/auth/login', {
       method: 'POST',
-      body: JSON.stringify({ name, pwdHash })
+      body: JSON.stringify({ name, password: pwd })
     });
     if (data.error) { showLoginErr(data.error === '密碼錯誤' ? '❌ 密碼錯誤' : data.error); return; }
     AUTH_TOKEN = data.token;
@@ -2213,10 +2203,9 @@ async function createAcct() {
   const pwd  = g('newAcctPwd').value;
   if (!name) { alert('請輸入帳號名稱'); return; }
   if (!pwd)  { alert('請設定密碼'); return; }
-  const pwdHash = await hashPwd(pwd);
   const data = await api('/admin/accounts', {
     method: 'POST',
-    body: JSON.stringify({ name, pwdHash, systems: [], canReport: false })
+    body: JSON.stringify({ name, password: pwd, systems: [], canReport: false })
   });
   if (data.error) { alert('建立失敗：' + data.error); return; }
   g('newAcctName').value = ''; g('newAcctPwd').value = '';

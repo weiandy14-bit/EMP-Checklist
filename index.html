@@ -1714,8 +1714,23 @@ function clickIssues(){
   renderSB(); renderMain(); save(); closeSidebarOnNav();
 }
 
-function backToProjects(){
-  CURR_PROJ = null;
+async function backToProjects(){
+  if (_dirty) {
+    const choice = confirm('⚠️ 有未儲存的變更\n\n按「確定」立即存檔後離開\n按「取消」放棄變更直接離開');
+    if (choice) {
+      clearTimeout(_kvSaveTimer);
+      await api(`/state/${CURR_PROJ.id}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+          proj: { name: CURR_PROJ.name, rev: g('drawingRev').value, date: g('checkDate').value },
+          chk: S.chk, note: S.note, sig: S.sig
+        })
+      });
+      _dirty = false;
+      toast('✅ 已儲存');
+    }
+  }
+  CURR_PROJ = null; _dirty = false;
   S = { sys:'', sub:'', expanded:{}, chk:{}, note:{}, sig:{} };
   g('projectName').value = ''; g('drawingRev').value = ''; g('checkDate').value = '';
   g('projectScreen').style.display = 'flex';
@@ -2239,6 +2254,7 @@ function logout() {
 // ═══════════════════════════════════════════════
 let CURR_PROJ = null;
 let _kvSaveTimer = null;
+let _dirty = false;
 
 function showProjectScreen(user) {
   g('ps-icon').textContent = user.isAdmin ? '👑' : '👤';
@@ -2349,6 +2365,7 @@ async function enterProject(id) {
 
 function kvSave() {
   if (!CURR_PROJ) return;
+  _dirty = true;
   clearTimeout(_kvSaveTimer);
   _kvSaveTimer = setTimeout(async () => {
     await api(`/state/${CURR_PROJ.id}`, {
@@ -2358,6 +2375,8 @@ function kvSave() {
         chk: S.chk, note: S.note, sig: S.sig
       })
     });
+    _dirty = false;
+    toast('✅ 已自動存檔');
   }, 1200);  // 1.2 秒防抖
 }
 

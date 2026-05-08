@@ -385,10 +385,10 @@ async function handleGetProjects(env, cors, user) {
 // POST /projects
 async function handleCreateProject(req, env, cors, user) {
   if (!user?.isAdmin) return E('僅管理者可新增工程', 403, cors);
-  const { name } = await req.json();
-  if (!name) return E('缺少工程名稱', 400, cors);
+  const { caseNo, name, systems = [] } = await req.json();
+  if (!name) return E('缺少案件名稱', 400, cors);
   const id   = crypto.randomUUID();
-  const proj = { id, name, createdAt: new Date().toISOString(), createdBy: user.sub };
+  const proj = { id, caseNo: caseNo || '', name, systems, createdAt: new Date().toISOString(), createdBy: user.sub };
   await kvPutJSON(env.MEP_KV, `proj:${id}`, proj);
   const idx = await getProjIndex(env.MEP_KV);
   await kvPutJSON(env.MEP_KV, 'proj_index', [...idx, id]);

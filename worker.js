@@ -215,9 +215,16 @@ async function ensureReportDb(kv, token) {
       if (!db.archived) return cached;
     } catch { /* 繼續建立新的 */ }
   }
-  // 取得父頁面（從 Notion 工作區根層建立）
-  const db = await notionReq('POST', '/databases', {
+  // Notion API 不允許直接在 workspace 根層建立資料庫，需先建立容器頁面
+  const page = await notionReq('POST', '/pages', {
     parent: { type: 'workspace', workspace: true },
+    icon:   { type: 'emoji', emoji: '📁' },
+    properties: {
+      title: [{ type: 'text', text: { content: 'MEP 報告管理' } }],
+    },
+  }, token);
+  const db = await notionReq('POST', '/databases', {
+    parent: { type: 'page_id', page_id: page.id },
     icon:   { type: 'emoji', emoji: '📋' },
     title:  [{ type: 'text', text: { content: 'MEP 檢查報告' } }],
     properties: {

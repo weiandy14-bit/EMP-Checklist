@@ -1,0 +1,31 @@
+name: Restore files from feature branch
+
+on:
+  push:
+    paths:
+      - '.github/workflows/restore-files.yml'
+  workflow_dispatch:
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Restore index.html and worker.js from feature branch
+        run: |
+          git fetch origin claude/fix-api-call-error-EpFts
+          git checkout origin/claude/fix-api-call-error-EpFts -- index.html worker.js
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html worker.js
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "fix: 還原完整 index.html 與 worker.js (auto restore)"
+            git push origin main
+          fi

@@ -207,7 +207,7 @@ async function notionReq(method, path, body, token) {
   return res.json();
 }
 
-async function ensureReportDb(kv, token) {
+async function ensureReportDb(kv, token, parentPageId) {
   const cached = await kv.get('report_db_id');
   if (cached) {
     try {
@@ -215,16 +215,9 @@ async function ensureReportDb(kv, token) {
       if (!db.archived) return cached;
     } catch { /* 繼續建立新的 */ }
   }
-  // Notion API 不允許直接在 workspace 根層建立資料庫，需先建立容器頁面
-  const page = await notionReq('POST', '/pages', {
-    parent: { type: 'workspace', workspace: true },
-    icon:   { type: 'emoji', emoji: '📁' },
-    properties: {
-      title: [{ type: 'text', text: { content: 'MEP 報告管理' } }],
-    },
-  }, token);
+  if (!parentPageId) throw new Error('請設定 NOTION_PARENT_PAGE_ID（Notion 父頁面 ID）');
   const db = await notionReq('POST', '/databases', {
-    parent: { type: 'page_id', page_id: page.id },
+    parent: { type: 'page_id', page_id: parentPageId },
     icon:   { type: 'emoji', emoji: '📋' },
     title:  [{ type: 'text', text: { content: 'MEP 檢查報告' } }],
     properties: {
@@ -285,8 +278,8 @@ function buildBlocks(report) {
   return blocks;
 }
 
-async function pushToNotion(kv, token, report) {
-  const dbId  = await ensureReportDb(kv, token);
+async function pushToNotion(kv, token, parentPageId, report) {
+  const dbId  = await ensureReportDb(kv, token, parentPageId);
   const { meta } = report;
   const title = `${meta.proj}${meta.rev?' '+meta.rev:''} ${meta.date||''}`.trim();
   const props = {
@@ -501,7 +494,7 @@ async function handleReport(projId, req, env, cors, user) {
   const { report } = await req.json();
   if (!report?.meta || !report?.systems) return E('無效的報告格式', 400, cors);
   try {
-    const result = await pushToNotion(env.MEP_KV, env.NOTION_TOKEN, report);
+    const result = await pushToNotion(env.MEP_KV, env.NOTION_TOKEN, env.NOTION_PARENT_PAGE_ID, report);
     return R({ ok: true, ...result }, 200, cors);
   } catch (e) {
     return E(`Notion 錯誤：${e.message}`, 502, cors);

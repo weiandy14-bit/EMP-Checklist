@@ -281,7 +281,14 @@ function buildBlocks(report) {
 async function pushToNotion(kv, token, parentPageId, report) {
   const dbId  = await ensureReportDb(kv, token, parentPageId);
   const { meta } = report;
-  const title = `${meta.proj}${meta.rev?' '+meta.rev:''} ${meta.date||''}`.trim();
+  // 將 submittedAt（ISO）轉為 台灣時間 YYYY-MM-DD HH:mm
+  const dt = new Date(meta.submittedAt || Date.now());
+  const pad = n => String(n).padStart(2, '0');
+  const twOffset = 8 * 60;
+  const local = new Date(dt.getTime() + twOffset * 60000);
+  const dateTime = `${local.getUTCFullYear()}-${pad(local.getUTCMonth()+1)}-${pad(local.getUTCDate())} ${pad(local.getUTCHours())}:${pad(local.getUTCMinutes())}`;
+  const parts = [dateTime, meta.caseNo, meta.projName, meta.submitter].filter(Boolean);
+  const title = parts.join('　');
   const props = {
     '報告名稱':  { title:     [{ text:{ content: title } }] },
     '專案名稱':  { rich_text: [{ text:{ content: meta.proj        ||'' } }] },

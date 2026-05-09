@@ -2536,6 +2536,7 @@ function _buildReport(){
   });
   return{
     meta:{proj,rev,date,submitter:CURR_ACCT?.name||'',
+      caseNo:CURR_PROJ?.caseNo||'', projName:CURR_PROJ?.name||'',
       submittedAt:new Date().toISOString(),pct,pass,issue,na,total},
     systems
   };

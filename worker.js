@@ -324,7 +324,7 @@ async function handleBootstrap(req, env, cors) {
   await kvPutJSON(env.MEP_KV, `acct:${id}`, acct);
   await kvPutJSON(env.MEP_KV, 'acct_index', [id]);
   const token = await jwtSign(
-    { sub: id, name, isAdmin: true, exp: Math.floor(Date.now()/1000) + JWT_TTL },
+    { sub: id, name, isAdmin: true, canReport: true, exp: Math.floor(Date.now()/1000) + JWT_TTL },
     env.JWT_SECRET
   );
   return R({ token, user: { id, name, isAdmin: true, systems: [], canReport: true } }, 200, cors);
@@ -350,7 +350,7 @@ async function handleLogin(req, env, cors, request) {
     }
     await clearFailures(env.MEP_KV, ip);
     const token = await jwtSign(
-      { sub: id, name, isAdmin: acct.isAdmin, exp: Math.floor(Date.now()/1000) + JWT_TTL },
+      { sub: id, name, isAdmin: acct.isAdmin, canReport: acct.canReport, exp: Math.floor(Date.now()/1000) + JWT_TTL },
       env.JWT_SECRET
     );
     return R({
@@ -449,9 +449,19 @@ async function handleDeleteProject(id, env, cors, user) {
   return R({ ok: true }, 200, cors);
 }
 
+// 工程存取權限檢查（admin 或 user.systems 與 proj.systems 有交集）
+async function canAccessProj(kv, user, projId) {
+  if (user.isAdmin) return true;
+  const proj = await getProj(kv, projId);
+  if (!proj) return false;
+  if (!proj.systems || proj.systems.length === 0) return true;
+  return (user.systems || []).some(s => proj.systems.includes(s));
+}
+
 // GET /state/:projId
 async function handleGetState(projId, env, cors, user) {
   if (!user) return E('請先登入', 401, cors);
+  if (!await canAccessProj(env.MEP_KV, user, projId)) return E('無此工程的存取權限', 403, cors);
   const state = await getState(env.MEP_KV, projId);
   return R(state, 200, cors);
 }
@@ -459,6 +469,7 @@ async function handleGetState(projId, env, cors, user) {
 // PUT /state/:projId
 async function handlePutState(projId, req, env, cors, user) {
   if (!user) return E('請先登入', 401, cors);
+  if (!await canAccessProj(env.MEP_KV, user, projId)) return E('無此工程的存取權限', 403, cors);
   const body = await req.json();
   const state = {
     proj:      body.proj      || {},
@@ -476,6 +487,7 @@ async function handlePutState(projId, req, env, cors, user) {
 async function handleReport(projId, req, env, cors, user) {
   if (!user) return E('請先登入', 401, cors);
   if (!user.isAdmin && !user.canReport) return E('無送出報告的權限', 403, cors);
+  if (!await canAccessProj(env.MEP_KV, user, projId)) return E('無此工程的存取權限', 403, cors);
   if (!env.NOTION_TOKEN) return E('NOTION_TOKEN 未設定', 500, cors);
   const { report } = await req.json();
   if (!report?.meta || !report?.systems) return E('無效的報告格式', 400, cors);

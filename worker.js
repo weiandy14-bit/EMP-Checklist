@@ -264,7 +264,7 @@ function buildBlocks(report) {
       for (const item of sub.items) {
         const s = item.status || '';
         const color = s==='issue'?'red_background': s==='pass'?'green_background': s==='na'?'gray_background':'default';
-        const emoji = s==='pass'?'✅': s==='issue'?'❌': s==='na'?'➡️':'⬜';
+        const emoji = s==='pass'?'✅': s==='issue'?'❌': s==='na'?'➖':'⬜';
         let content = `${STATUS_ICON[s]||'□'}  [${SEV_LABEL[item.sev]||item.sev||'—'}]  ${item.text||'（無內容）'}`;
         if (item.basis) content += `\n📋 ${item.basis}`;
         if (item.note)  content += `\n📝 備註：${item.note}`;
@@ -523,7 +523,7 @@ export default {
     }
 
     const url    = new URL(request.url);
-    const path   = url.pathname.replace(/\/$/,''); // 去尾部旜線
+    const path   = url.pathname.replace(/\/$/, ''); // 去尾部斜線
     const method = request.method;
     const user   = await getUser(request, env);
 

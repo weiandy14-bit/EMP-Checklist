@@ -4,3 +4,2694 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>機水電設計圖說 自主檢查系統</title>
+<style>
+:root{
+  --sb:#1e2d3d;--sbh:#2d4057;--pr:#3b82f6;--prd:#2563eb;
+  --ok:#10b981;--wa:#f59e0b;--er:#ef4444;
+  --g50:#f8fafc;--g100:#f1f5f9;--g200:#e2e8f0;--g300:#cbd5e1;
+  --g400:#94a3b8;--g500:#64748b;--g600:#475569;--g700:#334155;--g800:#1e293b;
+  --r:8px;--sh:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);
+  --sh2:0 4px 6px -1px rgba(0,0,0,.1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',-apple-system,'微軟正黑體',sans-serif;
+  background:var(--g50);color:var(--g800);height:100vh;overflow:hidden;
+  display:flex;flex-direction:column;font-size:14px}
+
+/* ── Header（雙排版）── */
+.hdr{background:#fff;border-bottom:1px solid var(--g200);
+  flex-shrink:0;box-shadow:var(--sh);z-index:10;display:flex;flex-direction:column}
+/* 上排：Logo ＋ 標題 ＋ 使用者 */
+.hdr-top{padding:0 18px;height:50px;display:flex;align-items:center;
+  justify-content:space-between;gap:12px}
+/* 下排：輸入欄 ＋ 搜尋 ＋ 按鈕 */
+.hdr-bot{padding:0 18px;min-height:40px;display:flex;align-items:center;
+  gap:8px;background:var(--g50);border-top:1px solid var(--g100);flex-wrap:wrap}
+.hdr-l{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.hdr-acts{display:flex;gap:5px;align-items:center;margin-left:auto;flex-shrink:0;
+  border-left:1px solid var(--g200);padding-left:8px}
+.logo{width:32px;height:32px;background:linear-gradient(135deg,#3b82f6,#1d4ed8);
+  border-radius:7px;display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:15px;font-weight:700;flex-shrink:0}
+.app-t{font-size:13.5px;font-weight:700;color:var(--g800)}
+.app-s{font-size:10.5px;color:var(--g500)}
+.pf{display:flex;flex-direction:column;align-items:flex-end}
+.pf label{font-size:9.5px;color:var(--g400);text-transform:uppercase;letter-spacing:.05em}
+.pf input{border:none;border-bottom:1px solid var(--g200);padding:1px 3px;
+  font-size:12px;color:var(--g700);background:transparent;text-align:right;
+  font-family:inherit;width:130px}
+.pf input[id=projectName]{width:290px;text-align:left}
+.pf input[type=date]{width:120px}
+.pf input:focus{outline:none;border-bottom-color:var(--pr)}
+.pf input[readonly]{color:var(--g500);cursor:default}
+.date-lock-btn{background:none;border:none;cursor:pointer;font-size:11px;
+  color:var(--g400);padding:0 2px;line-height:1;vertical-align:middle}
+.date-lock-btn:hover{color:var(--pr)}
+.btn{padding:5px 12px;border-radius:6px;font-size:12px;font-weight:600;
+  cursor:pointer;border:none;transition:all .15s;font-family:inherit}
+.btn-p{background:var(--pr);color:#fff}.btn-p:hover{background:var(--prd)}
+.btn-d{background:#fff;border:1px solid #fca5a5;color:var(--er)}.btn-d:hover{background:#fef2f2}
+
+/* ── Layout ── */
+.body{display:flex;flex:1;overflow:hidden}
+
+/* ── Sidebar ── */
+.sb{width:230px;background:var(--sb);flex-shrink:0;display:flex;flex-direction:column;overflow:hidden}
+.sb-sec{padding:12px 14px 5px;font-size:9.5px;text-transform:uppercase;
+  letter-spacing:.1em;color:#4a5568;font-weight:600}
+.sb-nav{flex:1;overflow-y:auto;padding:3px 0}
+.sb-nav::-webkit-scrollbar{width:3px}
+.sb-nav::-webkit-scrollbar-thumb{background:#374151;border-radius:2px}
+
+/* Parent nav item */
+.nav-item{display:flex;align-items:center;padding:8px 12px;cursor:pointer;
+  transition:all .15s;gap:9px;position:relative;user-select:none}
+.nav-item:hover{background:var(--sbh)}
+.nav-item.active{background:rgba(59,130,246,.15)}
+.nav-item.active::before{content:'';position:absolute;left:0;top:0;bottom:0;
+  width:3px;background:var(--pr);border-radius:0 2px 2px 0}
+.nav-ic{width:24px;height:24px;border-radius:5px;display:flex;align-items:center;
+  justify-content:center;font-size:12px;flex-shrink:0}
+.nav-ct{flex:1;min-width:0}
+.nav-nm{font-size:12px;font-weight:500;color:#94a3b8;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nav-item.active .nav-nm,.nav-item.sub-active .nav-nm{color:#fff}
+.nav-pw{display:flex;align-items:center;gap:4px;margin-top:2px}
+.nav-pb{flex:1;height:2.5px;background:#374151;border-radius:2px;overflow:hidden}
+.nav-pf{height:100%;border-radius:2px;transition:width .3s}
+.nav-pt{font-size:9.5px;color:#4a5568;white-space:nowrap}
+.nav-item.active .nav-pt,.nav-item.sub-active .nav-pt{color:#94a3b8}
+.nav-arrow{font-size:10px;color:#4a5568;transition:transform .2s;flex-shrink:0;margin-left:2px}
+.nav-arrow.open{transform:rotate(90deg)}
+
+/* Sub nav items */
+.sub-nav{overflow:hidden;max-height:0;transition:max-height .25s ease}
+.sub-nav.open{max-height:400px}
+.sub-item{display:flex;align-items:center;padding:7px 12px 7px 36px;
+  cursor:pointer;transition:all .15s;gap:7px;position:relative;user-select:none}
+.sub-item:hover{background:rgba(255,255,255,.06)}
+.sub-item.active{background:rgba(59,130,246,.12)}
+.sub-item.active::before{content:'';position:absolute;left:0;top:0;bottom:0;
+  width:2px;background:var(--pr);border-radius:0 1px 1px 0}
+.sub-dot{width:6px;height:6px;border-radius:50%;background:#4a5568;flex-shrink:0;transition:background .15s}
+.sub-item.active .sub-dot{background:var(--pr)}
+.sub-nm{font-size:11.5px;color:#6b7280;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sub-item.active .sub-nm{color:#93c5fd;font-weight:500}
+.sub-cnt{font-size:10px;color:#374151;flex-shrink:0}
+.sub-item.active .sub-cnt{color:#6b7280}
+
+/* 系統權限鎖定 */
+.nav-item.locked{opacity:.38;cursor:default;pointer-events:none}
+.nav-item.locked:hover{background:transparent}
+.lock-ic{font-size:12px;color:#4a5568;flex-shrink:0;margin-left:2px}
+
+/* Sidebar footer */
+.sb-foot{padding:12px;border-top:1px solid #2d3748}
+.ov-lbl{display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;margin-bottom:4px}
+.ov-bar{height:5px;background:#2d3748;border-radius:3px;overflow:hidden;margin-bottom:10px}
+.ov-fill{height:100%;border-radius:3px;transition:width .3s;
+  background:linear-gradient(90deg,var(--pr),#34d399)}
+.sb-acts{display:flex;gap:6px}
+.sb-btn{flex:1;padding:6px;border-radius:6px;font-size:11.5px;cursor:pointer;
+  border:none;font-weight:500;font-family:inherit;transition:all .15s}
+.sb-btn-p{background:var(--pr);color:#fff}.sb-btn-p:hover{background:var(--prd)}
+.sb-btn-g{background:#2d3748;color:#94a3b8}.sb-btn-g:hover{background:#374151;color:#fff}
+
+/* ── Main ── */
+.main{flex:1;overflow-y:auto;padding:18px}
+.main::-webkit-scrollbar{width:5px}
+.main::-webkit-scrollbar-thumb{background:var(--g300);border-radius:3px}
+
+/* Page title banner */
+.page-banner{background:linear-gradient(135deg,#1e3a5f,#2563eb);
+  border-radius:var(--r);padding:16px 20px;margin-bottom:14px;
+  display:flex;align-items:center;justify-content:space-between}
+.banner-title{color:#fff;font-size:15px;font-weight:700;letter-spacing:.02em}
+.banner-sub{color:#93c5fd;font-size:11px;margin-top:2px}
+.banner-badge{background:rgba(255,255,255,.15);color:#fff;padding:4px 12px;
+  border-radius:20px;font-size:11px;font-weight:600}
+/* Breadcrumb nav */
+.breadcrumb{display:flex;align-items:center;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.bc-btn{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:6px;
+  font-size:11.5px;font-weight:500;cursor:pointer;border:1px solid var(--g200);
+  background:#fff;color:var(--g600);transition:all .15s;font-family:inherit}
+.bc-btn:hover{background:var(--g50);border-color:var(--pr);color:var(--pr)}
+.bc-sep{color:var(--g300);font-size:11px}
+.bc-cur{font-size:11.5px;color:var(--g500);padding:5px 4px}
+
+/* System overview card (shown when parent selected, no sub) */
+.sys-overview{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-bottom:4px}
+.sub-card{background:#fff;border-radius:var(--r);padding:14px 16px;box-shadow:var(--sh);
+  cursor:pointer;transition:all .18s;border:2px solid transparent;position:relative}
+.sub-card:hover{box-shadow:var(--sh2);border-color:var(--pr);transform:translateY(-1px)}
+.sub-card.done{border-color:var(--ok)}
+.sub-card-ic{font-size:22px;margin-bottom:8px}
+.sub-card-nm{font-size:13px;font-weight:600;color:var(--g700);margin-bottom:6px}
+.sub-card-prog{display:flex;align-items:center;gap:6px}
+.sc-bar{flex:1;height:4px;background:var(--g200);border-radius:2px;overflow:hidden}
+.sc-fill{height:100%;border-radius:2px;transition:width .3s}
+.sc-pct{font-size:10.5px;color:var(--g500);flex-shrink:0}
+.sub-card-cnt{font-size:10.5px;color:var(--g400);margin-top:4px}
+
+/* Legend */
+.legend{display:flex;align-items:center;gap:10px;margin-bottom:10px;
+  padding:8px 13px;background:#fff;border-radius:var(--r);box-shadow:var(--sh);
+  flex-wrap:wrap;font-size:11px}
+.li{display:flex;align-items:center;gap:3px;color:var(--g600)}
+.ldiv{color:var(--g300);margin:0 1px}
+
+/* System header */
+.sys-hdr{background:#fff;border-radius:var(--r);padding:15px 18px;
+  margin-bottom:10px;box-shadow:var(--sh);display:flex;align-items:center;gap:12px}
+.sys-ic{width:42px;height:42px;border-radius:10px;display:flex;
+  align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.sys-hdr-ct{flex:1}
+.sys-title{font-size:15px;font-weight:700;color:var(--g800);margin-bottom:2px}
+.sys-meta{font-size:11px;color:var(--g500)}
+.sys-right{display:flex;align-items:center;gap:12px}
+.stats{display:flex;gap:12px}
+.stat{text-align:center}
+.stat-v{font-size:17px;font-weight:700;line-height:1}
+.stat-l{font-size:10px;color:var(--g400);margin-top:2px}
+.circ{position:relative;width:50px;height:50px;flex-shrink:0}
+.circ svg{transform:rotate(-90deg)}
+.circ-txt{position:absolute;inset:0;display:flex;align-items:center;
+  justify-content:center;font-size:11px;font-weight:700;color:var(--g700)}
+
+/* Checklist */
+/* ── 工程卡片 ── */
+.proj-card{background:#fff;border-radius:var(--r);padding:16px;box-shadow:var(--sh);
+  border:2px solid transparent;cursor:pointer;transition:all .15s;position:relative}
+.proj-card:hover{border-color:var(--pr);box-shadow:var(--sh2)}
+.proj-no{font-size:10.5px;color:var(--g400);font-weight:600;letter-spacing:.05em;margin-bottom:4px}
+.proj-nm{font-size:14px;font-weight:700;color:var(--g800);margin-bottom:10px;
+  line-height:1.35;word-break:break-all}
+.proj-bar-bg{height:5px;background:var(--g200);border-radius:3px;overflow:hidden;margin-bottom:6px}
+.proj-bar-fill{height:100%;background:var(--pr);border-radius:3px;transition:width .3s}
+.proj-meta{font-size:10.5px;color:var(--g500);display:flex;justify-content:space-between}
+.proj-del{position:absolute;top:10px;right:10px;background:none;border:none;
+  cursor:pointer;font-size:12px;color:var(--g300);display:none}
+.proj-card:hover .proj-del{display:block}
+.proj-del:hover{color:var(--er)}
+.batch-bar{display:flex;align-items:center;gap:8px;padding:8px 12px;
+  background:#fff;border-radius:var(--r);margin-bottom:8px;box-shadow:var(--sh);
+  flex-wrap:wrap}
+.batch-lbl{font-size:11.5px;color:var(--g500);flex:1;min-width:0}
+.batch-lbl strong{color:var(--g700)}
+.batch-btn{padding:4px 10px;border-radius:5px;font-size:11.5px;font-weight:600;
+  cursor:pointer;border:none;transition:all .15s;font-family:inherit}
+.batch-pass{background:#dcfce7;color:#15803d}.batch-pass:hover{background:#bbf7d0}
+.batch-na{background:#f1f5f9;color:var(--g600)}.batch-na:hover{background:#e2e8f0}
+.batch-clr{background:#fff;border:1px solid var(--g200);color:var(--g500)}.batch-clr:hover{background:var(--g100)}
+.cl-list{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.cl-item{background:#fff;border-radius:var(--r);padding:11px 13px;
+  box-shadow:var(--sh);border-left:4px solid transparent;transition:all .15s}
+.cl-item:hover{box-shadow:var(--sh2)}
+.cl-item.sa{border-left-color:var(--er)}
+.cl-item.sb2{border-left-color:var(--wa)}
+.cl-item.sc{border-left-color:var(--ok)}
+.cl-item.s-pass{background:#f0fdf4}
+.cl-item.s-issue{background:#fff7f7}
+.cl-item.s-na{opacity:.5}
+.item-row{display:flex;align-items:flex-start;gap:9px}
+.status-btns{display:flex;gap:3px;flex-shrink:0;margin-top:1px}
+.sb3{width:26px;height:26px;border-radius:5px;border:1.5px solid var(--g200);
+  background:#fff;cursor:pointer;font-size:11px;display:flex;align-items:center;
+  justify-content:center;transition:all .15s;font-family:inherit}
+.sb3:hover{border-color:var(--g400);background:var(--g50)}
+.sb3.ap{background:var(--ok);border-color:var(--ok);color:#fff}
+.sb3.ai{background:var(--er);border-color:var(--er);color:#fff}
+.sb3.an{background:var(--g400);border-color:var(--g400);color:#fff}
+.item-ct{flex:1;min-width:0}
+.item-hdr{display:flex;align-items:center;gap:6px;margin-bottom:2px}
+.badge{padding:1.5px 6px;border-radius:4px;font-size:10px;font-weight:700;flex-shrink:0}
+.ba{background:#fef2f2;color:var(--er)}
+.bb{background:#fffbeb;color:#d97706}
+.bc{background:#ecfdf5;color:#059669}
+.item-txt{font-size:12.5px;color:var(--g700);line-height:1.55}
+.item-basis{font-size:10.5px;color:var(--g400);margin-top:2px}
+.item-foot{display:flex;justify-content:flex-end;margin-top:4px}
+.note-tog{font-size:10.5px;color:var(--g400);cursor:pointer;background:none;
+  border:none;padding:2px 5px;border-radius:4px;transition:all .15s;font-family:inherit}
+.note-tog:hover{color:var(--pr);background:var(--g100)}
+.note-area{margin-top:6px;display:none}
+.note-area.show{display:block}
+.note-ta{width:100%;border:1px solid var(--g200);border-radius:6px;
+  padding:5px 9px;font-size:11.5px;color:var(--g600);resize:vertical;
+  min-height:36px;font-family:inherit;background:var(--g50);line-height:1.5}
+.note-ta:focus{outline:none;border-color:var(--pr);background:#fff}
+
+/* Signature */
+.sig-sec{background:#fff;border-radius:var(--r);padding:16px 18px;box-shadow:var(--sh)}
+.sig-title{font-size:11.5px;font-weight:600;color:var(--g600);margin-bottom:9px;
+  padding-bottom:7px;border-bottom:1px solid var(--g100)}
+.sig-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.sig-f{display:flex;flex-direction:column;gap:3px}
+.sig-f label{font-size:10.5px;color:var(--g400)}
+.sig-in{border:none;border-bottom:1.5px solid var(--g200);padding:3px 0;
+  font-size:12px;color:var(--g700);background:transparent;font-family:inherit;width:100%}
+.sig-in:focus{outline:none;border-bottom-color:var(--pr)}
+
+/* Modal */
+.modal-ov{position:fixed;inset:0;background:rgba(15,23,42,.55);
+  display:flex;align-items:center;justify-content:center;z-index:100;
+  backdrop-filter:blur(3px)}
+.modal-ov.hidden{display:none}
+.modal{background:#fff;border-radius:12px;padding:22px;max-width:400px;
+  width:90%;box-shadow:0 20px 40px rgba(0,0,0,.2)}
+.modal-title{font-size:14px;font-weight:700;color:var(--g800);margin-bottom:5px}
+.modal-desc{font-size:12px;color:var(--g500);margin-bottom:16px;line-height:1.6;white-space:pre-line}
+.modal-acts{display:flex;gap:8px;justify-content:flex-end}
+.btn-out{background:#fff;border:1px solid var(--g200);color:var(--g600);
+  padding:6px 13px;border-radius:6px;font-size:12px;font-weight:500;
+  cursor:pointer;font-family:inherit;transition:all .15s}
+.btn-out:hover{background:var(--g100)}
+
+/* Toast */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--g800);color:#fff;
+  padding:8px 14px;border-radius:8px;font-size:12px;box-shadow:var(--sh2);
+  transform:translateY(8px);opacity:0;transition:all .2s;z-index:200;pointer-events:none}
+.toast.show{transform:translateY(0);opacity:1}
+
+/* 登入畫面 */
+#loginScreen{position:fixed;inset:0;background:linear-gradient(135deg,#1e2d3d 0%,#2563eb 100%);
+  z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-box{background:#fff;border-radius:16px;padding:28px 26px;width:100%;max-width:380px;
+  box-shadow:0 25px 60px rgba(0,0,0,.35)}
+.login-logo{width:48px;height:48px;background:linear-gradient(135deg,#3b82f6,#1d4ed8);
+  border-radius:12px;display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:22px;font-weight:700;margin:0 auto 14px}
+.login-title{font-size:15.5px;font-weight:700;color:var(--g800);text-align:center;margin-bottom:3px}
+.login-sub{font-size:11.5px;color:var(--g400);text-align:center;margin-bottom:18px}
+.acct-list{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;max-height:260px;overflow-y:auto}
+.acct-row{display:flex;align-items:center;gap:8px;padding:10px 11px;background:var(--g50);
+  border-radius:var(--r);border:1px solid var(--g200)}
+.acct-av{width:34px;height:34px;border-radius:50%;
+  background:linear-gradient(135deg,#3b82f6,#6366f1);
+  display:flex;align-items:center;justify-content:center;color:#fff;
+  font-size:14px;font-weight:700;flex-shrink:0}
+.acct-nm{font-size:13px;font-weight:600;color:var(--g700);flex:1;min-width:0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.acct-pw{border:1px solid var(--g200);border-radius:5px;padding:4px 7px;font-size:12px;
+  width:86px;font-family:inherit;color:var(--g700)}
+.acct-pw:focus{outline:none;border-color:var(--pr)}
+.login-div{display:flex;align-items:center;gap:8px;margin:12px 0;font-size:11px;color:var(--g300)}
+.login-div::before,.login-div::after{content:'';flex:1;height:1px;background:var(--g200)}
+.new-acct-form{display:flex;flex-direction:column;gap:7px}
+.new-acct-form input{border:1px solid var(--g200);border-radius:6px;padding:7px 10px;
+  font-size:12.5px;font-family:inherit;color:var(--g700);width:100%}
+.new-acct-form input:focus{outline:none;border-color:var(--pr)}
+
+/* 紀錄管理 */
+.btn-rec{background:#fff;border:1px solid var(--g200);color:var(--g600)}
+.btn-rec:hover{background:var(--g100);color:var(--g800)}
+.rec-item{display:flex;align-items:center;gap:10px;padding:11px 13px;
+  background:var(--g50);border-radius:var(--r);border:1px solid var(--g200);transition:border-color .15s}
+.rec-item:hover{border-color:var(--g300)}
+.rec-info{flex:1;min-width:0}
+.rec-name{font-size:13px;font-weight:600;color:var(--g800);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rec-meta{font-size:10.5px;color:var(--g400);margin-top:2px}
+.rec-prog{display:flex;align-items:center;gap:6px;margin-top:5px}
+.rec-bar{flex:1;height:4px;background:var(--g200);border-radius:2px;overflow:hidden}
+.rec-fill{height:100%;background:var(--pr);border-radius:2px;transition:width .3s}
+.rec-pct{font-size:10.5px;color:var(--g500);flex-shrink:0;min-width:28px;text-align:right}
+.rec-acts{display:flex;gap:5px;flex-shrink:0;align-items:center}
+
+/* Welcome screen */
+.welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:60vh;text-align:center;gap:12px}
+.welcome-ic{font-size:52px}
+.welcome-t{font-size:17px;font-weight:700;color:var(--g700)}
+.welcome-s{font-size:12.5px;color:var(--g400);max-width:320px;line-height:1.6}
+
+/* ── 系統完成率儀表板 ── */
+.dash-ov{background:#fff;border-radius:var(--r);padding:14px 18px;box-shadow:var(--sh);margin-bottom:14px}
+.dash-ov-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.dash-ov-lbl{font-size:12px;color:var(--g600);font-weight:500}
+.dash-ov-pct{font-weight:700;color:var(--pr);font-size:15px}
+.dash-ov-bar{height:7px;background:var(--g100);border-radius:4px;overflow:hidden}
+.dash-ov-fill{height:100%;border-radius:4px;transition:width .4s;background:linear-gradient(90deg,var(--pr),#34d399)}
+.sd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:12px}
+.sd-card{position:relative;background:#fff;border-radius:var(--r);padding:16px;box-shadow:var(--sh);
+  cursor:pointer;transition:all .18s;border:2px solid transparent;
+  border-top:3px solid var(--sd-clr,var(--pr))}
+.sd-card:hover{box-shadow:var(--sh2);transform:translateY(-2px);border-color:var(--sd-clr,var(--pr))}
+.sd-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.sd-ic{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:21px;flex-shrink:0}
+.sd-pct-big{font-size:24px;font-weight:800;line-height:1}
+.sd-nm{font-size:12.5px;font-weight:700;color:var(--g700);margin-bottom:8px;padding-right:20px}
+.sd-bar-bg{height:5px;background:var(--g100);border-radius:3px;overflow:hidden;margin-bottom:8px}
+.sd-bar-fill{height:100%;border-radius:3px;transition:width .4s}
+.sd-stats{display:flex;gap:4px;flex-wrap:wrap;font-size:10px}
+.sd-st{padding:2px 5px;border-radius:3px;font-weight:500}
+.sd-st.pass{color:#16a34a;background:#f0fdf4}
+.sd-st.issue{color:#dc2626;background:#fef2f2}
+.sd-st.na{color:#6b7280;background:#f3f4f6}
+.sd-st.tot{color:#9ca3af;font-weight:400}
+.sd-done-badge{position:absolute;top:8px;right:8px;font-size:14px}
+
+/* ── 搜尋 ── */
+.search-wrap{position:relative;display:flex;align-items:center}
+.search-inp{border:1px solid var(--g200);border-radius:20px;padding:5px 12px 5px 30px;
+  font-size:12px;color:var(--g700);background:var(--g50);font-family:inherit;
+  width:160px;transition:all .2s}
+.search-inp:focus{outline:none;border-color:var(--pr);background:#fff;width:200px}
+.search-inp::-webkit-search-cancel-button{cursor:pointer}
+.search-ic-lbl{position:absolute;left:9px;font-size:12px;color:var(--g400);pointer-events:none;line-height:1}
+
+/* 搜尋結果面板 */
+.srch-panel{background:#fff;border-radius:var(--r);padding:14px 18px;box-shadow:var(--sh);margin-bottom:10px}
+.srch-hd{font-size:13px;font-weight:700;color:var(--g700);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.srch-item{background:var(--g50);border-radius:6px;padding:10px 12px;margin-bottom:6px;
+  cursor:pointer;transition:all .15s;border:1px solid transparent}
+.srch-item:hover{border-color:var(--pr);background:#fff;box-shadow:var(--sh)}
+.srch-path{font-size:10.5px;color:var(--g400);margin-bottom:3px}
+.srch-txt{font-size:12.5px;color:var(--g700);line-height:1.5}
+.srch-hl{background:#fef08a;border-radius:2px;font-weight:600;padding:0 1px}
+.srch-basis{font-size:10.5px;color:var(--g400);margin-top:3px}
+.srch-empty{text-align:center;padding:30px 20px;color:var(--g400);font-size:12.5px}
+
+/* 問題匯總 nav */
+.iss-nav{display:flex;align-items:center;padding:9px 12px;cursor:pointer;
+  transition:all .15s;gap:9px;position:relative;border-bottom:1px solid #2d3748}
+.iss-nav:hover{background:var(--sbh)}
+.iss-nav.active{background:rgba(239,68,68,.15)}
+.iss-nav.active::before{content:'';position:absolute;left:0;top:0;bottom:0;
+  width:3px;background:#ef4444;border-radius:0 2px 2px 0}
+.iss-ic{width:24px;height:24px;border-radius:5px;background:#fef2f2;
+  display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.iss-nm{font-size:12px;font-weight:500;color:#94a3b8;flex:1}
+.iss-nav.active .iss-nm{color:#fca5a5}
+.iss-badge{font-size:10px;background:#ef4444;color:#fff;border-radius:10px;
+  padding:1px 7px;flex-shrink:0;font-weight:700}
+.iss-badge.zero{background:#374151}
+
+/* 問題匯總主內容 */
+.iss-group{background:#fff;border-radius:var(--r);padding:13px 16px;box-shadow:var(--sh);margin-bottom:10px}
+.iss-group-hd{font-size:13px;font-weight:700;color:var(--g700);margin-bottom:9px;
+  padding-bottom:7px;border-bottom:1px solid var(--g100);
+  display:flex;align-items:center;gap:7px}
+.iss-row{background:#fff7f7;border-radius:6px;padding:9px 12px;margin-bottom:6px;
+  border-left:3px solid #ef4444;cursor:pointer;transition:border-color .15s}
+.iss-row:hover{border-left-color:#b91c1c}
+.iss-row-hd{display:flex;align-items:center;gap:6px;margin-bottom:3px;flex-wrap:wrap}
+.iss-row-txt{font-size:12.5px;color:var(--g700);line-height:1.5}
+.iss-row-note{font-size:11px;color:#b91c1c;margin-top:5px;padding:4px 9px;
+  background:#fee2e2;border-radius:4px}
+.iss-row-basis{font-size:10.5px;color:var(--g400);margin-top:3px}
+.iss-empty-box{text-align:center;padding:50px 20px}
+.iss-empty-ic{font-size:44px;margin-bottom:10px}
+.iss-empty-t{font-size:15px;font-weight:700;color:var(--g600)}
+.iss-empty-s{font-size:12px;color:var(--g400);margin-top:5px}
+
+/* ── 列印狀態標籤（螢幕隱藏，列印顯示）── */
+.print-lbl{display:none}
+.print-sum{display:none}
+
+@media print{
+  /* 強制列印背景色 */
+  *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;color-adjust:exact !important}
+
+  body{height:auto;overflow:visible}
+  .hdr{display:flex !important;flex-direction:column;box-shadow:none;border-bottom:2px solid #1e3a5f;margin-bottom:6px}
+  .hdr-top{height:auto;padding:6px 18px}
+  .hdr-bot{display:none !important}
+  .hdr .btn,.hdr .btn-d{display:none !important}
+  .sb,.legend,.batch-bar,.modal-ov,.toast{display:none !important}
+  .body{display:block}
+  .main{overflow:visible;padding:4px 0}
+  .page-banner{margin-bottom:8px;-webkit-print-color-adjust:exact !important}
+
+  /* 摘要統計列：列印時顯示 */
+  .print-sum{
+    display:flex !important;gap:0;margin-bottom:10px;
+    border:2px solid #1e3a5f;border-radius:8px;overflow:hidden;
+    font-size:12px;font-weight:600;break-inside:avoid
+  }
+  .ps-cell{flex:1;padding:8px 10px;text-align:center;border-right:1px solid rgba(255,255,255,.3)}
+  .ps-cell:last-child{border-right:none}
+  .ps-cell .ps-num{font-size:20px;font-weight:800;line-height:1;display:block;margin-bottom:2px}
+  .ps-cell .ps-lbl{font-size:10px;opacity:.85;display:block}
+  .ps-total{background:#1e3a5f;color:#fff}
+  .ps-pass {background:#065f46;color:#fff}
+  .ps-issue{background:#991b1b;color:#fff}
+  .ps-na   {background:#374151;color:#fff}
+  .ps-todo {background:#92400e;color:#fff}
+
+  /* 核對項目底色辨識 */
+  .cl-item{
+    break-inside:avoid;box-shadow:none;
+    border:1px solid #d1d5db;border-left:5px solid #d1d5db;
+    margin-bottom:5px;padding:9px 11px
+  }
+  /* 未核對：淡黃，最醒目——代表「還沒看」 */
+  .cl-item:not(.s-pass):not(.s-issue):not(.s-na){
+    background:#fef9c3 !important;border-left-color:#ca8a04 !important
+  }
+  /* 符合：淡綠 */
+  .cl-item.s-pass{background:#dcfce7 !important;border-left-color:#16a34a !important}
+  /* 有問題：淡紅 */
+  .cl-item.s-issue{background:#fee2e2 !important;border-left-color:#dc2626 !important;opacity:1 !important}
+  /* 不適用：淡灰 */
+  .cl-item.s-na{background:#f3f4f6 !important;border-left-color:#9ca3af !important;opacity:1 !important}
+
+  /* 隱藏三態按鈕，改顯示狀態標籤 */
+  .status-btns{display:none}
+  .print-lbl{
+    display:inline-flex !important;align-items:center;
+    padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;
+    margin-bottom:4px;border:1.5px solid currentColor
+  }
+  .pl-pass{background:#dcfce7;color:#15803d;border-color:#16a34a}
+  .pl-issue{background:#fee2e2;color:#b91c1c;border-color:#dc2626}
+  .pl-na{background:#f3f4f6;color:#6b7280;border-color:#9ca3af}
+  .pl-todo{background:#fef9c3;color:#92400e;border-color:#ca8a04}
+
+  .note-area{display:block !important}
+  .note-tog{display:none}
+  .sys-hdr{break-inside:avoid;box-shadow:none;border:1px solid #e2e8f0;margin-bottom:8px}
+  .sig-sec{break-inside:avoid;box-shadow:none;border:1px solid #e2e8f0;margin-top:10px}
+  .cl-list{gap:4px}
+  @page{margin:14mm;size:A4}
+}
+
+/* ══════════════════════════════════════════════
+   RWD 響應式佈局
+   ══════════════════════════════════════════════ */
+
+/* Hamburger — 預設隱藏（桌面不需要） */
+.mob-menu-btn{
+  display:none;background:none;border:none;cursor:pointer;
+  font-size:20px;color:var(--g600);padding:4px 6px;border-radius:6px;
+  line-height:1;flex-shrink:0;
+}
+.mob-menu-btn:hover{background:var(--g100)}
+
+/* Sidebar overlay（手機點擊背景關閉） */
+.sb-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:99;
+}
+.sb-overlay.show{display:block}
+
+/* ── 平板（≤ 1100px）──────────────────────────── */
+@media(max-width:1100px){
+  .sb{width:195px}
+  .pf input{width:110px}
+  .pf input[id=drawingRev]{width:55px}
+  .pf input[type=date]{width:105px}
+  .search-inp{width:130px}
+}
+
+/* ── 小平板（≤ 900px）────────────────────────── */
+@media(max-width:900px){
+  .hdr-bot{height:auto;padding:6px 14px;gap:6px;flex-wrap:wrap}
+  .hdr-acts{margin-left:0;border-left:none;padding-left:0;flex-wrap:wrap}
+  .pf-group{width:100%;justify-content:flex-start !important}
+  .pf input{width:130px}
+  .pf input[id=drawingRev]{width:65px}
+  .pf input[type=date]{width:120px}
+  .search-wrap{flex:1;min-width:160px}
+  .search-inp{width:100% !important}
+  .sb{width:185px}
+  .main{padding:12px}
+}
+
+/* ── 手機（≤ 640px）──────────────────────────── */
+@media(max-width:640px){
+  /* Header 上排 */
+  .hdr-top{padding:0 12px;height:46px}
+  .hdr-l{gap:8px}
+  .app-s{display:none}
+  .app-t{font-size:12.5px}
+  .mob-menu-btn{display:flex;align-items:center;justify-content:center}
+
+  /* Header 下排 */
+  .hdr-bot{padding:5px 12px;gap:5px}
+  .pf-group{gap:6px !important}
+  .pf input{width:95px;font-size:11px}
+  .pf input[id=drawingRev]{width:48px}
+  .pf input[type=date]{width:106px}
+  .pf label{font-size:8.5px}
+  .search-wrap{flex:1;min-width:120px}
+  .search-inp{width:100% !important;font-size:12px}
+  .hdr-acts{gap:4px}
+
+  /* 按鈕群組縮小 */
+  .btn{padding:4px 9px;font-size:11px}
+  .btn-p{padding:5px 10px}
+
+  /* Sidebar：抽屜式，預設收起 */
+  .sb{
+    position:fixed;left:-230px;top:0;bottom:0;
+    z-index:100;transition:left .25s ease;
+    box-shadow:none;width:230px;
+  }
+  .sb.mob-open{left:0;box-shadow:6px 0 24px rgba(0,0,0,.35)}
+
+  /* 主內容全寬 */
+  .main{padding:10px}
+  .sys-overview{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+  .sd-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+  .stats{gap:8px}
+  .stat-v{font-size:15px}
+}
+
+/* ── 超小手機（≤ 400px）──────────────────────── */
+@media(max-width:400px){
+  .pf-group{flex-wrap:wrap !important;gap:5px !important}
+  .pf input{width:105px}
+  .hdr-acts{flex-wrap:wrap}
+  .sys-overview{grid-template-columns:1fr 1fr}
+  .sd-grid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">M</div>
+    <div class="login-title">機水電設計圖說 自主檢查系統</div>
+    <div class="login-sub">請輸入帳號與密碼登入</div>
+    <div class="new-acct-form">
+      <input type="text" id="loginName" placeholder="帳號名稱" maxlength="20"
+        onkeydown="if(event.key==='Enter')g('loginPwd').focus()">
+      <input type="password" id="loginPwd" placeholder="密碼" maxlength="30"
+        onkeydown="if(event.key==='Enter')doLogin()">
+      <button class="btn btn-p" id="loginBtn" onclick="doLogin()" style="width:100%;padding:8px 0;font-size:13px">登入</button>
+    </div>
+    <div id="loginErr" style="margin-top:8px;font-size:11px;color:#ef4444;text-align:center;display:none"></div>
+  </div>
+</div>
+
+<!-- ══ 工程選擇畫面 ══════════════════════════════════════════ -->
+<div id="projectScreen" style="display:none;position:fixed;inset:0;background:var(--g50);z-index:50;flex-direction:column">
+  <div style="background:#fff;border-bottom:1px solid var(--g200);padding:12px 20px;
+    display:flex;align-items:center;justify-content:space-between;box-shadow:var(--sh);flex-shrink:0">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="logo">M</div>
+      <div>
+        <div style="font-size:13.5px;font-weight:700;color:var(--g800)">機水電設計圖說 自主檢查系統</div>
+        <div style="font-size:10.5px;color:var(--g500)">選擇工程</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <span id="ps-icon" style="font-size:13px">👤</span>
+      <span id="ps-name" style="font-size:12px;font-weight:600;color:var(--g700)"></span>
+      <button onclick="logout()" style="background:none;border:none;cursor:pointer;
+        font-size:11px;color:var(--g400);font-family:inherit;padding:0 0 0 4px">登出</button>
+    </div>
+  </div>
+  <div style="flex:1;overflow-y:auto;padding:20px">
+    <div style="max-width:860px;margin:0 auto">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div style="font-size:15px;font-weight:700;color:var(--g800)">工程列表</div>
+        <button id="addProjBtn" onclick="openNewProjModal()" class="btn btn-p"
+          style="display:none;font-size:12px;padding:6px 14px">＋ 新增工程</button>
+      </div>
+      <div id="projList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 新增工程 Modal ══════════════════════════════════════════ -->
+<div class="modal-ov hidden" id="newProjModal">
+  <div class="modal" style="max-width:520px;width:92%">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <div class="modal-title">＋ 新增工程</div>
+      <button class="btn-out" onclick="g('newProjModal').classList.add('hidden')" style="padding:3px 9px">✕</button>
+    </div>
+    <div style="display:grid;gap:11px;margin-bottom:16px">
+      <div>
+        <label style="font-size:11px;color:var(--g500);display:block;margin-bottom:4px;font-weight:600">案件編號</label>
+        <input type="text" id="np-caseNo" placeholder="例：2024-MEP-001" maxlength="30"
+          style="width:100%;border:1px solid var(--g200);border-radius:6px;padding:7px 10px;font-family:inherit;font-size:13px">
+      </div>
+      <div>
+        <label style="font-size:11px;color:var(--g500);display:block;margin-bottom:4px;font-weight:600">案件名稱 *</label>
+        <input type="text" id="np-name" placeholder="例：台北市XX大樓新建工程" maxlength="50"
+          style="width:100%;border:1px solid var(--g200);border-radius:6px;padding:7px 10px;font-family:inherit;font-size:13px">
+      </div>
+      <div>
+        <label style="font-size:11px;color:var(--g500);display:block;margin-bottom:6px;font-weight:600">選定工項</label>
+        <div id="np-systems" style="display:grid;grid-template-columns:repeat(2,1fr);gap:4px 16px;
+          max-height:200px;overflow-y:auto;padding:4px 2px"></div>
+      </div>
+    </div>
+    <div class="modal-acts">
+      <button class="btn-out" onclick="g('newProjModal').classList.add('hidden')">取消</button>
+      <button class="btn btn-p" onclick="createProject()">建立工程</button>
+    </div>
+  </div>
+</div>
+
+<header class="hdr">
+  <!-- ── 上排：Logo ＋ 系統名稱 ＋ 使用者標章 ── -->
+  <div class="hdr-top">
+    <div class="hdr-l">
+      <button class="mob-menu-btn" onclick="toggleSidebar()" title="開啟/關閉選單">☰</button>
+      <div class="logo" onclick="goHome()" title="回首頁" style="cursor:pointer">M</div>
+      <div onclick="goHome()" title="回首頁" style="cursor:pointer">
+        <div class="app-t">機水電設計圖說 自主檢查系統</div>
+        <div class="app-s">MEP Drawing Self-Inspection System</div>
+      </div>
+    </div>
+    <div id="userBadge" style="display:none;align-items:center;gap:7px;padding:5px 12px;
+      background:var(--g50);border:1px solid var(--g200);border-radius:20px;flex-shrink:0">
+      <span id="badgeIcon" style="font-size:13px">👤</span>
+      <span id="badgeName" style="font-size:12px;font-weight:600;color:var(--g700)"></span>
+      <button onclick="backToProjects()" style="background:none;border:none;cursor:pointer;
+        font-size:11px;color:var(--g500);padding:0 0 0 2px;font-family:inherit"
+        title="切換工程">📂 工程</button>
+      <button id="adminBtn" onclick="openAdminPanel()" style="display:none;background:none;border:none;
+        cursor:pointer;font-size:11px;color:var(--pr);padding:0 0 0 2px;font-family:inherit"
+        title="帳號與系統權限管理">⚙ 管理</button>
+      <button onclick="logout()" style="background:none;border:none;cursor:pointer;
+        font-size:11px;color:var(--g400);padding:0 0 0 2px;font-family:inherit"
+        title="登出">登出</button>
+    </div>
+  </div>
+  <!-- ── 下排：專案欄位 ＋ 搜尋 ＋ 功能按鈕 ── -->
+  <div class="hdr-bot">
+    <div class="pf-group" style="display:flex;gap:10px;align-items:center">
+      <div class="pf"><label>專案名稱</label>
+        <input type="text" id="projectName" placeholder="請輸入專案名稱" maxlength="40"></div>
+      <input type="hidden" id="drawingRev">
+      <div class="pf"><label>核對日期</label>
+        <div style="display:flex;align-items:center;gap:2px">
+          <input type="date" id="checkDate" onchange="onCheckDateChange()">
+          <button class="date-lock-btn" id="dateLockBtn" onclick="toggleDateLock()" title="點此解鎖日期" style="display:none">🔒</button>
+        </div>
+      </div>
+    </div>
+    <div class="search-wrap" style="margin:0 4px">
+      <span class="search-ic-lbl">🔍</span>
+      <input class="search-inp" id="searchBox" type="search" placeholder="搜尋項目..."
+        oninput="doSearch(this.value)" onsearch="doSearch(this.value)">
+    </div>
+    <div class="hdr-acts">
+      <label id="autoSaveLbl" style="display:none;align-items:center;gap:5px;font-size:11.5px;
+        color:var(--g600);cursor:pointer;user-select:none;padding:4px 8px;
+        border:1px solid var(--g200);border-radius:6px;background:#fff">
+        <input type="checkbox" id="autoSaveCk" onchange="toggleAutoSave(this.checked)"
+          style="width:13px;height:13px;cursor:pointer;accent-color:var(--pr)">
+        自動存檔
+        <span id="autoSaveTick" style="font-size:10px;color:var(--g400)"></span>
+      </label>
+      <button class="btn btn-rec" onclick="saveAsRecord()" title="儲存目前進度為一筆紀錄">💾 儲存</button>
+      <button class="btn btn-rec" onclick="openRecordManager()" title="管理所有已儲存的紀錄">📂 紀錄</button>
+      <button class="btn btn-rec" onclick="exportJSON()" title="匯出為 JSON 檔（可換電腦使用）">📤 匯出</button>
+      <label class="btn btn-rec" title="從 JSON 檔匯入" style="cursor:pointer;display:inline-flex;align-items:center;gap:3px">📥 匯入<input type="file" id="importFileInput" accept=".json" onchange="importJSON(event)" style="display:none"></label>
+      <button id="reportBtn" class="btn btn-rec" onclick="exportReportJSON()" style="display:none;background:#f0fdf4;color:#16a34a;border-color:#86efac;padding:5px 9px;font-size:11.5px" title="將本次檢查結果匯出 JSON，再執行 push_report.bat 送至 Notion">📋 傳送</button>
+      <button class="btn btn-p" onclick="exportPrint()">🖨 列印/PDF</button>
+      <button class="btn btn-d" onclick="confirmReset()">↺ 重置</button>
+    </div>
+  </div>
+</header>
+
+<div id="sbOverlay" class="sb-overlay" onclick="toggleSidebar()"></div>
+<div class="body">
+  <aside class="sb" id="sidebar">
+    <div id="issNav" class="iss-nav" onclick="clickIssues()">
+      <div class="iss-ic">⚠️</div>
+      <span class="iss-nm">問題匯總</span>
+      <span class="iss-badge zero" id="issBadge">0</span>
+    </div>
+    <div class="sb-sec">系統分類</div>
+    <nav class="sb-nav" id="sbNav"></nav>
+    <div class="sb-foot">
+      <div class="ov-lbl"><span>整體完成進度</span><span id="ovPct">0%</span></div>
+      <div class="ov-bar"><div class="ov-fill" id="ovFill" style="width:0%"></div></div>
+    </div>
+  </aside>
+  <main class="main" id="mainContent"></main>
+</div>
+
+<div class="modal-ov hidden" id="restoreModal">
+  <div class="modal">
+    <div class="modal-title">🔄 偵測到上次作業紀錄</div>
+    <div class="modal-desc" id="restoreDesc"></div>
+    <div class="modal-acts">
+      <button class="btn-out" onclick="startFresh()">重新開始</button>
+      <button class="btn btn-p" onclick="restoreSession()">繼續上次作業</button>
+    </div>
+  </div>
+</div>
+<div class="modal-ov hidden" id="adminModal">
+  <div class="modal" style="max-width:560px;width:95%">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <div class="modal-title">⚙ 帳號與系統權限管理</div>
+      <button class="btn-out" onclick="g('adminModal').classList.add('hidden')" style="padding:3px 9px">✕</button>
+    </div>
+    <div style="font-size:11px;color:var(--g400);margin-bottom:12px">管理員專用・勾選代表該帳號可存取此系統</div>
+    <div id="adminAcctList" style="max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:10px"></div>
+    <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--g100)">
+      <div style="font-size:11.5px;font-weight:600;color:var(--g700);margin-bottom:8px">＋ 新增操作者帳號</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <input type="text" id="newAcctName" placeholder="帳號名稱" maxlength="20"
+          style="flex:1;min-width:100px;border:1px solid var(--g200);border-radius:6px;padding:6px 10px;font-family:inherit;font-size:12px">
+        <input type="password" id="newAcctPwd" placeholder="密碼" maxlength="30"
+          style="flex:1;min-width:100px;border:1px solid var(--g200);border-radius:6px;padding:6px 10px;font-family:inherit;font-size:12px"
+          onkeydown="if(event.key==='Enter')createAcct()">
+        <button class="btn btn-p" onclick="createAcct()" style="padding:6px 14px;font-size:12px">建立</button>
+      </div>
+    </div>
+    <div class="modal-acts" style="margin-top:10px;border-top:1px solid var(--g100);padding-top:10px">
+      <button class="btn-out" onclick="g('adminModal').classList.add('hidden')">關閉</button>
+    </div>
+  </div>
+</div>
+<div class="modal-ov hidden" id="recordModal">
+  <div class="modal" style="max-width:500px;width:92%">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div class="modal-title">📂 紀錄管理</div>
+      <button class="btn-out" onclick="g('recordModal').classList.add('hidden')" style="padding:3px 9px">✕</button>
+    </div>
+    <div style="font-size:11px;color:var(--g400);margin-bottom:10px">最多儲存 20 筆・同名專案＋版次自動覆蓋</div>
+    <div id="recordList" style="max-height:350px;overflow-y:auto;display:flex;flex-direction:column;gap:7px"></div>
+    <div class="modal-acts" style="margin-top:12px;border-top:1px solid var(--g100);padding-top:10px">
+      <button class="btn-out" onclick="g('recordModal').classList.add('hidden')">關閉</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<!-- ── 列印設定 Modal ── -->
+<div class="modal-ov hidden" id="printModal">
+  <div class="modal" style="min-width:360px;max-width:480px;width:92%">
+    <div class="modal-title">🖨 列印 / PDF 報告設定</div>
+    <div style="display:grid;gap:10px;margin:14px 0">
+      <div class="pf" style="flex-direction:column;align-items:stretch">
+        <label style="font-size:11px;color:var(--g500);margin-bottom:4px">工程名稱</label>
+        <input type="text" id="pm-projName" placeholder="請輸入工程名稱"
+          style="border:1px solid var(--g200);border-radius:6px;padding:6px 10px;font-family:inherit;font-size:12px;width:100%">
+      </div>
+      <div class="pf" style="flex-direction:column;align-items:stretch">
+        <label style="font-size:11px;color:var(--g500);margin-bottom:4px">項目</label>
+        <input type="text" id="pm-projItem" placeholder="例：電氣工程 / 給排水工程 / 消防工程"
+          style="border:1px solid var(--g200);border-radius:6px;padding:6px 10px;font-family:inherit;font-size:12px;width:100%">
+      </div>
+      <div class="pf" style="flex-direction:column;align-items:stretch">
+        <label style="font-size:11px;color:var(--g500);margin-bottom:4px">操作人員</label>
+        <input type="text" id="pm-operator" placeholder="姓名"
+          style="border:1px solid var(--g200);border-radius:6px;padding:6px 10px;font-family:inherit;font-size:12px;width:100%">
+      </div>
+      <div class="pf" style="flex-direction:column;align-items:stretch">
+        <label style="font-size:11px;color:var(--g500);margin-bottom:4px">顯示範圍</label>
+        <select id="pm-show"
+          style="border:1px solid var(--g200);border-radius:6px;padding:6px 10px;font-family:inherit;font-size:12px;width:100%;background:#fff">
+          <option value="checked">已核對的項目（符合＋有問題＋不適用）</option>
+          <option value="issue">僅顯示「有問題」項目</option>
+          <option value="all">全部項目（共 130 項）</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-acts">
+      <button class="btn-out" onclick="g('printModal').classList.add('hidden')">取消</button>
+      <button class="btn btn-p" onclick="doPrint()">🖨 產生報告</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// API 設定
+// ═══════════════════════════════════════════════
+const API = 'https://emp-checklist.weiandy14.workers.dev';
+const JWT_KEY = 'mep_jwt_v1';
+let AUTH_TOKEN = null;   // JWT，登入後存放
+
+async function api(path, opts = {}) {
+  const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
+  if (AUTH_TOKEN) headers['Authorization'] = `Bearer ${AUTH_TOKEN}`;
+  const res = await fetch(API + path, { ...opts, headers });
+  return res.json();
+}
+
+// ═══════════════════════════════════════════════
+// 資料定義
+// ═══════════════════════════════════════════════
+const DATA = [
+  {
+    id:'power', num:1, icon:'⚡', name:'電力系統', color:'#3b82f6', bg:'#eff6ff',
+    expandable: true,
+    subs:[
+      {
+        id:'pw-motor', name:'① 動力系統', icon:'⚙️',
+        items:[
+          {id:'pm01',sev:'A',text:'電氣設計計算書完整性 □ 完整負載表是否已提供 □ 故障電流計算書是否已提供 □ 保護協調計算書是否已提供 □ 電壓降計算書是否已提供 □ 功因改善計算書是否已提供 □ 接地系統計算書是否已提供 □ 緊急發電機容量計算書是否已提供',basis:'用戶用電設備裝置規則'},
+          {id:'pm02',sev:'A',text:'圖說與計算書一致性 □ 圖中IC值是否已依計算書確認修正 □ 開關AT值是否已依計算書確認修正 □ 管線規格是否已依計算書確認修正',basis:'用戶用電設備裝置規則；NEMA MG-1'},
+          {id:'pm03',sev:'A',text:'圖例與設備規格標示 □ 圖例中各設備、器材主要規格是否已標出 □ 低壓NFB、ACB之IC值是否已澄清採Icu或Ics □ 圖面字體是否清晰易讀',basis:''},
+          {id:'pm04',sev:'A',text:'升位圖標示完整性 □ 升位圖是否已標出樓層高度 □ 升位圖各管線規格是否已標示',basis:''},
+          {id:'pm05',sev:'A',text:'緊急發電機組冷卻水塔、空調冷卻水塔、相關戶外設備迴路開關是否採用延遲型斷路器',basis:'用戶用電設備裝置規則'},
+          {id:'pm06',sev:'A',text:'檢查',basis:''},
+          {id:'pm07',sev:'A',text:'強電/弱電（控制訊號）Cable Tray 完全實體分隔，不得共用同一Tray格',basis:'工程規範通則；EMC'},
+          {id:'pm08',sev:'A',text:'屋外動力線路：電纜型式為屋外型（UV抗候護套/CVT），管材為HDG/RGS，管口設防水彎頭',basis:'用戶用電設備裝置規則屋外配線'},
+          {id:'pm09',sev:'B',text:'檢查　空調箱是否已配置電源迴路',basis:''},
+          {id:'pm10',sev:'B',text:'迴路編號跨圖一致：動力平面圖 / 點圖清單 / 單線圖 / 三圖是否一致',basis:'圖說管理規範'},
+          {id:'pm11',sev:'B',text:'馬達啟動方式（DOL/Y-△/Soft Starter/VFD）與馬達容量對應正確，啟動電流計算標示 50HP含以上需Y-△啟動',basis:'建築技術規則設備篇；消防法'},
+          {id:'pm12',sev:'C',text:'VFD變頻器輸出端電纜建議使用屏蔽電纜（減少EMI）',basis:'IEC 61800-3；EMC'},
+          {id:'pm13',sev:'B',text:'檢查 空調設備用變頻器  是否整合於空調動力盤內 或 獨立控制盤',basis:''},
+        ]
+      },
+      {
+        id:'pw-light', name:'② 照明系統', icon:'💡',
+        items:[
+          {id:'pl01',sev:'A',text:'照度計算書與圖面燈具數量、型式一致；各空間照度值符合CNS照度標準（辦公≥500lux，走廊≥100lux）',basis:'CNS 12112；建築技術規則'},
+          {id:'pl02',sev:'A',text:'燈具IP等級與安裝環境對應（屋外/潮濕區≥IP65，一般室內IP20，浴廁IP44）',basis:'IEC 60529；CNS'},
+          {id:'pl03',sev:'A',text:'緊急照明設置位置（走廊、樓梯、出入口、避難動線）、數量、備用時間 ≥30分鐘標示',basis:'各類場所消防安全設備設置標準'},
+          {id:'pl04',sev:'A',text:'緊急照明迴路（E迴路）與一般照明迴路完全分離，配電盤名稱牌白底紅字',basis:'消防法；各類場所消防安全設備設置標準；00702 §16010'},
+          {id:'pl05',sev:'A',text:'照明迴路過電流保護（MCCB/MCB）規格標示，分路電流 ≤ 開關額定值80%',basis:'用戶用電設備裝置規則第85條'},
+          {id:'pl06',sev:'A',text:'防爆區（Ex Zone）燈具須為防爆型（Ex d/Ex e/Ex n），防爆等級標示與危險區域圖一致',basis:'IEC 60079；CNS 3376'},
+          {id:'pl07',sev:'B',text:'燈具電源供電類別標示（N一般/E緊急），緊急出口指示燈設雙電源（市電+電池）',basis:'各類場所消防安全設備設置標準'},
+          {id:'pl08',sev:'B',text:'照明控制方式標示（手動/定時/感應/場景控制），控制迴路線徑及控制器規格',basis:'建築物節約能源設計技術規範'},
+          {id:'pl09',sev:'B',text:'燈具安裝高度、維護空間標示，重型燈具（>25kg）安裝固定方式說明',basis:'建築技術規則；CNS'},
+          {id:'pl10',sev:'C',text:'節能設計：全數LED燈具標示，Color Temperature（色溫）及CRI（演色性≥80）標示',basis:'能源管理法；ASHRAE 90.1'},
+        ]
+      },
+      {
+        id:'pw-sld', name:'③ 系統單線・升位圖', icon:'📊',
+        items:[
+          {id:'ps01',sev:'A',text:'所有電源來源清楚標示：台電進線（電壓/容量/進線方式）、緊急發電機、UPS各系統',basis:'用戶用電設備裝置規則；電業法'},
+          {id:'ps02',sev:'A',text:'迴路編號跨圖一致：動力平面圖 / 點圖清單 / 單線圖 / 三圖是否一致',basis:''},
+          {id:'ps03',sev:'A',text:'上下游斷路器保護協調：TCC曲線圖已完成，上下游不重疊（選擇性協調）',basis:'IEC 60947；工程規範'},
+          {id:'ps04',sev:'A',text:'所有負載分路標示：負載名稱、容量（kW/kVA）、電流（A）、電纜規格、斷路器規格',basis:'用戶用電設備裝置規則'},
+          {id:'ps05',sev:'A',text:'計量設備位置標示：台電計量CT/PT、用戶內部電能表、諧波分析儀（如有）',basis:'電業法；電力設施裝置規則'},
+          {id:'ps06',sev:'A',text:'ATS/STS自動切換開關標示：切換邏輯、切換時間、優先順序（市電→發電機→UPS）',basis:'各類場所消防安全設備設置標準'},
+          {id:'ps07',sev:'A',text:'升位圖各樓層盤體名稱（MDB/SDB/DP/MCC）、編號唯一不重複，位置與平面圖一致',basis:'圖說管理規範'},
+          {id:'ps08',sev:'A',text:'N（中性線）/PE（接地線）分開標示，TN-S系統確認全程N與PE不合用',basis:'IEC 60364-1；用戶用電設備裝置規則'},
+          {id:'ps09',sev:'B',text:'備用迴路標示（SPARE）數量及容量，供未來擴充使用，與負載計算書餘裕值一致',basis:'圖說管理規範'},
+          {id:'ps10',sev:'B',text:'功率因數改善設備（電容器）標示位置、容量（kVAR），避免過補償（>0.95）',basis:'台電供電契約；電業法'},
+          {id:'ps11',sev:'B',text:'諧波源設備（VFD/UPS/整流器）標示，並確認諧波抑制措施（濾波器/隔離變壓器）',basis:'IEC 61000-3-2；台電法規'},
+          {id:'ps12',sev:'B',text:'圖面圖例完整，各符號代表之設備一致性，圖號版次與各相關圖說同步更新',basis:'圖說管理規範'},
+        ]
+      },
+      {
+        id:'pw-solar', name:'④ 太陽能系統', icon:'☀️',
+        items:[
+          {id:'pso01',sev:'A',text:'太陽能板容量（kWp）與逆變器（Inverter）額定容量對應，DC/AC轉換率計算書標示',basis:'IEC 61215；CNS 15114'},
+          {id:'pso02',sev:'A',text:'DC側電壓（Voc×串列數）不超過逆變器最大輸入電壓，防反接二極體設計確認',basis:'IEC 62109；CNS'},
+          {id:'pso03',sev:'A',text:'孤島效應保護（Anti-islanding）設計確認，市電停電時DC側安全斷開機制',basis:'CNS 15932；台電併聯規定'},
+          {id:'pso04',sev:'A',text:'DC側接地（負接地/正接地/浮接）方式標示，AC側接地符合屋內線路裝置規則',basis:'IEC 60364-7-712；CNS'},
+          {id:'pso05',sev:'A',text:'DC側電纜選用太陽能專用電纜（UV抗候/耐高溫），過電流保護（DC熔絲/DC斷路器）設置',basis:'IEC 62930；NEC 690'},
+          {id:'pso06',sev:'A',text:'台電併聯申請相關：計量電表（發電量/售電量）位置、保護電驛（過/低電壓、頻率）設定',basis:'台電再生能源設置規定'},
+          {id:'pso07',sev:'B',text:'太陽能板支架結構耐風速計算（台灣≥60m/s），支架接地及防雷設計',basis:'建築技術規則；CNS 15114'},
+          {id:'pso08',sev:'B',text:'監控系統（MPPT追蹤效率、發電量記錄）設計，遠端監控通訊介面標示',basis:'IEC 61724；業主需求'},
+          {id:'pso09',sev:'C',text:'陰影分析（周邊遮蔽物影響）確認，串並聯設計最佳化，建議各串列設Optimizer',basis:'ASHRAE；設計最佳化'},
+        ]
+      },
+      {
+        id:'pw-detail', name:'⑤ 大樣圖詳細圖', icon:'🔍',
+        items:[
+          {id:'pd01',sev:'A',text:'電管/電纜穿越防火牆、防火樓板之防火填塞大樣圖：材料品牌、施工工法、防火時效標示',basis:'建築技術規則設備篇；消防法；00702 §07840'},
+          {id:'pd02',sev:'A',text:'接地系統大樣：接地棒埋設方式、熱熔接接頭工法（Cadweld）、接地銅排安裝、保護管規格',basis:'00702 §16061；用戶用電設備裝置規則'},
+          {id:'pd03',sev:'A',text:'屋外設備基座大樣：排水孔位置、密封防水工法、設備固定方式、接地連接',basis:'建築技術規則；設備規範'},
+          {id:'pd04',sev:'A',text:'防爆設備安裝大樣：導管密封接頭（Seal Fitting）位置（距防爆設備≤450mm）、充填方式',basis:'IEC 60079-14；CNS 3376'},
+          {id:'pd05',sev:'B',text:'Cable Tray/線梯支撐大樣：支撐間距（≤1.5m水平/≤3m垂直）、吊架規格、與結構接合方式',basis:'NEC 392；NEMA VE1'},
+          {id:'pd06',sev:'B',text:'BUSWAY管道間安裝大樣：Spring Hanger彈簧吊架規格、穿樓板框架補強、防水密封環',basis:'NEC 368；設備廠商規範'},
+          {id:'pd07',sev:'B',text:'配電盤/MCC基礎大樣：槽鋼基礎規格（100×50×5mm）、水平度要求、地腳螺栓',basis:'00702 §16401；CNS 13542'},
+          {id:'pd08',sev:'B',text:'電管彎管/轉彎半徑大樣：最小彎曲半徑（≥6倍管外徑），管口護口設置',basis:'用戶用電設備裝置規則；NEC 358'},
+          {id:'pd09',sev:'C',text:'標示牌大樣：尺寸、字體、顏色規定（一般白底黑字、緊急白底紅字），固定方式',basis:'00702 §16010'},
+        ]
+      },
+      {
+        id:'pw-facade', name:'⑥ 外牆燈系統', icon:'🏙️',
+        items:[
+          {id:'pf01',sev:'A',text:'所有屋外燈具IP等級 ≥ IP65（防塵防噴水），濱海或腐蝕環境需IP66以上或不鏽鋼材質',basis:'IEC 60529；CNS'},
+          {id:'pf02',sev:'A',text:'屋外電纜型式選用屋外型（UV抗候PVC/PE護套），不得使用一般屋內型CV電線',basis:'用戶用電設備裝置規則屋外配線規定'},
+          {id:'pf03',sev:'A',text:'屋外配管管材為熱浸鍍鋅鋼管（HDG）或RGS，管口設防水彎頭（Weatherproof Fitting）',basis:'用戶用電設備裝置規則；CNS'},
+          {id:'pf04',sev:'A',text:'所有接線箱、拉線箱為防水型（IP54以上），電管接頭使用防水型密封接頭',basis:'IEC 60529；CNS'},
+          {id:'pf05',sev:'A',text:'外牆燈接地保護：每組燈具獨立PE接地線，接地線截面積符合規定，截面積標示',basis:'IEC 60364-5-54；用戶用電設備裝置規則'},
+          {id:'pf06',sev:'A',text:'LED驅動器（Driver）安裝於室內或有防水盒保護，驅動器電壓等級與燈具額定一致',basis:'IEC 61347；CNS'},
+          {id:'pf07',sev:'B',text:'控制系統：定時控制/感應控制/智慧調光控制方式標示，控制器位置及訊號線路規格',basis:'建築物節約能源設計技術規範；業主需求'},
+          {id:'pf08',sev:'B',text:'光害防制：燈具出光角度、遮光板設計，符合環保署光害管制要求（夜間關燈時間）',basis:'（中央尚無光害專法）依設置地地方政府光污染／光害管制自治條例或要點；環境部《光污染管理指引》'},
+          {id:'pf09',sev:'B',text:'廣告燈箱/招牌燈：負載容量計算書，迴路設獨立斷路器，廣告燈申請許可確認',basis:'建築法；廣告物管理辦法'},
+          {id:'pf10',sev:'C',text:'免工具維護設計：燈具更換高度評估，危險高度（>3m）燈具建議設安全繩扣',basis:'職業安全衛生規定'},
+        ]
+      },
+      {
+        id:'pw-genset', name:'⑦ 緊急發電機系統', icon:'🔋',
+        items:[
+          {id:'pg01',sev:'A',text:'⚠️ 燃料儲量 ≥8小時（消防法強制），業主規範00702 §16231日用箱僅2小時，以消防法為準',basis:'消防法；各類場所消防安全設備設置標準（修正日期 113.04.24）'},
+          {id:'pg02',sev:'A',text:'發電機容量計算書：含馬達啟動衝擊電流（最大單台啟動電流疊加），計算書與SLD容量一致',basis:'00702 §16231；IEC 60034'},
+          {id:'pg03',sev:'A',text:'ATS自動切換開關：切換時間 ≤10秒（消防法），半導體廠確認是否需 ≤8秒，型式（機械/固態）',basis:'消防法；各類場所消防安全設備設置標準（修正日期 113.04.24）'},
+          {id:'pg04',sev:'A',text:'發電機接地：第二種接地（系統接地），接地電阻依 V/Ig 計算，接地銅排位置標示',basis:'用戶用電設備裝置規則第27條'},
+          {id:'pg05',sev:'A',text:'緊急發電機機房：通風量計算（散熱+燃燒空氣），進排氣口位置，防火牆區劃',basis:'建築技術規則；消防法'},
+          {id:'pg06',sev:'A',text:'排氣管路：消音器型式（住宅區型，消音率≥20dBA），排氣管保溫（防燙），出口位置',basis:'00702 §16231；噪音管制法'},
+          {id:'pg07',sev:'A',text:'燃料儲存槽：防漏設計（圍堰容積≥110%油箱容量），溢油感測器，加油口防雨加鎖',basis:'水污染防治法；消防法'},
+          {id:'pg08',sev:'B',text:'發電機廠內試驗記錄要求：25%/50%/75%/100%各連續2小時，頻率穩定度≤0.25%，電壓穩定度≤2%',basis:'00702 §16231'},
+          {id:'pg09',sev:'B',text:'機房噪音量測點（機房外1m）≤80dB(A)（00702規定），隔音設計說明',basis:'00702 §16231；噪音管制法'},
+          {id:'pg10',sev:'B',text:'冷卻系統：風冷式確認進排氣通道不短路，水冷式散熱器位置，停機冷卻延遲運轉功能',basis:'00702 §16231；設備廠商規範'},
+          {id:'pg11',sev:'B',text:'發電機品牌：引擎限定CUMMINS/CAT/MTU，發電機頭限定MARATHON/STAMFORD/CAT（00702）',basis:'00702 §16231'},
+          {id:'pg12',sev:'C',text:'自動週期性試運轉：建議設定每月自動試車30分鐘，試車紀錄系統，遠端監控介面',basis:'維護管理規範；業主需求'},
+        ]
+      },
+      {
+        id:'pw-grnd', name:'⑧ 避雷接地系統', icon:'🌍',
+        items:[
+          {id:'g01',sev:'A',text:'接地電阻值：00702業主規範要求 ≤10Ω（法規第三種 ≤100Ω，業主規範更嚴，以10Ω為準）',basis:'用戶用電設備裝置規則第26-31條；00702 §16061'},
+          {id:'g02',sev:'A',text:'接地棒規格：銅包鋼棒，直徑19mm，長3m（00702 §16061），不得以鍍鋅鋼棒替代',basis:'00702 §16061；CNS'},
+          {id:'g03',sev:'A',text:'地下接地棒連接工法：熱熔接（Cadweld/Thermic Welding），不得使用一般焊接或壓接',basis:'00702 §16061'},
+          {id:'g04',sev:'A',text:'ESD靜電接地電阻 ≤1Ω（ANSI/ESD S6.1），ESD接地與電力接地系統完全獨立分開',basis:'ANSI/ESD S6.1；SEMI S2'},
+          {id:'g05',sev:'A',text:'避雷針規格：銅棒直徑 ≥12mm（建築技術規則），支架耐風速 ≥60m/sec（00702 §16061）',basis:'建築技術規則第22條；00702 §16061'},
+          {id:'g06',sev:'A',text:'特別第三種接地（150V以上低壓設備機殼）≤10Ω，與系統接地分開標示',basis:'用戶用電設備裝置規則第29條'},
+          {id:'g07',sev:'B',text:'接地棒埋設：地面下至少3m或地下水位以下，多棒並設間距 ≥2m，連接線 ≥30mm²',basis:'00702 §16061'},
+          {id:'g08',sev:'B',text:'地面接地導線保護管：地面上2.5m/地下0.6m段以PVC管保護，接地排絕緣顏色PVC綠色',basis:'00702 §16061；CNS 5202'},
+          {id:'g09',sev:'B',text:'接地系統圖與SLD、動力圖說核對一致：接地點位置、接地線截面積、接地型式（TN-S/TT/IT）',basis:'IEC 60364-5-54'},
+          {id:'g10',sev:'B',text:'測試時機標注：乾燥天氣下進行，雨後至少1週後測試（避免濕土影響接地電阻讀值）',basis:'00702 §16061'},
+        ]
+      },
+    ]
+  },
+  {
+    id:'elv', num:2, icon:'📡', name:'弱電系統', color:'#8b5cf6', bg:'#f5f3ff',
+    expandable: true,
+    subs:[
+      {
+        id:'elv-tel', name:'① 電信設備工程', icon:'📞',
+        items:[
+          {id:'et01',sev:'A',text:'電信配管（EMT/PVC/HDPE）管徑、埋設深度及彎曲半徑符合中華電信用戶設備室內配線技術標準，管口設護口及防水端頭',basis:'電信管理法；建築物電信設備及空間設置使用管理規則；建築技術規則建築設備編'},
+          {id:'et02',sev:'A',text:'MDF/IDF主配線架及中間配線架容量（對數/端子數）計算書，安裝位置、接地匯流排、跨接線（Jumper）路由標示完整',basis:'建築物電信設備及空間設置使用管理規則；TIA-568-C'},
+          {id:'et03',sev:'A',text:'電信外線引入方式（地下引入/架空）、進線管防水防蟲措施、接地匯流排位置及引入點防火填塞工法標示',basis:'電信管理法；建築技術規則建築設備編'},
+          {id:'et04',sev:'B',text:'電信機房（MDF室）電源容量（UPS/一般電源分路）、照明≥300lux、溫濕度控制（18~27°C/RH<60%）及通風散熱規格標示',basis:'建築物電信設備及空間設置使用管理規則；建築技術規則'},
+          {id:'et05',sev:'B',text:'電信盤體（IDF）安裝淨空：前方≥1.2m，盤體固定方式及開口防護，標示牌（盤號/用途/所屬樓層）完整清晰',basis:'建築物電信設備及空間設置使用管理規則；TIA-569'},
+        ]
+      },
+      {
+        id:'elv-fib', name:'② 光纖設備工程', icon:'🔆',
+        items:[
+          {id:'ef01',sev:'A',text:'光纖型式（SM/MM）及規格（OS2 G.652D/OM3 OM4）依傳輸距離與頻寬需求選用，圖說標示纖芯數、型式及適用標準',basis:'ITU-T G.652；TIA-568-C；ISO/IEC 11801'},
+          {id:'ef02',sev:'A',text:'光纖配線架（ODF）容量（纖芯數）及安裝位置，熔接損耗預算（Link Budget）計算書：系統總損耗≤允許損耗值',basis:'TIA-568-C；ISO/IEC 11801；ITU-T G.671'},
+          {id:'ef03',sev:'A',text:'光纖路由：彎曲半徑≥30mm（SM）/≥20mm（MM），轉角設保護套管，不與高壓強電共管路，標示纜線路由圖',basis:'TIA-568-C；建築技術規則建築設備編'},
+          {id:'ef04',sev:'B',text:'光纖端接方式（機械熔接/融著熔接），連接器型式（SC/LC/FC）及插入損耗≤0.3dB/點，OTDR測試要求及合格標準說明',basis:'TIA-568-C；IEC 61300-3-4'},
+          {id:'ef05',sev:'B',text:'屋外光纜選用鎧裝型（含防潮層，ADSS/管道型），直埋深度≥600mm，路徑轉角及接頭盒位置設標示樁，接頭盒防護IP65以上',basis:'CNS 13474；TIA-590-B'},
+        ]
+      },
+      {
+        id:'elv-tv', name:'③ 電視共同天線設備工程', icon:'📺',
+        items:[
+          {id:'etv01',sev:'A',text:'分配網路訊號位準計算書：各分接頭輸出符合NCC規定（類比電視57~83dBμV；數位電視47~77dBμV），最遠端位準確認',basis:'廣播電視法；有線廣播電視法；有線廣播電視系統工程技術管理辦法'},
+          {id:'etv02',sev:'A',text:'頭端設備（訊號源/擴大機/調變器）位置、供電方式（UPS備電≥2小時）、增益計算書，設備品牌規格標示',basis:'廣播電視法；有線廣播電視系統工程技術管理辦法'},
+          {id:'etv03',sev:'A',text:'分歧器/分配器串接損耗計算，同軸電纜型式（RG-6/RG-11）及衰減量標示，阻抗匹配（75Ω）全程確認',basis:'有線廣播電視系統工程技術管理辦法；CNS 3556'},
+          {id:'etv04',sev:'B',text:'電視插座安裝位置及高度（距地300mm或1200mm），面板規格（F型接頭/隔離式），各房間設置數量符合設計需求',basis:'建築技術規則建築設備編；建築物電信設備及空間設置使用管理規則'},
+          {id:'etv05',sev:'B',text:'接地及防雷保護：頭端設備外殼接地，同軸電纜入戶處設突波保護器（Surge Protector），雷擊保護接地連結建築物接地網',basis:'建築技術規則；CNS 3556；建築物電信設備及空間設置使用管理規則'},
+        ]
+      },
+      {
+        id:'elv-tray', name:'④ 鋁製電纜線架工程', icon:'🔩',
+        items:[
+          {id:'etr01',sev:'A',text:'鋁製Cable Tray型式（梯形/槽型/網格型）、寬度及載重依所載電纜重量計算，電纜填充率≤50%（截面積比），型錄規格書附圖說',basis:'NEMA VE1；NEC 392；CNS 2089'},
+          {id:'etr02',sev:'A',text:'支撐間距符合廠商規範（梯形Tray水平≤1.5m，垂直≤3m），支撐固定方式（膨脹螺栓/焊接吊架）及荷重計算書，與結構體接合標示',basis:'NEMA VE1；NEC 392；建築技術規則'},
+          {id:'etr03',sev:'A',text:'鋁製Tray等電位連接：連接線（Bonding Jumper）截面積≥6mm²，Tray段與段間跨接，最終連至建築物接地匯流排，接觸電阻≤0.1Ω',basis:'NEC 392-60；IEC 60364-5-54'},
+          {id:'etr04',sev:'B',text:'防火區劃貫穿：鋁Tray穿越防火牆/防火樓板處設防火填塞（防火泥/防火板），防火性能標示（F60/F120），填塞工法圖示',basis:'建築技術規則建築設備編；消防法；CNS 12514'},
+          {id:'etr05',sev:'B',text:'強弱電Tray分離：平行敷設間距≥150mm，交叉時採垂直交叉方式（弱電在上），交叉角度≥30°，必要時設鋼板分隔，標示於圖面',basis:'EMC工程規範；TIA-569-D；NEMA VE1'},
+        ]
+      },
+      {
+        id:'elv-cctv', name:'⑤ 監視系統設備工程', icon:'📷',
+        items:[
+          {id:'ec01',sev:'A',text:'攝影機規格（解析度≥2MP/4MP/8MP）、視角（水平/垂直°）及安裝高度（室內2.5~3.5m，屋外依現場）確認，圖說標示覆蓋範圍無死角',basis:'CNS 14751；內政部建築研究所安全標準；建築技術規則'},
+          {id:'ec02',sev:'A',text:'NVR/DVR儲存容量計算書：攝影機數量×解析度×壓縮率（H.265/H.265+）×24hr×保存天數（≥30天），RAID等級及備援標示',basis:'建築物公共安全檢查申報辦法；CNS 14751'},
+          {id:'ec03',sev:'A',text:'IP攝影機供電方式（PoE IEEE 802.3af/at/bt）或獨立DC電源，PoE交換器總功率預算（含裕度20%），UPS備電時間≥4小時，標示圖說',basis:'IEEE 802.3af/at；CNS 14751'},
+          {id:'ec04',sev:'B',text:'屋外攝影機防護等級≥IP66（直接受雨）/IP67（浸水），依氣候加裝加熱/除霧器，防雷突波保護器設於電源及訊號線入口處',basis:'IEC 60529；CNS 14751；建築物防雷設施設置規範'},
+          {id:'ec05',sev:'B',text:'監視中心（NVR主機/顯示牆/操作工作站）電源（UPS備電≥4小時），網路架構（獨立VLAN隔離），遠端監控VPN加密，操作權限分級管理',basis:'CNS 14751；資通安全管理法'},
+        ]
+      },
+      {
+        id:'elv-park', name:'⑥ 停管設備工程', icon:'🅿️',
+        items:[
+          {id:'epm01',sev:'A',text:'車輛偵測器型式（地感線圈/超音波/LPR車牌辨識攝影機）安裝位置與停車場平面圖一致，偵測靈敏度設定及維護通道標示',basis:'停車場法；道路交通管理處罰條例；建築技術規則'},
+          {id:'epm02',sev:'A',text:'出入口柵欄機（Boom Gate）控制邏輯（自動/手動/遠端）、備用電源（UPS≥4小時）、斷電自動開啟（Fail Open）安全機制說明',basis:'停車場法；建築技術規則第142條；消防法'},
+          {id:'epm03',sev:'A',text:'停車導引顯示板（剩餘車位/方向指引）安裝高度（底部淨高≥2.2m），通訊介面（RS485/TCP-IP），顯示字體及視距確認',basis:'停車場法；道路交通標誌標線號誌設置規則'},
+          {id:'epm04',sev:'B',text:'繳費機/票卡機電源（AC110V/220V）、通訊線路（乙太網路/4G LTE）及防護等級（≥IP54），安裝位置符合無障礙設計規範（操作高度900-1200mm）',basis:'停車場法；建築技術規則第167條（無障礙設施）'},
+          {id:'epm05',sev:'B',text:'停車場管理系統功能確認：即時車位數顯示、統計報表輸出、車牌辨識準確率≥95%、第三方支付（信用卡/行動支付）介面整合',basis:'停車場法；電子支付機構管理條例'},
+        ]
+      },
+      {
+        id:'elv-access', name:'⑦ 門禁管制系統工程', icon:'🔐',
+        items:[
+          {id:'eak01',sev:'A',text:'門禁管制器供電方式（PoE/DC12V/DC24V）及備用電源（UPS≥4小時），斷電預設狀態（Fail Safe常開/Fail Secure常閉）依消防安全需求確認，逃生門必須Fail Safe',basis:'消防法；建築技術規則建築設備編；各類場所消防安全設備設置標準'},
+          {id:'eak02',sev:'A',text:'電磁鎖/電鎖扣規格（保持磁力≥272kgf）安裝方式，逃生路線出口側不限制通行（設緊急開關/推桿），消防聯動火警自動解鎖，標示聯動訊號',basis:'消防法；建築技術規則第76條；各類場所消防安全設備設置標準'},
+          {id:'eak03',sev:'A',text:'讀卡機安裝高度（中心距地900-1100mm），型式（RFID 13.56MHz/生物識別指紋/人臉），通訊介面（Wiegand 26/34 bit或OSDP），防護等級（室外≥IP65）',basis:'建築技術規則第167條（無障礙）；CNS 15449（RFID）'},
+          {id:'eak04',sev:'A',text:'門禁系統與消防系統聯動：火警確認後自動解鎖所有逃生路線及防火區劃門禁，聯動方式（乾接點/網路訊號）及測試記錄要求',basis:'消防法；各類場所消防安全設備設置標準；建築技術規則'},
+          {id:'eak05',sev:'B',text:'人員進出記錄完整儲存≥90天，資料加密傳輸（TLS 1.2以上），上傳中控/雲端備份，影像門禁須符合個人資料保護法告知義務，影像保存期限標示',basis:'個人資料保護法；資通安全管理法'},
+        ]
+      },
+      {
+        id:'elv-bms', name:'⑧ 中央監控系統設備工程', icon:'🖥️',
+        items:[
+          {id:'ebm01',sev:'A',text:'BMS整合設備清單確認：各子系統（空調/電力/消防/門禁/CCTV/給排水）通訊協定（BACnet IP/Modbus TCP/OPC-UA/SNMP）及整合點數清單，與施工圖核對',basis:'ISO 16484-5（BACnet）；IEC 61968；建築技術規則建築設備編'},
+          {id:'ebm02',sev:'A',text:'DDC/PLC控制器I/O點數（DI/DO/AI/AO）計算書，各迴路IO清單與平面圖核對，預留20%擴充容量，控制器冗餘（N+1）設計說明',basis:'ASHRAE Guideline 13；ISO 16484-3；建築技術規則'},
+          {id:'ebm03',sev:'A',text:'中控室設備電源（UPS備電≥8小時），Server冗餘配置（N+1主機），資料庫自動備份（每日備份/異地備援），不斷電自動切換時間≤30秒',basis:'ASHRAE Guideline 13；建築技術規則建築設備編'},
+          {id:'ebm04',sev:'B',text:'HMI監控畫面功能確認：系統架構圖、即時狀態監視、警報管理（分級/SMS/Email通知）、趨勢記錄（≥1年）、能源計量（kWh/水m³）、定期報表產出',basis:'ASHRAE Guideline 13；ISO 50001能源管理系統；建築技術規則'},
+          {id:'ebm05',sev:'B',text:'資訊安全設計：BMS控制網路與辦公IT網路實體隔離（DMZ/防火牆），遠端維護採VPN加密（IPSec/SSL）及多因素認證，定期弱點掃描及修補計畫',basis:'資通安全管理法；IEC 62443工業控制系統資安；CNS 27001'},
+        ]
+      },
+    ]
+  },
+  {
+    id:'water', num:3, icon:'💧', name:'給水系統', color:'#06b6d4', bg:'#ecfeff',
+    expandable: true,
+    subs:[
+      {
+        id:'wt-fixture', name:'① 衛生器具', icon:'🚿',
+        items:[
+          {id:'wf01',sev:'A',text:'衛生設備數量依建築技術規則建築設備編第37條規定，依建築物用途（住宅/辦公廳/學校/工廠/戲院/車站/其他公眾場所）查表核對，大便器、小便器、洗面盆及浴缸/淋浴設備均不得少於最低數量標準，缺項即退件',basis:'建築技術規則建築設備編 第37條'},
+          {id:'wf02',sev:'A',text:'省水設備規格標示：大便器沖水量≤6L/次（雙段式3/6L），水龍頭出水量≤8L/min，小便器用水量≤2L/次，圖說標示省水標章等級，符合用水設備裝置及管理辦法節水要求',basis:'自來水法；建築技術規則建築設備編'},
+          {id:'wf03',sev:'A',text:'無障礙廁所衛生器具：馬桶坐面距地38~43cm，側邊淨空間≥80cm，L型不鏽鋼安全扶手（直徑3.2cm，水平+垂直各一），緊急求助鈴設置，符合無障礙設施設計規範',basis:'建築技術規則建築設計施工編 第170條；建築物無障礙設施設計規範'},
+          {id:'wf04',sev:'B',text:'衛生器具存水彎水封深度≥50mm（防臭氣/防蟲），各器具進水管設球閥止水栓（維修可獨立切斷），安裝完成後通水功能測試確認排水順暢無滲漏、溢水孔暢通',basis:'建築技術規則建築設備編 第29條'},
+          {id:'wf05',sev:'B',text:'器具安裝完成面與牆面齊平，矽利康填縫防水完整（背壓板高度≥150mm、無斷縫），洗面盆台面接縫、浴缸四周填縫確認，圖說標示器具型號/品牌及安裝高度',basis:'建築技術規則建築設計施工編；飲用水管理條例'},
+        ]
+      },
+      {
+        id:'wt-supply', name:'② 給水設備工程', icon:'🔧',
+        items:[
+          {id:'ws01',sev:'A',text:'末端最低服務水壓≥1kgf/cm²（98kPa），靜水壓≤5kgf/cm²（490kPa），超過需設PRV減壓閥，水壓計算書標示各樓層末端水壓值，PRV安裝位置及設定壓力值標示',basis:'建築技術規則建築設備編'},
+          {id:'ws02',sev:'A',text:'加壓泵浦（衛壓幫浦/變頻定壓機組）選型計算書：最大同時使用量（依器具給水單位DFU計算）、揚程（靜水頭+管路損失+預留壓力）、泵浦效率，備用泵浦（1用1備）配置說明',basis:'建築技術規則建築設備編；自來水法'},
+          {id:'ws03',sev:'A',text:'飲用水管線材質（SUS304不鏽鋼管/銅管/CPVC）標示，全程以藍色識別，不與非飲用水（沖廁/冷卻/雨水）共管，各分岐點設逆止閥防回流污染，管線路由圖完整',basis:'飲用水管理條例；建築技術規則建築設備編'},
+          {id:'ws04',sev:'B',text:'給水主幹管在適當位置設截斷閥（分區供水各區、每戶水錶前），高樓分區供水設計（各區靜水壓差≤3kgf/cm²），水錶位置、讀表空間（前方≥0.6m）及編號標示',basis:'建築技術規則建築設備編；自來水法'},
+          {id:'ws05',sev:'B',text:'管路試壓：工作壓力×1.5倍靜壓，保壓≥1hr無可見滲漏；試壓後沖洗（流速≥1.5m/s直至排水清澈）；消毒（有效氯50ppm，封管靜置24hr），消毒後採水送驗合格方可通水使用',basis:'飲用水管理條例；自來水法'},
+        ]
+      },
+      {
+        id:'wt-tank', name:'③ 組合式水箱系統', icon:'🗄️',
+        items:[
+          {id:'wtk01',sev:'A',text:'屋頂水箱容量≥1日用水量，地下蓄水池容量為日用水量4/10~6/10（兩者合計應≥1日），容量計算書依用途別用水原單位計算，圖說標示容量值（m³）及各槽用途',basis:'建築技術規則建築設備編'},
+          {id:'wtk02',sev:'A',text:'組合式不鏽鋼水箱（SUS444/SUS316L）材質規格，板厚依容量選用，附屬配件齊全：通氣管（設防蟲細目紗網）、溢水管、排水管（管底排水）、可加鎖人孔（≥45cm×45cm）、液位計，缺一即退件',basis:'建築技術規則建築設備編；飲用水管理條例；CNS 13571'},
+          {id:'wtk03',sev:'A',text:'飲用水槽與消防用水槽分槽設計，消防用水量計算書（依各類場所消防安全設備設置標準），消防水箱低水位聯動補水及警報設備，消防聯動設備整合試驗記錄',basis:'建築技術規則建築設備編；各類場所消防安全設備設置標準'},
+          {id:'wtk04',sev:'B',text:'水箱安裝位置結構樓版承載計算書（滿水重量送結構技師複核），水箱底部淨空≥60cm（維修空間），四周淨空≥45cm，防震固定措施（隔震墊/基座螺栓），設溢水接管至排水系統',basis:'建築技術規則建築設備編；建築技術規則建築構造編'},
+          {id:'wtk05',sev:'B',text:'飲用水水箱清洗頻率≥每年1次，清洗後水質送驗合格（大腸桿菌群未檢出、濁度≤2NTU、餘氯0.2~1.0mg/L），清洗及水質檢驗報告保存≥2年，水箱外部標示清洗日期牌',basis:'飲用水管理條例；自來水法'},
+        ]
+      },
+      {
+        id:'wt-rain', name:'④ 雨水回收設備工程', icon:'🌧️',
+        items:[
+          {id:'wr01',sev:'A',text:'集水面積計算書（有效集水面積=屋頂面積×集水效率0.85~0.95），集水管路以淺綠色標示（每5m標記「雨水回收利用，不可飲用」），獨立配置不與廢水管混用，初期棄流裝置（前5mm降雨排棄）設置及標示',basis:'建築技術規則建築設計施工編 第318條；水利法'},
+          {id:'wr02',sev:'A',text:'雨水貯留槽容量計算書（集水面積×月均降雨量×集水效率，考量連續無雨天數），貯水槽加蓋防塵防蟲（細目紗網），溢水管、排水管、通氣管（防蟲網）齊全，防止人畜掉入安全設計',basis:'建築技術規則建築設計施工編 第318條；建築技術規則建築設備編'},
+          {id:'wr03',sev:'A',text:'雨水回收利用管路全程以淺綠色標示、每5m標記「非飲用水」，所有出水栓設「非飲用水」標示牌，嚴禁與飲用水管路交叉連接（防Cross-connection），兩管系統物理隔離',basis:'建築技術規則建築設計施工編 第318條'},
+          {id:'wr04',sev:'B',text:'雨水水質處理設備依用途選配：沖廁用≥初步過濾（100mesh），澆灌用≥砂濾，接觸用途≥UV殺菌（253.7nm，劑量≥25mJ/cm²），水質監測（濁度/餘氯）儀器設置，定期水質送驗計畫',basis:'水利法；建築技術規則建築設計施工編 第318條'},
+          {id:'wr05',sev:'B',text:'雨水貯留槽低水位自動切換自來水補給，液位控制浮球閥/電磁閥設置，年節水量估算計算書，配合綠建築標章「基地保水」及「節水」指標申請所需文件準備',basis:'建築技術規則建築設計施工編 第318條；自來水法；水利法'},
+        ]
+      },
+      {
+        id:'wt-grease', name:'⑤ 油脂截留設備工程', icon:'🍳',
+        items:[
+          {id:'wg01',sev:'A',text:'餐廳/廚房/食品烹飪場所排水管路強制裝設油脂截留器（建築設備編第29條），截留器容量依廚房排水量計算（保留時間≥10min），型式（重力型/機械型）、安裝位置及圖說標示',basis:'建築技術規則建築設備編 第29條；水污染防治法'},
+          {id:'wg02',sev:'A',text:'油脂截留器材質（SUS304不鏽鋼/FRP），有效容積依尖峰排水流量計算，附可拆式清洗蓋板及提籃過濾網，底部設排泥閥或排泥管，安裝位置維護可達，圖說標示型號及容量（L）',basis:'建築技術規則建築設備編 第29條；CNS標準'},
+          {id:'wg03',sev:'A',text:'停車場/洗車場/加油站設油水分離器，有效容量計算（車位數×清洗水量），出流水含油量符合放流水標準（≤10mg/L），連接至污水下水道，嚴禁接入雨水管，圖說標示流向及出流水質標準',basis:'建築技術規則建築設備編 第29條；放流水標準；水污染防治法'},
+          {id:'wg04',sev:'B',text:'截留器安裝於易清理位置，加設防臭密封蓋，下游排水管坡度≥1/50，清理頻率標示（一般建議每週1次），清理孔（最小400mm×400mm）位置確認，維護通道淨空標示',basis:'建築技術規則建築設備編 第29條；下水道法'},
+          {id:'wg05',sev:'B',text:'截留廢油脂清除方式：委託合法廢棄物清除機構或自行清除符合規定，廢棄物清除聯單（三聯單）保存，禁止將截留油脂倒入下水道，廢棄物分類貯存方式標示說明',basis:'廢棄物清理法；水污染防治法；下水道法'},
+        ]
+      },
+      {
+        id:'wt-gcold', name:'⑥ 垃圾冷藏設備工程', icon:'🧊',
+        items:[
+          {id:'wc01',sev:'A',text:'垃圾冷藏室（GC Room）設置位置、面積計算書（依建築物廢棄物日產生量估算），室溫設定≤10°C（廚餘處理≤4°C），壓縮機組容量計算書（尖峰進料量計算），圖說標示設備型號及配置',basis:'廢棄物清理法；建築技術規則建築設計施工編'},
+          {id:'wc02',sev:'A',text:'冷凍設備系統（壓縮機/蒸發器/冷凝器/膨脹閥）規格確認，系統COP≥3.0，停電4hr內溫度維持功能確認（設備熱質量計算或緊急電源），溫度超限警報（≥12°C）設置',basis:'廢棄物清理法；食品安全衛生管理法；建築技術規則建築設備編'},
+          {id:'wc03',sev:'A',text:'冷藏室門扇（保溫冷凍門，隔熱厚度≥100mm），防蟲設備（門底橡膠封條/空氣幕），地坪防水（環氧樹脂/FRP塗佈），坡度≥1/100朝排水口，牆面防水層高度≥1.8m，頂板防結露絕熱處理',basis:'建築技術規則建築設計施工編；廢棄物清理法；食品安全衛生管理法'},
+          {id:'wc04',sev:'B',text:'冷藏室排水（冷凝水及清洗廢水）接至污水系統（禁止排入雨水管），排水管設存水彎截留器（防臭氣回流），地板排水口設置（每5m²≥1個），止水門檻高度≥10cm，排水坡向確認',basis:'建築技術規則建築設備編 第29條；廢棄物清理法；水污染防治法'},
+          {id:'wc05',sev:'B',text:'冷藏室通風換氣：室內保持微負壓（防臭氣外逸），換氣次數≥10次/hr，排氣設活性碳除臭或UV光觸媒設備，排氣出口位置遠離建築物進氣口及開窗≥3m，符合空氣污染防制法臭味排放標準',basis:'廢棄物清理法；空氣污染防制法；建築技術規則建築設備編'},
+        ]
+      },
+    ]
+  },
+  {
+    id:'drain', num:4, icon:'🔄', name:'排水系統', color:'#64748b', bg:'#f8fafc',
+    expandable: true,
+    subs:[
+      {
+        id:'dr-drain', name:'① 排水設備工程', icon:'🪣',
+        items:[
+          {id:'dd01',sev:'A',text:'排水橫管坡度符合規定：DN75mm管≥1/50、DN100mm管≥1/100、DN100mm以上≥1/200，圖說需逐段標示坡度值及管徑，坡度計算書附圖說，坡度不足或逆坡即退件',basis:'建築技術規則建築設備編 第26條；下水道法'},
+          {id:'dd02',sev:'A',text:'污水管（含糞便）、生活廢水管（洗滌/浴廁）與雨水管三管分流配管，污水於進化糞池前完全分流，雨污水分流路由圖完整標示，接管申請前須通過下水道機構檢驗合格',basis:'建築技術規則建築設備編 第29條；下水道法 第22條；水污染防治法'},
+          {id:'dd03',sev:'A',text:'各衛生器具設獨立存水彎（P型/S型/U型），水封深度≥50mm（防臭氣/防蟲），通氣管頂端高出屋頂≥600mm，遠離進氣口及開窗（≥600mm），頂端加裝細目防蟲紗網，圖說完整標示',basis:'建築技術規則建築設備編 第29條'},
+          {id:'dd04',sev:'A',text:'排水立管清潔口設置（每隔3層以內、立管彎曲處及管徑變換處），排水橫管清潔口每15m一個及轉彎90°處，清潔口位置維護可達，圖說標示清潔口型號、位置及蓋板規格',basis:'建築技術規則建築設備編'},
+          {id:'dd05',sev:'B',text:'排水管管徑依排水單位數（DFU）計算，計算書與圖說管徑一致；特殊廢水（酸鹼/有機溶劑/高溫）管材確認耐腐蝕性（PP/PVDF/SUS316L），與一般排水完全分流，管路標示廢水種類',basis:'建築技術規則建築設備編 第29條；水污染防治法；職業安全衛生設施規則'},
+        ]
+      },
+      {
+        id:'dr-cond', name:'② 空調冷凝排水系統', icon:'💦',
+        items:[
+          {id:'dc01',sev:'A',text:'各樓層FCU/AHU冷凝水出水管（≥DN25）設保溫，集中至冷凝水立管（≥DN50），管路坡度全程≥1/100（嚴禁逆坡），末端以間接排水方式（Air Gap≥25mm）排入地漏或排水溝，不得直接接入廢水橫管',basis:'建築技術規則建築設備編；室內空氣品質管理法'},
+          {id:'dc02',sev:'A',text:'冷凝水盤（Drain Pan）材質（SUS304不鏽鋼/ABS防鏽處理），容量≥1hr預期冷凝水量，設液位開關（積水警報並聯鎖壓縮機停機），排水口設防蟲細目網，圖說標示冷凝水盤規格及液位計設置位置',basis:'建築技術規則建築設備編；室內空氣品質管理法'},
+          {id:'dc03',sev:'A',text:'冷凝水排水系統獨立配置，不與衛生廢水管共管，以間接排水方式防止污水逆流污染冷凝水盤及空調系統，間接排水出口位置、Air Gap尺寸於圖說中標示，雨污水分流確認',basis:'建築技術規則建築設備編；室內空氣品質管理法；水污染防治法'},
+          {id:'dc04',sev:'B',text:'冷凝水立管每層設清潔口（蝴蝶型清潔蓋），管材採PVC保溫管或SUS304不鏽鋼管，保溫層厚度≥20mm（防管壁結露），吊架間距≤1.0m，穿越防火區劃處設防火填塞，標示管路走向及保溫規格',basis:'建築技術規則建築設備編；建築技術規則建築設計施工編'},
+          {id:'dc05',sev:'B',text:'屋頂冷凍主機/室外機冷凝水排放，排水管引至指定排放口（不得直接排於屋頂面或外牆），排放量計算書，排放口設過濾網，不得接入雨水管，接管方式符合下水道使用規定，排放水質符合放流水標準',basis:'建築技術規則建築設備編；下水道法；水污染防治法；放流水標準'},
+        ]
+      },
+    ]
+  },
+  {
+    id:'fire', num:5, icon:'🔥', name:'消防系統', color:'#ef4444', bg:'#fef2f2',
+    expandable: true,
+    subs:[
+      {
+        id:'ff-hydrant', name:'① 消防栓及連結送水設備', icon:'🚒',
+        items:[
+          {id:'fh01',sev:'A',text:'室內消防栓箱位置核對各樓層保護半徑（A型≤25m、B型≤15m），箱體型式（A/B型）、水帶口徑及長度標示完整，消防立管管徑（≥65mm）及位置與平面圖一致',basis:'消防法；各類場所消防安全設備設置標準'},
+          {id:'fh02',sev:'A',text:'消防加壓幫浦流量≥130L/min（A型）、揚程計算書，末端主管管末水壓≥1.7kgf/cm²，雙電源供電（一般電源+緊急電源）及ATS自動切換時間標示，備用幫浦（1用1備）配置確認',basis:'消防法；各類場所消防安全設備設置標準'},
+          {id:'fh03',sev:'A',text:'連結送水管出水口（每3層或每45m設一處）、屋外雙口送水口位置（消防車可到達處，距地0.5~1.0m），立管管徑≥100mm，各樓層截斷閥與末端試水閥位置標示，系統圖說核對',basis:'消防法；各類場所消防安全設備設置標準'},
+        ]
+      },
+      {
+        id:'ff-intake', name:'② 採水系統設備', icon:'💧',
+        items:[
+          {id:'fw01',sev:'A',text:'採水口位置（屋頂水箱採水口、屋外採水口），距消防車停車位置≤2m，採水口管徑≥100mm，採水口規格（口徑/接口型式）、止回閥及截斷閥設置標示',basis:'消防法；各類場所消防安全設備設置標準'},
+          {id:'fw02',sev:'A',text:'採水系統配管路由（立管/橫管）、管徑符合規定，各樓層採水出水口高度（距地0.5~1.0m）及位置，閥件（止回閥/截斷閥/截流閥）型號及安裝位置標示，系統圖核對',basis:'消防法；各類場所消防安全設備設置標準'},
+          {id:'fw03',sev:'B',text:'採水系統與消防栓系統、自動灑水系統之水源共用或獨立說明，水箱容積計算書，系統試驗閥及排水管位置標示，採水系統水力計算書核對',basis:'消防法；各類場所消防安全設備設置標準'},
+        ]
+      },
+      {
+        id:'ff-alarm', name:'③ 火警設備', icon:'🔔',
+        items:[
+          {id:'fa01',sev:'A',text:'感知器型式依場所用途及天花板高度選用（差動式/補償式/定溫式/光電式/偵煙式），各型設置面積限制（差動式一般場所≤65m²/個），圖說標示感知器型號、位置及數量，未設感知器區域需說明',basis:'消防法；各類場所消防安全設備設置標準'},
+          {id:'fa02',sev:'A',text:'火警受信總機位置（防災中心/管理室），迴路數量及各迴路探測器清單（每迴路≤200個），受信總機容量（迴路數/輸出點數），消防連動設備（防煙/排煙/空調/門禁）清單及聯動程序圖',basis:'消防法；各類場所消防安全設備設置標準'},
+          {id:'fa03',sev:'A',text:'手動報警機位置（各樓層步行距離≤50m，安裝高度距地0.8~1.5m），火警警鈴位置（音壓≥90dB，步行距離≤50m），電源線路耐燃等級（FR/FRNC），系統圖說核對迴路編號與現場位置',basis:'消防法；各類場所消防安全設備設置標準'},
+        ]
+      },
+      {
+        id:'ff-pa', name:'④ 緊急廣播設備', icon:'📢',
+        items:[
+          {id:'fp01',sev:'A',text:'揚聲器位置（各樓層步行距離≤25m，安裝高度≥1.8m），各揚聲器音壓（距揚聲器1m處≥92dB，噪音環境加5dB），圖說標示揚聲器位置、數量及音壓值',basis:'消防法；各類場所消防安全設備設置標準'},
+          {id:'fp02',sev:'A',text:'緊急廣播擴大器（主機）位置（防災中心），輸出功率計算書（各分區揚聲器功率合計），備用電源（蓄電池，停電後可廣播≥10min），與火警系統自動聯動（火警後自動切換為緊急廣播）確認',basis:'消防法；各類場所消防安全設備設置標準'},
+          {id:'fp03',sev:'B',text:'廣播分區設計圖（每層或依防火區劃分區），各分區獨立控制，緊急廣播優先控制說明，廣播線路採2線式耐燃電纜，圖說核對廣播分區與火警偵測分區對應關係',basis:'消防法；各類場所消防安全設備設置標準'},
+        ]
+      },
+      {
+        id:'ff-sign', name:'⑤ 標示設備及避難器具設備', icon:'🚪',
+        items:[
+          {id:'fs01',sev:'A',text:'出口標示燈位置（通往戶外出入口及通往直通樓梯出入口），步行距離≤10m（A型/常亮型），備用電源（停電後≥60min），圖說標示位置及燈具型號，所有逃生路線出口均須設置',basis:'消防法；各類場所消防安全設備設置標準'},
+          {id:'fs02',sev:'A',text:'避難方向指示燈位置（走廊/通道，步行距離≤15m，距地1m以下或懸吊），指示方向與實際逃生路線一致，轉角處設置，各指示燈方向箭頭圖說核對平面逃生路線',basis:'消防法；各類場所消防安全設備設置標準'},
+          {id:'fs03',sev:'B',text:'避難器具型式選用（緩降機/滑台/避難繩索/滑桿），依場所用途及樓層選用，固定環/固定器承重計算，安裝位置避難空間（窗口/陽台淨空確認），使用說明牌及開口標示設置',basis:'消防法；各類場所消防安全設備設置標準'},
+        ]
+      },
+      {
+        id:'ff-sprink', name:'⑥ 自動灑水設備', icon:'💦',
+        items:[
+          {id:'fsp01',sev:'A',text:'灑水頭型式（閉鎖型標準/快速反應/大水滴/側壁型），依場所及天花板高度選用，間距符合規定（標準型≤3.6m×3.6m/9m²，快速反應型≤3.0m×3.0m），圖說核對全場覆蓋無死角',basis:'消防法；各類場所消防安全設備設置標準'},
+          {id:'fsp02',sev:'A',text:'末端水壓及流量計算書：末端工作壓力≥1kgf/cm²（閉鎖型），同時放水量（依場所類別），幫浦揚程/流量規格與計算書一致，水源容量（水箱容積）計算書標示，圖說核對幫浦型號',basis:'消防法；各類場所消防安全設備設置標準'},
+          {id:'fsp03',sev:'A',text:'控制閥（OS&Y閥）位置（各層各防火區），流水檢知裝置型號及安裝位置，末端查驗閥（各層），自動警報閥及配管材質（CPVC/鋼管），圖說核對控制閥、查驗閥與系統配管路由',basis:'消防法；各類場所消防安全設備設置標準'},
+        ]
+      },
+      {
+        id:'ff-foam', name:'⑦ 泡沫滅火設備', icon:'🧯',
+        items:[
+          {id:'fm01',sev:'A',text:'泡沫放射方式（固定式/移動式）及全區/局部放射型式，依場所用途（停車場/飛機庫/危險物品）選用，泡沫頭型式（高/低膨脹）、設計密度（L/min·m²）及覆蓋面積計算，圖說核對全場覆蓋',basis:'消防法；各類場所消防安全設備設置標準'},
+          {id:'fm02',sev:'A',text:'泡沫原液濃度（AFFF 3%/6%或蛋白質3%）及儲量計算書（場所面積×設計密度×放射時間），泡沫原液儲槽規格/容積/位置，比例混合裝置（Proportioner）型號及安裝位置標示',basis:'消防法；各類場所消防安全設備設置標準'},
+          {id:'fm03',sev:'B',text:'泡沫消防栓（移動式）位置（停車場步行距離≤25m），泡沫幫浦流量/揚程，配管口徑及材質，泡沫系統控制盤位置，泡沫設備與一般消防系統配管獨立性確認，圖說系統圖核對',basis:'消防法；各類場所消防安全設備設置標準'},
+        ]
+      },
+      {
+        id:'ff-smoke', name:'⑧ 排煙設備', icon:'💨',
+        items:[
+          {id:'fsk01',sev:'A',text:'機械排煙機容量計算書（排煙量≥1m³/min·m²，每防煙區劃≥30,000m³/hr），排煙口位置（天花板下方≤80cm），排煙風道鋼板厚度及耐火標示，緊急電源供電確認，圖說核對排煙機房位置及風道路由',basis:'消防法；各類場所消防安全設備設置標準'},
+          {id:'fsk02',sev:'A',text:'自然排煙窗有效面積計算（≥地板面積2%），排煙窗位置（天花板或上部外牆，距地板1/2以上），常開式或電動開啟（火災時自動/手動開啟）機構標示，各防煙區劃排煙窗圖說核對',basis:'消防法；各類場所消防安全設備設置標準'},
+          {id:'fsk03',sev:'A',text:'防煙區劃界線標示（≤500m²，防煙垂壁下垂高度≥50cm或至天花板），排煙系統與火警聯動程序（火警後自動開啟排煙口/啟動排煙機），特別安全梯加壓防煙設備（正壓≥12.5Pa）確認',basis:'消防法；各類場所消防安全設備設置標準'},
+        ]
+      },
+      {
+        id:'ff-radio', name:'⑨ 消防無線電通訊設備', icon:'📡',
+        items:[
+          {id:'fr01',sev:'A',text:'無線電通訊輔助設備設置場所確認（高層建築物/地下2層以下），漏洩同軸電纜（LCX）型式及規格標示，敷設路由（走廊天花板/管道間），信號強度涵蓋計算（-65dBm以上），圖說標示電纜路徑',basis:'消防法；各類場所消防安全設備設置標準'},
+          {id:'fr02',sev:'A',text:'無線電通訊主幹線連接介面（連接室外消防無線電頻段），增益器（Booster/Repeater）位置及規格，分配器及電纜終端阻抗匹配（50Ω），漏洩電纜每隔500m設連接介面箱，系統圖說核對',basis:'消防法；各類場所消防安全設備設置標準'},
+          {id:'fr03',sev:'B',text:'緊急電源（蓄電池，停電後可使用≥1hr），無線電設備機房（防災中心整合）位置及電源配置，系統測試說明（無線電手持機測試點位及接收強度記錄），圖說完整標示',basis:'消防法；各類場所消防安全設備設置標準'},
+        ]
+      },
+      {
+        id:'ff-fixed', name:'⑩ 固定式放水型設備', icon:'🔫',
+        items:[
+          {id:'ffd01',sev:'A',text:'固定式放水設備（大型放水砲/水霧/水幕）安裝位置及射程範圍，放水量計算書（持續放水時間≥20min），水源容積計算，控制閥及遠端遙控操作位置標示，圖說核對保護範圍覆蓋',basis:'消防法；各類場所消防安全設備設置標準'},
+          {id:'ffd02',sev:'B',text:'固定式放水幫浦規格（流量/揚程），配管口徑及材質，緊急電源供電確認，遠端遙控及手動操作方式說明，設備位置維護通道淨空確認，圖說系統圖核對',basis:'消防法；各類場所消防安全設備設置標準'},
+        ]
+      },
+      {
+        id:'ff-mobile', name:'⑪ 移動式放水型設備', icon:'🚿',
+        items:[
+          {id:'fml01',sev:'A',text:'移動式放水設備（消防水帶箱/輪架式噴射器）設置位置，各放水點保護半徑確認，水帶規格（口徑/長度）、噴嘴型式及接口規格（接消防栓），圖說標示位置及設備清單',basis:'消防法；各類場所消防安全設備設置標準'},
+          {id:'fml02',sev:'B',text:'移動式放水設備操作位置淨空（≥0.5m），水源計算（儲水量依場所面積及危險等級），設備數量與場所面積核對，圖說標示設備位置及維護說明',basis:'消防法；各類場所消防安全設備設置標準'},
+        ]
+      },
+      {
+        id:'ff-seal', name:'⑬ 防火填塞', icon:'🧱',
+        items:[
+          {id:'fsc01',sev:'A',text:'管路（給排水/電氣/空調配管）及電纜（線槽/電管）穿越防火牆、防火樓板處設防火填塞，填塞材料型式（防火泥/防火板/防火毯/耐燃發泡劑）依管材及開口尺寸選用，圖說標示各填塞位置及材料防火等級（F60/F90/F120）',basis:'消防法；各類場所消防安全設備設置標準；建築技術規則建築設計施工編'},
+          {id:'fsc02',sev:'A',text:'風管穿越防火區劃設防火閥（FD）或防煙閘門（SD）：防火閥溫度熔斷72°C，耐火性能1hr，電動防火閥接火警聯動訊號（火警確認後關閉），圖說核對防火閥位置與防火區劃線一致性',basis:'消防法；各類場所消防安全設備設置標準；建築技術規則建築設計施工編'},
+          {id:'fsc03',sev:'B',text:'防火填塞施工圖面標示：填塞材料型號/品牌、防火等級、截面施工工法圖示，送審資料含廠商型錄及耐火試驗報告（CNS 12514或同等），各穿越點位置逐一標示於平面圖，竣工後拍照記錄要求說明',basis:'消防法；建築技術規則建築設計施工編；CNS 12514'},
+        ]
+      },
+    ]
+  },
+  {
+    id:'hvac', num:6, icon:'❄️', name:'空調系統', color:'#0ea5e9', bg:'#f0f9ff',
+    expandable: true,
+    subs:[
+      {
+        id:'hv-water', name:'① 空調水系統', icon:'🌊',
+        items:[
+          {id:'hw01',sev:'A',text:'冰水主機（Chiller）容量計算書：冷凍噸/kW依冷負荷計算書，型式（空冷/水冷/磁浮離心），COP/IPLV值，電源規格（kW/FLA），圖說設備規格表核對型號/數量/安裝位置一致',basis:'ASHRAE 90.1；設計圖說規範'},
+          {id:'hw02',sev:'A',text:'冰水/冷卻水配管路由（平/剖面），管材及管徑計算（流速：冰水≤3m/s，冷卻水≤3.5m/s），保溫規格（管徑對應厚度/防潮鋁箔），閥件（截斷/止回/平衡閥）位置及型號完整標示',basis:'ASHRAE 90.1；設計圖說規範'},
+          {id:'hw03',sev:'A',text:'冷卻水塔規格（噸數/水量m³/hr/冷卻效能），安裝位置（屋頂/室外）及通風淨空，補充水/排放水接管，水處理設備（藥注/電解殺菌）規格，冷卻水量與冷凍機組配對計算核對',basis:'設計圖說規範；設備廠商規範'},
+          {id:'hw04',sev:'A',text:'膨脹水箱（膨脹桶）容積計算書（系統冰水總容積×膨脹係數），安裝於系統最高點，氮氣預充壓力設定值，安全閥/壓力錶規格及位置，圖說系統圖膨脹桶接管方式核對',basis:'設計圖說規範；設備廠商規範'},
+          {id:'hw05',sev:'B',text:'冰水/冷卻水幫浦流量/揚程計算書，雙幫浦（1用1備）配置及自動切換，變頻控制（差壓定壓控制）說明，管路平衡閥（自動/手動）設置位置，各路分支平衡計算，幫浦與系統特性曲線核對',basis:'設計圖說規範；設備廠商規範'},
+        ]
+      },
+      {
+        id:'hv-air', name:'② 空調風系統', icon:'💨',
+        items:[
+          {id:'ha01',sev:'A',text:'AHU/FCU設備清單：各區域送/回風量（CMH）計算書，機組型號/規格（冷量kW/風量CMH/機外靜壓Pa/馬力HP）與設備規格表核對，圖說平面位置及剖面安裝空間（維護通道淨空≥0.9m）確認',basis:'ASHRAE 62.1；設計圖說規範'},
+          {id:'ha02',sev:'A',text:'風管路由（平/剖面），風管尺寸計算（主管風速≤8m/s，支管≤5m/s，末端≤3m/s），鍍鋅鋼板厚度依管徑，保溫規格（玻璃棉厚度/外包鋁箔），穿越防火區劃防火閥（FD/SD）位置與防火區劃圖核對',basis:'ASHRAE 90.1；設計圖說規範'},
+          {id:'ha03',sev:'A',text:'送/回/排風口型式（格柵/散流器/線形），位置、尺寸及設計風量分配，各區域送回風平衡計算（送風量=回風量+排風量），末端氣流組織合理性（無死角/短路），圖說風口佈置核對',basis:'ASHRAE 62.1；設計圖說規範'},
+          {id:'ha04',sev:'A',text:'外氣系統：外氣量計算（依人數/換氣次數取較大值），外氣取入口位置（遠離污染源、廚排/廁排口距離≥3m），全熱交換器（ERV/HRV）規格及效率（熱回收率≥70%），CO₂感測器位置及控制說明',basis:'ASHRAE 62.1；室內空氣品質管理法'},
+          {id:'ha05',sev:'B',text:'空調箱/風機規格（送/排/外氣機）：風量/靜壓/馬力，葉輪型式（前傾/後傾），變頻器（VFD）控制方式，噪音值（dB），消音器型式及位置，彈性接頭（Flexible Duct）設置，圖說風機維護空間核對',basis:'ASHRAE 90.1；設計圖說規範'},
+        ]
+      },
+      {
+        id:'hv-spec', name:'③ 圖說設備規格表', icon:'📋',
+        items:[
+          {id:'hsp01',sev:'A',text:'空調設備規格表完整性：各設備（Chiller/冷卻塔/AHU/FCU/幫浦/冷媒機組）品牌（或同等品標示）、型號、數量、冷量（kW/冷凍噸）/風量（CMH）/水量（m³/hr）規格列表，與平面圖設備編號一致',basis:'設計圖說規範'},
+          {id:'hsp02',sev:'A',text:'設備電氣規格標示：各設備電壓（V）/相數/頻率（Hz）/功率（kW）/額定電流（FLA）/啟動電流（LRA）/效率（%），與動力系統供電迴路（MCC/MCB容量）對應，電源容量核對足夠',basis:'設計圖說規範'},
+          {id:'hsp03',sev:'A',text:'冷媒規格標示：各系統冷媒型別（R-410A/R-32/R-134a/R-454B），單台充填量（kg）及系統總充填量，冷媒安全等級（A1/A2L），機房換氣量及冷媒洩漏偵測器設置說明',basis:'設計圖說規範；設備廠商規範'},
+          {id:'hsp04',sev:'B',text:'設備效率規格核對：冷凍主機COP/IPLV、冷卻水塔效能、空調箱風機效率（BEP點）、過濾器效率（MERV等級），效率值符合建築節能規範要求，規格表與計算書核對一致',basis:'ASHRAE 90.1；建築節能規範'},
+          {id:'hsp05',sev:'B',text:'設備安裝尺寸確認：各設備外形尺寸（長×寬×高）及重量（運轉/乾燥），機房/樓板承重計算（kg/m²），設備搬運路線（機房門及通道淨尺寸≥設備最大截面+100mm），圖說核對機房配置',basis:'設計圖說規範；設備廠商規範'},
+        ]
+      },
+      {
+        id:'hv-dwg', name:'④ 系統、升位、施工大樣圖', icon:'📐',
+        items:[
+          {id:'hd01',sev:'A',text:'空調冰水系統圖（System Diagram/P&ID）完整性：設備符號圖例，冷凍主機/幫浦/冷卻塔/膨脹桶/分水器/集水器連接關係，各路由閥件（截止/止回/平衡/排氣/排水閥）及儀表（溫度計/壓力計/流量計）位置，流向箭頭，主管管徑標示',basis:'設計圖說規範'},
+          {id:'hd02',sev:'A',text:'空調管路升位圖（Riser Diagram）：各樓層冰水/冷卻水/冷媒管路立管路由，管徑標示（各段），各樓層分歧閥件，坡度方向（排氣/排水方向），與平面圖管徑一致，各系統立管編號對應平面圖',basis:'設計圖說規範'},
+          {id:'hd03',sev:'A',text:'冷凍機房施工大樣圖：設備平/立面配置（含設備基礎、維護空間），冰水幫浦防震基礎（彈簧座規格及靜負荷計算），冷卻水塔屋頂安裝大樣及防水收頭，分水器/集水器（Header）配管大樣',basis:'設計圖說規範'},
+          {id:'hd04',sev:'A',text:'風管施工大樣：防火閥安裝截面大樣，風管吊架型式及間距（矩形≤3m/圓形≤4m），保溫施工截面圖（材料/厚度/包覆順序），穿越樓板/牆壁封口大樣，與結構/水電管路衝突處理說明',basis:'設計圖說規範'},
+          {id:'hd05',sev:'B',text:'末端設備安裝大樣：FCU/AHU冷凝水盤及排水管接法（存水彎/排水坡度），室外機安裝基礎及固定螺栓大樣，自動排氣閥及排水閥位置，屋頂穿越防水大樣，各設備接管大樣彙整',basis:'設計圖說規範'},
+        ]
+      },
+      {
+        id:'hv-ctrl', name:'⑤ 控制圖、IO點位表', icon:'🗂️',
+        items:[
+          {id:'hc01',sev:'A',text:'各受控設備控制原理圖（Control Diagram）：冷凍主機群控（台數/載量控制邏輯），AHU控制（溫度/CO₂ PID迴路），FCU控制（溫控器/二管/三管/四管制），防火閥聯動，控制邏輯與設備規格表核對完整',basis:'設計圖說規範'},
+          {id:'hc02',sev:'A',text:'IO點位表（I/O List）：各設備監控點逐一列表（DI/DO/AI/AO），點位名稱/位號/功能說明/訊號型式（乾接點/4-20mA/PT100/Modbus/BACnet），點位總數與DDC控制器I/O容量核對（含20%預留）',basis:'設計圖說規範'},
+          {id:'hc03',sev:'A',text:'現場控制盤（LCP/DDC盤）配線圖：設備啟停（DO）、運轉狀態（DI）、故障警報（DI）、電流/功率（AI）接線，動力迴路（主迴路/控制迴路）分離，接地系統標示，盤體尺寸及進出線方式',basis:'設計圖說規範'},
+          {id:'hc04',sev:'A',text:'儀表清單：各感測器型式（冰水溫度感測PT100/壓差計/電磁流量計），量測範圍及精度，直管段安裝要求（上游10D/下游5D），接線方式（2/3/4線），安裝位置與平面圖核對，各儀表與IO表點位對應',basis:'設計圖說規範'},
+          {id:'hc05',sev:'B',text:'安全聯鎖控制（Interlock）說明：冷媒洩漏→緊急排氣/主機停機，消防警報→空調停機/防火閥關閉，停電復電順序啟動禁止，高低壓保護/流量低保護聯鎖，聯鎖程序圖說完整，與BMS整合介面確認',basis:'設計圖說規範'},
+        ]
+      },
+      {
+        id:'hv-auto', name:'⑥ 空調自動控制（監控）', icon:'🖥️',
+        items:[
+          {id:'hau01',sev:'A',text:'DDC控制器配置圖：各機房/樓層DDC型號/I/O容量/通訊協定（BACnet MS/TP or IP/Modbus），DDC供電（UPS保護），控制網路架構圖（現場層→監控層→整合層BMS），各DDC覆蓋區域與點位表核對',basis:'設計圖說規範'},
+          {id:'hau02',sev:'A',text:'BMS監控畫面規格（HMI Screen List）：冷凍機房系統圖、各樓層平面圖、主要設備即時狀態/數值，警報清單（分級/確認/SMS通知），趨勢記錄（保存≥1年），能源計量（kWh/冷凍噸hr/COP即時計算）',basis:'設計圖說規範'},
+          {id:'hau03',sev:'A',text:'節能自動控制策略：冷凍主機台數控制（依冷負荷%自動加減機），二次幫浦差壓變頻，冰水供水溫度重設（依負荷/室外溫度），冷卻水塔風扇台數+變頻控制，策略控制程序圖說完整標示',basis:'ASHRAE 90.1；設計圖說規範'},
+          {id:'hau04',sev:'A',text:'進階節能策略：最佳起停（Optimal Start/Stop），夜間通風（Night Purge），需量反應（DR，電力尖峰降載計畫），冬季自由冷卻（Free Cooling，冷卻水直供冷），各策略控制條件/啟動設定值說明',basis:'設計圖說規範；ASHRAE Guideline 36'},
+          {id:'hau05',sev:'B',text:'系統整合測試計畫（Cx Plan）：點位確認測試（PAT），功能性能測試（FPT，控制邏輯模擬），整合測試（與BMS/消防/電力系統），能源性能測試（實際COP量測），測試記錄表格式及合格標準確認',basis:'ASHRAE Guideline 0；設計圖說規範'},
+        ]
+      },
+      {
+        id:'hv-noise', name:'⑦ 噪音防制', icon:'🔇',
+        items:[
+          {id:'hn01',sev:'A',text:'設備噪音值於規格表標示：冷凍主機/冷卻塔/AHU/送風機（距設備1m，dB(A)），機房設備噪音預測計算，鄰近居室/辦公室噪音影響評估，超標時設隔音措施說明',basis:'噪音管制法；設計圖說規範'},
+          {id:'hn02',sev:'A',text:'隔音/消音措施圖說：機房隔音牆構造（RC/砌磚/輕隔間加隔音棉，STC≥50），風管消音器（靜音箱/消音彎頭）型式及安裝位置（AHU進出口），衰減量計算，設備彈簧防振基礎型號及靜負荷計算',basis:'設計圖說規範；設備廠商規範'},
+          {id:'hn03',sev:'B',text:'管路振動防制：冰水/冷卻水管彈性接頭（幫浦進出口設置），彈簧/橡膠吊架型式及設置間距，穿越樓板/牆壁管路設套管及填縫，設備振動傳遞分析（必要時），圖說防振措施位置完整標示',basis:'設計圖說規範；設備廠商規範'},
+        ]
+      },
+      {
+        id:'hv-vrf', name:'⑧ 變頻多聯空調設備', icon:'🔄',
+        items:[
+          {id:'hvrf01',sev:'A',text:'室外機規格（冷凍/暖房能力kW/冷媒型別R-410A或R-32），連接室內機能力範圍（75~130%），最大配管長度/高差限制（依廠商規範），圖說室外機位置（通風淨空/噪音距離）及冷媒配管路由',basis:'設計圖說規範；設備廠商規範'},
+          {id:'hvrf02',sev:'A',text:'室內機型式（壁掛/天花板崁入/吊隱/落地）及規格（冷量kW/風量CMH），各室內機能力與室外機容量平衡計算（系統容量率），分歧管（Branch Selector Box）安裝位置，各分歧點冷媒配管管徑標示',basis:'設計圖說規範；設備廠商規範'},
+          {id:'hvrf03',sev:'B',text:'多聯系統控制規劃：集中控制器位置及受控台數，各室內機獨立溫控及時程設定，電力計量（各系統獨立電表），冷媒洩漏偵測器（R-32 A2L設置要求）設置位置，圖說控制系統配線說明',basis:'設計圖說規範；設備廠商規範'},
+        ]
+      },
+      {
+        id:'hv-vav', name:'⑨ 可變風量控制系統', icon:'🌬️',
+        items:[
+          {id:'hvav01',sev:'A',text:'VAV箱型式（單風道/風機動力型FPB）及規格（最大/最小設計風量CMH，箱靜壓Pa），各區域VAV箱清單（位置/服務區域/設計風量），系統靜壓設計（AHU靜壓=最不利迴路阻力），VAV箱最小外氣量設定值',basis:'ASHRAE 62.1；設計圖說規範'},
+          {id:'hvav02',sev:'A',text:'VAV系統AHU變頻控制：管道靜壓感測器安裝位置（主管末端2/3處），定靜壓控制設定值（Pa），VAV箱全關時系統最小風量保護設定，CO₂需求控制通風（DCV）整合邏輯，控制圖說核對',basis:'ASHRAE 90.1；設計圖說規範'},
+          {id:'hvav03',sev:'B',text:'VAV系統調試規劃：空調箱總風量TAB（Test Adjust Balance），各VAV箱最大/最小風量設定值，暖通調試報告（TAB Report）格式，BMS監控點位（各VAV箱風量/開度/溫度/CO₂），圖說各VAV箱編號與IO表核對',basis:'ASHRAE Guideline 0；設計圖說規範'},
+        ]
+      },
+    ]
+  },
+];
+
+// ═══════════════════════════════════════════════
+// 狀態
+// ═══════════════════════════════════════════════
+let KEY='mep_v3';
+let S={
+  sys:'',        // 目前選中的 parent系統 id（'__issues__'=問題匯總）
+  sub:'',        // 目前選中的 sub系統 id（expandable才有）
+  expanded:{},   // {sysId: true/false}
+  chk:{},        // {itemId: 'pass'|'issue'|'na'|''}
+  note:{},       // {itemId: string}
+  sig:{},        // {subId|sysId: {designer,checker,date}}
+  search:''      // 搜尋關鍵字
+};
+
+// ═══════════════════════════════════════════════
+// LocalStorage
+// ═══════════════════════════════════════════════
+function save(){
+  localStorage.setItem(KEY,JSON.stringify({
+    sys:S.sys,sub:S.sub,expanded:S.expanded,
+    chk:S.chk,note:S.note,sig:S.sig,
+    proj:{name:g('projectName').value,rev:g('drawingRev').value,date:g('checkDate').value},
+    ts:new Date().toISOString()
+  }));
+  _dirty = true; // 標記有未儲存變更
+}
+function loadSaved(){try{return JSON.parse(localStorage.getItem(KEY));}catch(e){return null;}}
+function applyData(d){
+  S.sys=d.sys||'';S.sub=d.sub||'';S.expanded=d.expanded||{};
+  S.chk=d.chk||{};S.note=d.note||{};S.sig=d.sig||{};
+  if(d.proj){g('projectName').value=d.proj.name||'';g('drawingRev').value=d.proj.rev||'';g('checkDate').value=d.proj.date||'';}
+}
+
+// ═══════════════════════════════════════════════
+// 統計
+// ═══════════════════════════════════════════════
+function getItems(target){ // target = sys obj or sub obj
+  return target.items||[];
+}
+function calcStats(items){
+  let done=0,issues=0;
+  items.forEach(i=>{const s=S.chk[i.id]||'';if(s)done++;if(s==='issue')issues++;});
+  return{total:items.length,done,issues,pct:items.length?Math.round(done/items.length*100):0};
+}
+function sysAllItems(sys){
+  if(sys.expandable) return sys.subs.flatMap(s=>s.items);
+  return sys.items||[];
+}
+function canAccessSys(sysId){
+  // 工程範圍限制（有設定工項才套用）
+  if(CURR_PROJ?.systems?.length && !CURR_PROJ.systems.includes(sysId)) return false;
+  if(!CURR_ACCT)return true;
+  if(CURR_ACCT.isAdmin)return true;
+  return(CURR_ACCT.systems||[]).includes(sysId);
+}
+function overallStats(){
+  let t=0,d=0;
+  DATA.forEach(sys=>{
+    if(!canAccessSys(sys.id))return;
+    const items=sysAllItems(sys);const st=calcStats(items);t+=st.total;d+=st.done;
+  });
+  return{pct:t?Math.round(d/t*100):0};
+}
+
+// ═══════════════════════════════════════════════
+// 渲染 Sidebar
+// ═══════════════════════════════════════════════
+function renderSB(){
+  g('sbNav').innerHTML=DATA.map(sys=>{
+    const isAct=S.sys===sys.id;
+    const isExp=S.expanded[sys.id];
+    const items=sysAllItems(sys);
+    const st=calcStats(items);
+    const ok=canAccessSys(sys.id);
+    const actCls=ok?(isAct&&!sys.expandable?' active':isAct?' sub-active':''):'';
+    let html=`<div class="nav-item${actCls}${ok?'':' locked'}" ${ok?`onclick="clickParent('${sys.id}')"`:''}>
+      <div class="nav-ic" style="background:${sys.bg};color:${sys.color}">${sys.icon}</div>
+      <div class="nav-ct">
+        <div class="nav-nm">${sys.num}. ${sys.name}</div>
+        <div class="nav-pw">
+          <div class="nav-pb"><div class="nav-pf" style="width:${st.pct}%;background:${sys.color}"></div></div>
+          <div class="nav-pt">${ok?st.done+'/'+st.total:'🔒'}</div>
+        </div>
+      </div>
+      ${ok&&sys.expandable?`<span class="nav-arrow${isExp?' open':''}">▶</span>`:!ok?'<span class="lock-ic">🔒</span>':''}
+    </div>`;
+    if(sys.expandable&&ok){
+      html+=`<div class="sub-nav${isExp?' open':''}">`;
+      sys.subs.forEach(sub=>{
+        const ss=calcStats(sub.items);
+        const isSubAct=S.sub===sub.id;
+        html+=`<div class="sub-item${isSubAct?' active':''}" onclick="clickSub('${sys.id}','${sub.id}')">
+          <div class="sub-dot"></div>
+          <span class="sub-nm">${sub.name}</span>
+          <span class="sub-cnt">${ss.done}/${ss.total}</span>
+        </div>`;
+      });
+      html+='</div>';
+    }
+    return html;
+  }).join('');
+  const ov=overallStats();
+  g('ovPct').textContent=ov.pct+'%';
+  g('ovFill').style.width=ov.pct+'%';
+  // 問題匯總 nav 狀態
+  const issN=countAllIssues();
+  const issNavEl=g('issNav');
+  if(issNavEl){
+    issNavEl.classList.toggle('active',S.sys==='__issues__');
+    const badge=g('issBadge');
+    if(badge){badge.textContent=issN;badge.className='iss-badge'+(issN===0?' zero':'');}
+  }
+}
+
+// ═══════════════════════════════════════════════
+// 渲染主內容
+// ═══════════════════════════════════════════════
+function renderMain(){
+  const banner=`<div class="page-banner">
+    <div><div class="banner-title">機水電設計圖說 自主檢查項目及確認系統</div>
+    <div class="banner-sub">MEP Drawing Self-Inspection &amp; Confirmation System</div></div>
+    <div class="banner-badge">送審前核對</div>
+  </div>`;
+
+  // ── 麵包屑導覽列 ──
+  function mkBreadcrumb(){
+    const sys=S.sys&&S.sys!=='__issues__'&&S.sys!=='__search__'?DATA.find(s=>s.id===S.sys):null;
+    const sub=sys&&S.sub?sys.subs?.find(s=>s.id===S.sub):null;
+    if(!S.sys||S.sys==='__search__') return '';
+    let html=`<div class="breadcrumb">
+      <button class="bc-btn" onclick="goHome()" title="回首頁">🏠 首頁</button>`;
+    if(S.sys==='__issues__'){
+      html+=`<span class="bc-sep">›</span><span class="bc-cur">⚠️ 問題匯總</span>`;
+    } else if(sys){
+      if(sub){
+        html+=`<span class="bc-sep">›</span>
+          <button class="bc-btn" onclick="goBack()" title="回上一頁">${sys.icon} ${sys.name}</button>
+          <span class="bc-sep">›</span><span class="bc-cur">${sub.icon} ${sub.name}</span>`;
+      } else {
+        html+=`<span class="bc-sep">›</span><span class="bc-cur">${sys.icon} ${sys.name}</span>`;
+      }
+    }
+    html+=`</div>`;
+    return html;
+  }
+  const bc=mkBreadcrumb();
+
+  // ── 搜尋結果視圖 ──
+  if(S.search&&S.search.length>0){
+    const sbcHtml=`<div class="breadcrumb"><button class="bc-btn" onclick="goHome()">🏠 首頁</button><span class="bc-sep">›</span><span class="bc-cur">🔍 搜尋：${S.search}</span></div>`;
+    g('mainContent').innerHTML=banner+sbcHtml+renderSearchView(S.search);
+    return;
+  }
+  // ── 問題匯總視圖 ──
+  if(S.sys==='__issues__'){
+    const issN=countAllIssues();
+    g('mainContent').innerHTML=banner+bc+`<div class="sys-hdr" style="margin-bottom:10px">
+      <div class="sys-ic" style="background:#fef2f2">⚠️</div>
+      <div class="sys-hdr-ct">
+        <div class="sys-title">問題匯總</div>
+        <div class="sys-meta">共 ${issN} 個問題項目・點擊可跳至該項目</div>
+      </div>
+    </div>`+renderIssuesView();
+    return;
+  }
+  if(!S.sys){
+    const visSys=DATA.filter(sys=>canAccessSys(sys.id));
+    const ov=overallStats();
+    const lbl=CURR_ACCT?.isAdmin?'整體完成進度（全部系統）':'您負責系統的完成進度';
+    const ovH=`<div class="dash-ov">
+      <div class="dash-ov-row">
+        <span class="dash-ov-lbl">${lbl}</span>
+        <span class="dash-ov-pct">${ov.pct}%</span>
+      </div>
+      <div class="dash-ov-bar"><div class="dash-ov-fill" style="width:${ov.pct}%"></div></div>
+    </div>`;
+    const cardsH=visSys.map(sys=>{
+      const items=sysAllItems(sys);
+      const st=calcStats(items);
+      const passN=items.filter(i=>(S.chk[i.id]||'')==='pass').length;
+      const issN=items.filter(i=>(S.chk[i.id]||'')==='issue').length;
+      const naN=items.filter(i=>(S.chk[i.id]||'')==='na').length;
+      const doneBadge=st.pct===100?'<span class="sd-done-badge">✅</span>':'';
+      return`<div class="sd-card" onclick="clickParent('${sys.id}')" style="--sd-clr:${sys.color}">
+        ${doneBadge}
+        <div class="sd-top">
+          <div class="sd-ic" style="background:${sys.bg}">${sys.icon}</div>
+          <div class="sd-pct-big" style="color:${sys.color}">${st.pct}%</div>
+        </div>
+        <div class="sd-nm">${sys.num}. ${sys.name}</div>
+        <div class="sd-bar-bg"><div class="sd-bar-fill" style="width:${st.pct}%;background:${sys.color}"></div></div>
+        <div class="sd-stats">
+          <span class="sd-st pass">✅ ${passN}</span>
+          ${issN>0?`<span class="sd-st issue">❌ ${issN}</span>`:''}
+          <span class="sd-st na">— ${naN}</span>
+          <span class="sd-st tot">/ ${st.total}</span>
+        </div>
+      </div>`;
+    }).join('');
+    g('mainContent').innerHTML=banner+ovH+`<div class="sd-grid">${cardsH}</div>`;
+    return;
+  }
+  const sys=DATA.find(s=>s.id===S.sys);
+  if(!sys) return;
+
+  // Expandable + 無子項選中 → 顯示子系統概覽
+  if(sys.expandable&&!S.sub){
+    const cards=sys.subs.map(sub=>{
+      const ss=calcStats(sub.items);
+      return`<div class="sub-card${ss.pct===100?' done':''}" onclick="clickSub('${sys.id}','${sub.id}')">
+        <div class="sub-card-ic">${sub.icon}</div>
+        <div class="sub-card-nm">${sub.name}</div>
+        <div class="sub-card-prog">
+          <div class="sc-bar"><div class="sc-fill" style="width:${ss.pct}%;background:${sys.color}"></div></div>
+          <div class="sc-pct">${ss.pct}%</div>
+        </div>
+        <div class="sub-card-cnt">共${ss.total}項・完成${ss.done}項${ss.issues>0?'・⚠️'+ss.issues+'問題':''}</div>
+      </div>`;
+    }).join('');
+    g('mainContent').innerHTML=banner+bc+`<div class="sys-overview">${cards}</div>`;
+    return;
+  }
+
+  // 取得要顯示的項目清單
+  let items,title,icon,color,bg,sigKey;
+  if(sys.expandable&&S.sub){
+    const sub=sys.subs.find(s=>s.id===S.sub);
+    if(!sub) return;
+    items=sub.items; title=`${sys.name} ▸ ${sub.name}`;
+    icon=sub.icon; color=sys.color; bg=sys.bg; sigKey=sub.id;
+  } else {
+    items=sys.items||[]; title=sys.name;
+    icon=sys.icon; color=sys.color; bg=sys.bg; sigKey=sys.id;
+  }
+
+  const st=calcStats(items);
+  const C=2*Math.PI*20;
+  const off=C*(1-st.pct/100);
+  const passN=items.filter(i=>(S.chk[i.id]||'')==='pass').length;
+  const naN=items.filter(i=>(S.chk[i.id]||'')==='na').length;
+  const todoN=items.filter(i=>!(S.chk[i.id]||'')).length;
+
+  const itemsH=items.map((item,idx)=>{
+    const s=S.chk[item.id]||'';
+    const n=S.note[item.id]||'';
+    const hasNote=n.trim().length>0;
+    let cls=`cl-item s${item.sev==='A'?'a':item.sev==='B'?'b2':'c'}`;
+    if(s==='pass')cls+=' s-pass';
+    if(s==='issue')cls+=' s-issue';
+    if(s==='na')cls+=' s-na';
+    const bt=item.sev==='A'?'A 必修正':item.sev==='B'?'B 建議確認':'C 建議優化';
+    // 列印用狀態標籤
+    const plCls=s==='pass'?'pl-pass':s==='issue'?'pl-issue':s==='na'?'pl-na':'pl-todo';
+    const plTxt=s==='pass'?'✓ 符合':s==='issue'?'✗ 有問題':s==='na'?'— 不適用':'□ 待核對';
+    return`<div class="${cls}" id="ci-${item.id}">
+      <div class="item-row">
+        <div class="status-btns">
+          <button class="sb3${s==='pass'?' ap':''}" onclick="setS('${item.id}','pass')" title="符合">✓</button>
+          <button class="sb3${s==='issue'?' ai':''}" onclick="setS('${item.id}','issue')" title="有問題">✗</button>
+          <button class="sb3${s==='na'?' an':''}" onclick="setS('${item.id}','na')" title="不適用">—</button>
+        </div>
+        <div class="item-ct">
+          <div class="item-hdr">
+            <span class="badge b${item.sev.toLowerCase()}">${bt}</span>
+            <span class="print-lbl ${plCls}">${plTxt}</span>
+          </div>
+          <div class="item-txt">${item.text}</div>
+          <div class="item-basis">📋 ${item.basis}</div>
+          <div class="item-foot">
+            <button class="note-tog" onclick="togNote('${item.id}')">${hasNote?'📝 已有備註':'＋ 新增備註'}</button>
+          </div>
+          <div class="note-area${(hasNote||s==='issue')?' show':''}" id="na-${item.id}">
+            <textarea class="note-ta" placeholder="審查備註、問題說明、修正要求..."
+              oninput="saveNote('${item.id}',this.value)">${esc(n)}</textarea>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  const sig=S.sig[sigKey]||{};
+  g('mainContent').innerHTML=banner+bc+`
+    <div class="legend">
+      <span style="color:var(--g600);font-weight:600">操作：</span>
+      <div class="li">✓ 符合</div><div class="li">✗ 有問題（填備註）</div><div class="li">— 不適用</div>
+      <span class="ldiv">|</span>
+      <div class="li"><span class="badge ba">A 必修正</span></div>
+      <div class="li"><span class="badge bb">B 建議確認</span></div>
+      <div class="li"><span class="badge bc">C 建議優化</span></div>
+    </div>
+    <div class="sys-hdr">
+      <div class="sys-ic" style="background:${bg}">${icon}</div>
+      <div class="sys-hdr-ct">
+        <div class="sys-title">${title}</div>
+        <div class="sys-meta">共 ${st.total} 個核對項目・已完成 ${st.done} 項${st.issues>0?' ・⚠️ '+st.issues+' 項有問題':' ・無問題'}</div>
+      </div>
+      <div class="sys-right">
+        <div class="stats">
+          <div class="stat"><div class="stat-v" style="color:#10b981">${passN}</div><div class="stat-l">符合</div></div>
+          <div class="stat"><div class="stat-v" style="color:#ef4444">${st.issues}</div><div class="stat-l">問題</div></div>
+          <div class="stat"><div class="stat-v" style="color:#94a3b8">${naN}</div><div class="stat-l">不適用</div></div>
+        </div>
+        <div class="circ">
+          <svg width="50" height="50" viewBox="0 0 50 50">
+            <circle cx="25" cy="25" r="20" fill="none" stroke="#e2e8f0" stroke-width="4"/>
+            <circle cx="25" cy="25" r="20" fill="none" stroke="${color}" stroke-width="4"
+              stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}"
+              stroke-linecap="round" style="transition:stroke-dashoffset .3s"/>
+          </svg>
+          <div class="circ-txt">${st.pct}%</div>
+        </div>
+      </div>
+    </div>
+    <div class="print-sum">
+      <div class="ps-cell ps-total"><span class="ps-num">${st.total}</span><span class="ps-lbl">總計項目</span></div>
+      <div class="ps-cell ps-pass"><span class="ps-num">${passN}</span><span class="ps-lbl">✓ 符合</span></div>
+      <div class="ps-cell ps-issue"><span class="ps-num">${st.issues}</span><span class="ps-lbl">✗ 有問題</span></div>
+      <div class="ps-cell ps-na"><span class="ps-num">${naN}</span><span class="ps-lbl">— 不適用</span></div>
+      <div class="ps-cell ps-todo"><span class="ps-num">${todoN}</span><span class="ps-lbl">□ 待核對</span></div>
+    </div>
+    <div class="batch-bar">
+      <span class="batch-lbl">批次操作：<strong>${todoN}</strong> 項待核對</span>
+      <button class="batch-btn batch-pass" onclick="setAllS('${sigKey}','pass')" title="將所有待核對項目標為符合">✓ 全部符合</button>
+      <button class="batch-btn batch-na" onclick="setAllS('${sigKey}','na')" title="將所有待核對項目標為不適用">— 全部不適用</button>
+      <button class="batch-btn batch-clr" onclick="setAllS('${sigKey}','clr')" title="清除所有項目的狀態">↺ 清除全部</button>
+    </div>
+    <div class="cl-list">${itemsH}</div>
+    <div class="sig-sec">
+      <div class="sig-title">📋 本項目核對簽署 — ${title}</div>
+      <div class="sig-grid">
+        <div class="sig-f"><label>設計工程師</label>
+          <input class="sig-in" type="text" placeholder="姓名" value="${esc(sig.designer||'')}"
+            onchange="saveSig('${sigKey}','designer',this.value)"></div>
+        <div class="sig-f"><label>複核工程師</label>
+          <input class="sig-in" type="text" placeholder="姓名" value="${esc(sig.checker||'')}"
+            onchange="saveSig('${sigKey}','checker',this.value)"></div>
+        <div class="sig-f"><label>核對日期</label>
+          <input class="sig-in" type="date" value="${esc(sig.date||'')}"
+            onchange="saveSig('${sigKey}','date',this.value)"></div>
+      </div>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════
+// 操作
+// ═══════════════════════════════════════════════
+// 手機 Sidebar 開關
+// ═══════════════════════════════════════════════
+function toggleSidebar(){
+  const sb=g('sidebar');const ov=g('sbOverlay');
+  if(!sb||!ov)return;
+  const open=sb.classList.toggle('mob-open');
+  ov.classList.toggle('show',open);
+}
+function closeSidebarOnNav(){
+  // 手機點選項目後自動收起 sidebar
+  if(window.innerWidth<=640){
+    const sb=g('sidebar');const ov=g('sbOverlay');
+    if(sb)sb.classList.remove('mob-open');
+    if(ov)ov.classList.remove('show');
+  }
+}
+
+// ═══════════════════════════════════════════════
+function clickParent(id){
+  S.search=''; if(g('searchBox'))g('searchBox').value='';
+  if(S.sys===id){
+    S.expanded[id]=!S.expanded[id];
+  } else {
+    S.sys=id; S.sub='';
+    const sys=DATA.find(s=>s.id===id);
+    if(sys&&sys.expandable) S.expanded[id]=true;
+  }
+  renderSB(); renderMain(); save(); closeSidebarOnNav();
+}
+
+function clickSub(sysId,subId){
+  S.search=''; if(g('searchBox'))g('searchBox').value='';
+  S.sys=sysId; S.sub=subId; S.expanded[sysId]=true;
+  renderSB(); renderMain(); save(); closeSidebarOnNav();
+}
+
+function clickIssues(){
+  S.sys='__issues__'; S.sub=''; S.search='';
+  if(g('searchBox'))g('searchBox').value='';
+  renderSB(); renderMain(); save(); closeSidebarOnNav();
+}
+
+async function backToProjects(){
+  if (_dirty) {
+    const choice = confirm('⚠️ 有未儲存的變更\n\n按「確定」立即存檔後離開\n按「取消」放棄變更直接離開');
+    if (choice) {
+      clearTimeout(_kvSaveTimer);
+      await api(`/state/${CURR_PROJ.id}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+          proj: { name: CURR_PROJ.name, rev: g('drawingRev').value, date: g('checkDate').value },
+          chk: S.chk, note: S.note, sig: S.sig
+        })
+      });
+      _dirty = false;
+      toast('✅ 已儲存');
+    }
+  }
+  CURR_PROJ = null; _dirty = false;
+  clearInterval(_autoSaveInterval); _autoSaveEnabled = false;
+  g('autoSaveLbl').style.display = 'none';
+  g('autoSaveCk').checked = false;
+  S = { sys:'', sub:'', expanded:{}, chk:{}, note:{}, sig:{} };
+  g('projectName').value = ''; g('drawingRev').value = ''; g('checkDate').value = '';
+  g('projectScreen').style.display = 'flex';
+  renderProjectList();
+}
+function goHome(){
+  S.sys=''; S.sub=''; S.search='';
+  if(g('searchBox'))g('searchBox').value='';
+  renderSB(); renderMain(); save(); closeSidebarOnNav();
+}
+
+function goBack(){
+  if(S.search){
+    S.search=''; if(g('searchBox'))g('searchBox').value='';
+    renderSB(); renderMain(); return;
+  }
+  if(S.sub){
+    // 子系統 → 上一層：系統概覽
+    S.sub='';
+    renderSB(); renderMain(); save(); return;
+  }
+  if(S.sys&&S.sys!=='__issues__'){
+    // 系統概覽 → 首頁
+    goHome(); return;
+  }
+  goHome();
+}
+
+// ─── 搜尋 ───────────────────────────────────────
+function doSearch(q){
+  S.search=q.trim();
+  if(S.search) S.sys='__search__';
+  renderSB(); renderMain();
+}
+
+function renderSearchView(q){
+  const lower=q.toLowerCase();
+  const results=[];
+
+  // ── 權限過濾 ──────────────────────────────────────────────────────────────
+  // 管理員：搜尋全部系統；操作者：只搜尋 canAccessSys() 回傳 true 的系統
+  const isAdmin=CURR_ACCT?.isAdmin===true;
+  const searchable=DATA.filter(sys=>canAccessSys(sys.id));
+
+  // 操作者尚未被分配任何系統
+  if(!isAdmin&&searchable.length===0){
+    return`<div class="srch-panel">
+      <div class="srch-hd">🔍 搜尋「${esc(q)}」</div>
+      <div class="srch-empty">⛔ 您尚未被分配任何系統<br>
+        <span style="font-size:11px;color:var(--g400)">請聯繫管理員設定您的系統存取權限</span></div>
+    </div>`;
+  }
+
+  searchable.forEach(sys=>{
+    const allItems=sys.expandable?sys.subs.flatMap(sub=>sub.items.map(i=>({...i,_sub:sub.name,_subId:sub.id}))):
+      (sys.items||[]).map(i=>({...i,_sub:'',_subId:''}));
+    allItems.forEach(item=>{
+      if(item.text.toLowerCase().includes(lower)||item.basis.toLowerCase().includes(lower)||item.id.toLowerCase().includes(lower)){
+        results.push({sys,item});
+      }
+    });
+  });
+
+  // 標題加上範圍提示
+  const scopeHint=isAdmin
+    ?`（全系統）`
+    :`（${searchable.map(s=>s.name).join('・')}）`;
+
+  if(!results.length) return`<div class="srch-panel">
+    <div class="srch-hd">🔍 搜尋「${esc(q)}」<span style="font-size:10.5px;color:var(--g400);margin-left:6px">${scopeHint}</span></div>
+    <div class="srch-empty">找不到相關項目，請換個關鍵字試試</div></div>`;
+
+  const re=new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi');
+  const hl=txt=>esc(txt).replace(re,m=>`<span class="srch-hl">${m}</span>`);
+  const rows=results.map(({sys,item})=>{
+    const s=S.chk[item.id]||'';
+    const n=S.note[item.id]||'';
+    const bt=item.sev==='A'?'A 必修正':item.sev==='B'?'B 建議確認':'C 建議優化';
+    const bc=`b${item.sev.toLowerCase()}`;
+    const stTxt=s==='pass'?'✓ 符合':s==='issue'?'✗ 有問題':s==='na'?'— 不適用':'□ 待核對';
+    const path=item._sub?`${sys.name} ▸ ${item._sub}`:sys.name;
+    return`<div class="srch-item" onclick="navToItem('${sys.id}','${item._subId}','${item.id}')">
+      <div class="srch-path">${sys.icon} ${esc(path)}</div>
+      <div class="srch-txt">${hl(item.text)}</div>
+      <div class="srch-basis">📋 ${hl(item.basis)}</div>
+      <div style="display:flex;gap:6px;margin-top:5px;align-items:center;flex-wrap:wrap">
+        <span class="badge ${bc}">${bt}</span>
+        <span style="font-size:10.5px;color:var(--g500)">${stTxt}</span>
+        ${n?`<span style="font-size:10.5px;color:#b91c1c">📝 有備註</span>`:''}
+      </div>
+    </div>`;
+  }).join('');
+  return`<div class="srch-panel">
+    <div class="srch-hd">🔍 搜尋「${esc(q)}」・找到 ${results.length} 項
+      <span style="font-size:10.5px;color:var(--g400);margin-left:6px">${scopeHint}</span></div>
+    ${rows}</div>`;
+}
+
+function navToItem(sysId,subId,itemId){
+  S.search=''; if(g('searchBox'))g('searchBox').value='';
+  S.sys=sysId; S.sub=subId||''; S.expanded[sysId]=true;
+  renderSB(); renderMain(); save();
+  setTimeout(()=>{const el=g('ci-'+itemId);if(el)el.scrollIntoView({behavior:'smooth',block:'center'});},120);
+}
+
+// ─── 問題匯總 ────────────────────────────────────
+function countAllIssues(){
+  let n=0;
+  DATA.forEach(sys=>sysAllItems(sys).forEach(i=>{if((S.chk[i.id]||'')==='issue')n++;}));
+  return n;
+}
+
+function renderIssuesView(){
+  const groups=[];
+  DATA.forEach(sys=>{
+    const rows=[];
+    if(sys.expandable){
+      sys.subs.forEach(sub=>{
+        sub.items.forEach(item=>{
+          if((S.chk[item.id]||'')==='issue') rows.push({item,subName:sub.name,subId:sub.id});
+        });
+      });
+    } else {
+      (sys.items||[]).forEach(item=>{
+        if((S.chk[item.id]||'')==='issue') rows.push({item,subName:'',subId:''});
+      });
+    }
+    if(rows.length) groups.push({sys,rows});
+  });
+
+  if(!groups.length) return`<div class="iss-empty-box">
+    <div class="iss-empty-ic">🎉</div>
+    <div class="iss-empty-t">目前沒有問題項目</div>
+    <div class="iss-empty-s">所有已核對項目均符合，繼續加油！</div>
+  </div>`;
+
+  return groups.map(({sys,rows})=>{
+    const rowsH=rows.map(({item,subName,subId})=>{
+      const n=S.note[item.id]||'';
+      const bt=item.sev==='A'?'A 必修正':item.sev==='B'?'B 建議確認':'C 建議優化';
+      const bc=`b${item.sev.toLowerCase()}`;
+      return`<div class="iss-row" onclick="navToItem('${sys.id}','${subId}','${item.id}')">
+        <div class="iss-row-hd">
+          <span class="badge ${bc}">${bt}</span>
+          ${subName?`<span style="font-size:10.5px;color:var(--g500)">${esc(subName)}</span>`:''}
+          <span style="font-size:10.5px;color:var(--g400);margin-left:auto">${esc(item.id)}</span>
+        </div>
+        <div class="iss-row-txt">${esc(item.text)}</div>
+        <div class="iss-row-basis">📋 ${esc(item.basis)}</div>
+        ${n?`<div class="iss-row-note">📝 ${esc(n)}</div>`:''}
+      </div>`;
+    }).join('');
+    return`<div class="iss-group">
+      <div class="iss-group-hd">${sys.icon} ${esc(sys.name)}
+        <span class="iss-badge" style="display:inline-block">${rows.length}</span>
+      </div>${rowsH}
+    </div>`;
+  }).join('');
+}
+
+function setS(id,val){
+  S.chk[id]=S.chk[id]===val?'':val;
+  if(S.chk[id]==='issue'){const a=document.getElementById('na-'+id);if(a)a.classList.add('show');}
+  renderSB(); renderMain(); save();
+  setTimeout(()=>{const e=document.getElementById('ci-'+id);if(e)e.scrollIntoView({behavior:'smooth',block:'nearest'});},60);
+}
+
+function setAllS(sigKey,val){
+  const sys=DATA.find(s=>s.id===S.sys);
+  if(!sys) return;
+  let items;
+  if(sys.expandable&&S.sub){
+    const sub=sys.subs.find(s=>s.id===S.sub);
+    items=sub?sub.items:[];
+  } else {
+    items=sys.items||[];
+  }
+  items.forEach(i=>{
+    if(val==='clr') delete S.chk[i.id];
+    else S.chk[i.id]=val;
+  });
+  renderSB(); renderMain(); save();
+}
+
+function saveNote(id,val){S.note[id]=val;save();}
+function togNote(id){const a=document.getElementById('na-'+id);if(a)a.classList.toggle('show');}
+function saveSig(k,f,v){if(!S.sig[k])S.sig[k]={};S.sig[k][f]=v;save();}
+function exportPrint(){
+  // ── 列印前驗證：每個系統/子系統的簽署欄（設計工程師 ＋ 複核工程師）都要填寫 ──
+  const missing=[];
+  DATA.forEach(sys=>{
+    if(!canAccessSys(sys.id)) return;
+    if(sys.expandable){
+      sys.subs.forEach(sub=>{
+        const sig=S.sig[sub.id]||{};
+        if(!(sig.designer||'').trim()||!(sig.checker||'').trim()){
+          missing.push(`${sys.icon} ${sys.name} ▸ ${sub.icon} ${sub.name}`);
+        }
+      });
+    } else {
+      const sig=S.sig[sys.id]||{};
+      if(!(sig.designer||'').trim()||!(sig.checker||'').trim()){
+        missing.push(`${sys.icon} ${sys.name}`);
+      }
+    }
+  });
+  if(missing.length>0){
+    alert('⚠️ 列印前請先完成以下項目的核對簽署\n（設計工程師 ＋ 複核工程師 均須填寫）：\n\n・' + missing.join('\n・'));
+    return;
+  }
+  g('pm-projName').value = g('projectName').value;
+  g('pm-projItem').value = '';
+  g('pm-operator').value = g('badgeName').textContent.trim();
+  // 動態計算此使用者可存取的總項目數，更新下拉選項文字
+  let accessTotal=0;
+  DATA.forEach(sys=>{
+    if(!canAccessSys(sys.id)) return;
+    if(sys.expandable) sys.subs.forEach(sub=>accessTotal+=sub.items.length);
+    else accessTotal+=(sys.items||[]).length;
+  });
+  const allOpt=g('pm-show').querySelector('option[value="all"]');
+  if(allOpt) allOpt.textContent=`全部項目（共 ${accessTotal} 項）`;
+  g('printModal').classList.remove('hidden');
+}
+
+function doPrint(){
+  const projName  = g('pm-projName').value.trim()  || '（未填寫）';
+  const projItem  = g('pm-projItem').value.trim()   || '—';
+  const operator  = g('pm-operator').value.trim()   || '—';
+  const showMode  = g('pm-show').value;              // 'checked'|'issue'|'all'
+  const drawingRev= g('drawingRev').value.trim()    || '—';
+  const checkDate = g('checkDate').value            || new Date().toISOString().split('T')[0];
+  g('printModal').classList.add('hidden');
+
+  // ── 彙整各系統已篩選項目（只處理有存取權限的系統）──
+  let totPass=0,totIssue=0,totNa=0,totTodo=0;
+  let sections='';
+
+  DATA.forEach(sys=>{
+    if(!canAccessSys(sys.id)) return;   // ← 依權限過濾：操作者只看自己的系統
+    let allItems=[];
+    if(sys.expandable){
+      sys.subs.forEach(sub=>sub.items.forEach(i=>allItems.push({...i,_sub:sub.name})));
+    } else {
+      allItems=sys.items.map(i=>({...i,_sub:''}));
+    }
+
+    // 統計（僅限有權限系統，不受篩選影響）
+    let sPass=0,sIssue=0,sNa=0,sTodo=0;
+    allItems.forEach(i=>{
+      const s=S.chk[i.id]||'';
+      if(s==='pass')sPass++;else if(s==='issue')sIssue++;else if(s==='na')sNa++;else sTodo++;
+    });
+    totPass+=sPass;totIssue+=sIssue;totNa+=sNa;totTodo+=sTodo;
+
+    // 依篩選條件過濾顯示項目
+    const filtered=allItems.filter(i=>{
+      const s=S.chk[i.id]||'';
+      if(showMode==='issue')   return s==='issue';
+      if(showMode==='checked') return s!=='';
+      return true;
+    });
+    if(!filtered.length) return;
+
+    const rows=filtered.map(item=>{
+      const s=S.chk[item.id]||'';
+      const note=S.note[item.id]||'';
+      const sCls=s==='pass'?'sp':s==='issue'?'si':s==='na'?'sn':'';
+      const sTxt=s==='pass'?'✓ 符合':s==='issue'?'✗ 有問題':s==='na'?'— 不適用':'□ 待核對';
+      const sevCls=item.sev==='A'?'sa':item.sev==='B'?'sb':'sc';
+      const subSpan=item._sub?`<span style="color:#64748b;font-size:9px">[${esc(item._sub)}]</span><br>`:'';
+      const noteHtml=note?`<div class="nt">備註：${esc(note)}</div>`:'';
+      return `<tr><td class="tid">${esc(item.id)}</td><td class="${sevCls}">${esc(item.sev)}</td>`+
+             `<td>${subSpan}${esc(item.text)}${noteHtml}</td>`+
+             `<td class="bas">${esc(item.basis||'')}</td><td class="${sCls}">${sTxt}</td></tr>`;
+    }).join('');
+
+    sections+=`<div class="sh">${esc(sys.icon)} ${esc(sys.name)}`+
+      `<span class="sm"> 符合 ${sPass}／問題 ${sIssue}／不適用 ${sNa}／待核對 ${sTodo}</span></div>`+
+      `<table><thead><tr><th style="width:44px">項目ID</th><th style="width:24px">嚴重</th>`+
+      `<th>核對項目</th><th style="width:120px">法規依據</th><th style="width:60px">狀態</th></tr></thead>`+
+      `<tbody>${rows}</tbody></table>`;
+  });
+
+  const total=totPass+totIssue+totNa+totTodo;
+  const modeLabel=showMode==='issue'?'（僅有問題項目）':showMode==='checked'?'（已核對項目）':'（全部項目）';
+
+  // ── 核對簽署彙總表（無論項目篩選，一律顯示）──
+  let sigRows='';
+  DATA.forEach(sys=>{
+    if(!canAccessSys(sys.id)) return;
+    if(sys.expandable){
+      sys.subs.forEach(sub=>{
+        const sig=S.sig[sub.id]||{};
+        const d=(sig.designer||'').trim();
+        const c=(sig.checker||'').trim();
+        const dt=(sig.date||'').trim();
+        sigRows+=`<tr>
+          <td class="sgn">${esc(sys.icon)} ${esc(sys.name)} ▸ ${esc(sub.icon)} ${esc(sub.name)}</td>
+          <td class="sgv${d?'':' empty'}">${esc(d)||'—'}</td>
+          <td class="sgv${c?'':' empty'}">${esc(c)||'—'}</td>
+          <td class="sgv${dt?'':' empty'}">${esc(dt)||'—'}</td>
+        </tr>`;
+      });
+    } else {
+      const sig=S.sig[sys.id]||{};
+      const d=(sig.designer||'').trim();
+      const c=(sig.checker||'').trim();
+      const dt=(sig.date||'').trim();
+      sigRows+=`<tr>
+        <td class="sgn">${esc(sys.icon)} ${esc(sys.name)}</td>
+        <td class="sgv${d?'':' empty'}">${esc(d)||'—'}</td>
+        <td class="sgv${c?'':' empty'}">${esc(c)||'—'}</td>
+        <td class="sgv${dt?'':' empty'}">${esc(dt)||'—'}</td>
+      </tr>`;
+    }
+  });
+  const sigBlock=`<div class="sg-sec">
+    <div class="sg-hd">📋 核對簽署</div>
+    <table class="sg-table">
+      <thead><tr>
+        <th style="width:38%">核對系統 ／ 子系統</th>
+        <th style="width:20%">設計工程師</th>
+        <th style="width:20%">複核工程師</th>
+        <th style="width:22%">核對日期</th>
+      </tr></thead>
+      <tbody>${sigRows}</tbody>
+    </table>
+  </div>`;
+
+  const html=`<!DOCTYPE html><html lang="zh-TW"><head><meta charset="UTF-8">
+<title>機水電自主檢查報告</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"微軟正黑體",Arial,sans-serif;font-size:11px;color:#111}
+.rt{font-size:15px;font-weight:800;text-align:center;padding:8px 0 5px;border-bottom:3px solid #1e3a5f;margin-bottom:7px}
+.ri{display:grid;grid-template-columns:2fr 1fr 1.5fr 1fr;border:1.5px solid #1e3a5f;border-radius:4px;overflow:hidden;margin-bottom:8px}
+.rc{padding:5px 9px;border-right:1px solid #ccc}.rc:last-child{border-right:none}
+.rl{font-size:9px;color:#555;margin-bottom:1px}.rv{font-size:12px;font-weight:700}
+.su{display:flex;border:1.5px solid #1e3a5f;border-radius:4px;overflow:hidden;margin-bottom:10px}
+.sc2{flex:1;padding:5px 8px;text-align:center;border-right:1px solid rgba(255,255,255,.3)}.sc2:last-child{border-right:none}
+.sn2{font-size:16px;font-weight:800;display:block}.sl{font-size:9px;display:block}
+.st{background:#1e3a5f;color:#fff}.sp2{background:#065f46;color:#fff}
+.si2{background:#991b1b;color:#fff}.sn3{background:#374151;color:#fff}.sd{background:#92400e;color:#fff}
+.sh{background:#1e3a5f;color:#fff;padding:4px 8px;font-weight:700;font-size:11px;margin:8px 0 0;border-radius:3px 3px 0 0}
+.sm{font-weight:400;font-size:9px;opacity:.8;margin-left:8px}
+table{width:100%;border-collapse:collapse;margin-bottom:4px}
+th{background:#e8edf5;font-size:9px;padding:3px 5px;border:1px solid #ccc;text-align:left}
+td{font-size:10px;padding:3px 5px;border:1px solid #ddd;vertical-align:top}
+tr{break-inside:avoid}
+.tid{text-align:center;color:#64748b}.bas{font-size:9px;color:#555}
+.sp{background:#dcfce7;color:#15803d;font-weight:700;text-align:center}
+.si{background:#fee2e2;color:#b91c1c;font-weight:700;text-align:center}
+.sn{background:#f3f4f6;color:#6b7280;font-weight:700;text-align:center}
+.sa{background:#fee2e2;color:#b91c1c;font-weight:700;text-align:center}
+.sb{background:#fef9c3;color:#92400e;font-weight:700;text-align:center}
+.sc{background:#eff6ff;color:#1d4ed8;font-weight:700;text-align:center}
+.nt{color:#555;font-size:9px;font-style:italic;margin-top:2px}
+.ft{margin-top:10px;border-top:1px solid #ccc;padding-top:5px;font-size:9px;color:#888;text-align:right}
+/* 核對簽署彙總表 */
+.sg-sec{margin-top:16px;padding-top:10px;border-top:2.5px solid #1e3a5f;page-break-inside:avoid}
+.sg-hd{font-weight:800;font-size:12px;margin-bottom:7px;display:flex;align-items:center;gap:5px}
+.sg-table{width:100%;border-collapse:collapse}
+.sg-table th{background:#1e3a5f;color:#fff;font-size:10px;padding:5px 8px;border:1px solid #1e3a5f;text-align:left}
+.sgn{font-size:10px;padding:6px 8px;border:1px solid #ccc;font-weight:600;background:#f8fafc;width:38%}
+.sgv{font-size:11px;padding:6px 8px;border:1px solid #ccc;min-width:70px}
+.sgv.empty{background:#fff8f8;color:#ccc}
+@page{margin:12mm;size:A4}
+</style></head><body>
+<div class="rt">機水電設計圖說　自主檢查報告　${modeLabel}</div>
+<div class="ri">
+  <div class="rc"><div class="rl">工程名稱</div><div class="rv">${esc(projName)}</div></div>
+  <div class="rc"><div class="rl">項目</div><div class="rv">${esc(projItem)}</div></div>
+  <div class="rc"><div class="rl">版次／核對日期</div><div class="rv">${esc(drawingRev)} ／ ${esc(checkDate)}</div></div>
+  <div class="rc"><div class="rl">操作人員</div><div class="rv">${esc(operator)}</div></div>
+</div>
+<div class="su">
+  <div class="sc2 st"><span class="sn2">${total}</span><span class="sl">總計項目</span></div>
+  <div class="sc2 sp2"><span class="sn2">${totPass}</span><span class="sl">✓ 符合</span></div>
+  <div class="sc2 si2"><span class="sn2">${totIssue}</span><span class="sl">✗ 有問題</span></div>
+  <div class="sc2 sn3"><span class="sn2">${totNa}</span><span class="sl">— 不適用</span></div>
+  <div class="sc2 sd"><span class="sn2">${totTodo}</span><span class="sl">□ 待核對</span></div>
+</div>
+${sections}
+${sigBlock}
+<div class="ft">列印時間：${new Date().toLocaleString('zh-TW')}　／　機水電設計圖說自主檢查系統</div>
+</body></html>`;
+
+  const win=window.open('','_blank');
+  if(!win){alert('請允許此網站開啟彈出視窗，再重試一次。');return;}
+  win.document.write(html);
+  win.document.close();
+  setTimeout(()=>{win.focus();win.print();},400);
+}
+
+function confirmReset(){
+  if(confirm('⚠️ 確定要清除所有核對紀錄？\n此操作無法復原。')){
+    S={sys:'',sub:'',expanded:{},chk:{},note:{},sig:{}};
+    g('projectName').value='';g('drawingRev').value='';g('checkDate').value='';
+    _dateLocked=false;g('checkDate').readOnly=false;
+    g('dateLockBtn').style.display='none';g('dateLockBtn').textContent='🔒';
+    localStorage.removeItem(KEY);
+    renderSB();renderMain();toast('✅ 已重置所有核對資料');
+  }
+}
+
+let _dateLocked = false;
+function onCheckDateChange(){
+  if(g('checkDate').value){
+    _dateLocked=true;
+    g('checkDate').readOnly=true;
+    g('dateLockBtn').style.display='inline';
+    g('dateLockBtn').textContent='🔒';
+    g('dateLockBtn').title='點此解鎖日期';
+  }
+  save();
+}
+function toggleDateLock(){
+  _dateLocked=!_dateLocked;
+  g('checkDate').readOnly=_dateLocked;
+  g('dateLockBtn').textContent=_dateLocked?'🔒':'🔓';
+  g('dateLockBtn').title=_dateLocked?'點此解鎖日期':'點此鎖定日期';
+}
+
+function restoreSession(){
+  const d=loadSaved();if(d){applyData(d);}
+  g('restoreModal').classList.add('hidden');
+  renderSB();renderMain();toast('✅ 已恢復上次作業');
+}
+function startFresh(){
+  g('restoreModal').classList.add('hidden');
+  g('checkDate').value=new Date().toISOString().split('T')[0];
+  _dateLocked=false;g('checkDate').readOnly=false;
+  g('dateLockBtn').style.display='none';g('dateLockBtn').textContent='🔒';
+  renderSB();renderMain();
+}
+
+// ═══════════════════════════════════════════════
+// 工具
+// ═══════════════════════════════════════════════
+function g(id){return document.getElementById(id);}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function toast(msg){const t=g('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+
+// ═══════════════════════════════════════════════
+// 帳號系統（串接 Cloudflare Worker）
+// ═══════════════════════════════════════════════
+let CURR_ACCT = null;
+
+function showLoginErr(msg) {
+  const e = g('loginErr');
+  e.textContent = msg; e.style.display = 'block';
+}
+
+function applyLogin(user) {
+  CURR_ACCT = user;
+  g('loginScreen').style.display = 'none';
+  g('badgeIcon').textContent = user.isAdmin ? '👑' : '👤';
+  g('badgeName').textContent = user.name;
+  g('userBadge').style.display = 'inline-flex';
+  g('adminBtn').style.display = user.isAdmin ? 'inline' : 'none';
+  g('reportBtn').style.display = (user.isAdmin || user.canReport) ? 'inline-flex' : 'none';
+  showProjectScreen(user);
+}
+
+async function doLogin() {
+  const name = g('loginName').value.trim();
+  const pwd  = g('loginPwd').value;
+  if (!name) { showLoginErr('請輸入帳號名稱'); return; }
+  if (!pwd)  { showLoginErr('請輸入密碼'); return; }
+  g('loginBtn').textContent = '登入中…'; g('loginBtn').disabled = true;
+  g('loginErr').style.display = 'none';
+  try {
+    const data = await api('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ name, password: pwd })
+    });
+    if (data.error) { showLoginErr(data.error === '密碼錯誤' ? '❌ 密碼錯誤' : data.error); return; }
+    AUTH_TOKEN = data.token;
+    sessionStorage.setItem(JWT_KEY, AUTH_TOKEN);
+    applyLogin(data.user);
+  } catch (e) {
+    showLoginErr('網路錯誤，請稍後再試');
+  } finally {
+    g('loginBtn').textContent = '登入'; g('loginBtn').disabled = false;
+  }
+}
+
+async function createAcct() {
+  if (!CURR_ACCT?.isAdmin) { toast('⛔ 僅管理者可建立帳號'); return; }
+  const name = g('newAcctName').value.trim();
+  const pwd  = g('newAcctPwd').value;
+  if (!name) { alert('請輸入帳號名稱'); return; }
+  if (!pwd)  { alert('請設定密碼'); return; }
+  const data = await api('/admin/accounts', {
+    method: 'POST',
+    body: JSON.stringify({ name, password: pwd, systems: [], canReport: false })
+  });
+  if (data.error) { alert('建立失敗：' + data.error); return; }
+  g('newAcctName').value = ''; g('newAcctPwd').value = '';
+  toast('✅ 已建立帳號：' + name);
+  _renderAdminAcctList();
+}
+
+async function delAcct(id) {
+  const list = await api('/admin/accounts');
+  const a = Array.isArray(list) ? list.find(x => x.id === id) : null;
+  if (!confirm(`確定刪除帳號「${a?.name || id}」？`)) return;
+  const res = await api(`/admin/accounts/${id}`, { method: 'DELETE' });
+  if (res.error) { alert('刪除失敗：' + res.error); return; }
+  toast('🗑 已刪除帳號');
+  _renderAdminAcctList();
+}
+
+function logout() {
+  if (!confirm('確定要登出？')) return;
+  AUTH_TOKEN = null; CURR_ACCT = null; CURR_PROJ = null;
+  sessionStorage.removeItem(JWT_KEY);
+  S = { sys: '', sub: '', expanded: {}, chk: {}, note: {}, sig: {} };
+  g('projectName').value = ''; g('drawingRev').value = ''; g('checkDate').value = '';
+  g('userBadge').style.display = 'none';
+  g('adminBtn').style.display = 'none';
+  g('reportBtn').style.display = 'none';
+  g('projectScreen').style.display = 'none';
+  g('loginName').value = ''; g('loginPwd').value = '';
+  g('loginErr').style.display = 'none';
+  g('loginScreen').style.display = 'flex';
+}
+
+// ═══════════════════════════════════════════════
+// 工程管理
+// ═══════════════════════════════════════════════
+let CURR_PROJ = null;
+let _kvSaveTimer = null;
+let _dirty = false;
+let _autoSaveInterval = null;
+let _autoSaveEnabled = false;
+
+function showProjectScreen(user) {
+  g('ps-icon').textContent = user.isAdmin ? '👑' : '👤';
+  g('ps-name').textContent = user.name;
+  g('addProjBtn').style.display = user.isAdmin ? 'inline-flex' : 'none';
+  g('projectScreen').style.display = 'flex';
+  renderProjectList();
+}
+
+async function renderProjectList() {
+  g('projList').innerHTML = '<div style="color:var(--g400);font-size:12px;padding:8px">載入中…</div>';
+  const list = await api('/projects');
+  if (!Array.isArray(list)) { g('projList').innerHTML = '<div style="color:#ef4444">載入失敗</div>'; return; }
+  if (list.length === 0) {
+    g('projList').innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--g400);padding:40px 0;font-size:13px">
+      ${CURR_ACCT?.isAdmin ? '尚無工程，請點右上角「＋ 新增工程」' : '尚無指派工程，請聯絡管理者'}</div>`;
+    return;
+  }
+  // 取各工程進度（並行）
+  const states = await Promise.all(list.map(p => api(`/state/${p.id}`)));
+  g('projList').innerHTML = list.map((p, i) => {
+    const st = states[i] || {};
+    const pct = calcProjPct(p, st);
+    const isAdmin = CURR_ACCT?.isAdmin;
+    return `<div class="proj-card" onclick="enterProject('${p.id}')">
+      ${isAdmin ? `<button class="proj-del" onclick="event.stopPropagation();deleteProject('${p.id}')" title="刪除工程">🗑</button>` : ''}
+      <div class="proj-no">${esc(p.caseNo || '無案件編號')}</div>
+      <div class="proj-nm">${esc(p.name)}</div>
+      <div class="proj-bar-bg"><div class="proj-bar-fill" style="width:${pct}%"></div></div>
+      <div class="proj-meta">
+        <span>${p.systems?.length || 0} 個工項</span>
+        <span>完成 ${pct}%</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function calcProjPct(proj, state) {
+  const chk = state.chk || {};
+  const sysIds = proj.systems || [];
+  if (!sysIds.length) return 0;
+  let total = 0, done = 0;
+  DATA.forEach(sys => {
+    if (!sysIds.includes(sys.id)) return;
+    const items = sysAllItems(sys);
+    items.forEach(i => { total++; if (chk[i.id]) done++; });
+  });
+  return total ? Math.round(done / total * 100) : 0;
+}
+
+function openNewProjModal() {
+  g('np-caseNo').value = ''; g('np-name').value = '';
+  g('np-systems').innerHTML = DATA.map(sys =>
+    `<label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;padding:2px 0;user-select:none">
+      <input type="checkbox" value="${sys.id}" style="width:14px;height:14px;cursor:pointer;accent-color:var(--pr)">
+      <span>${sys.icon} ${sys.name}</span>
+    </label>`
+  ).join('');
+  g('newProjModal').classList.remove('hidden');
+  g('np-name').focus();
+}
+
+async function createProject() {
+  const caseNo = g('np-caseNo').value.trim();
+  const name   = g('np-name').value.trim();
+  if (!name) { alert('請輸入案件名稱'); return; }
+  const systems = [...g('np-systems').querySelectorAll('input:checked')].map(el => el.value);
+  const data = await api('/projects', {
+    method: 'POST',
+    body: JSON.stringify({ caseNo, name, systems })
+  });
+  if (data.error) { alert('建立失敗：' + data.error); return; }
+  g('newProjModal').classList.add('hidden');
+  toast('✅ 已建立工程：' + name);
+  renderProjectList();
+}
+
+async function deleteProject(id) {
+  const list = await api('/projects');
+  const p = Array.isArray(list) ? list.find(x => x.id === id) : null;
+  if (!confirm(`確定刪除工程「${p?.name || id}」？進度資料也會一併清除。`)) return;
+  const res = await api(`/projects/${id}`, { method: 'DELETE' });
+  if (res.error) { alert('刪除失敗：' + res.error); return; }
+  toast('🗑 已刪除工程');
+  renderProjectList();
+}
+
+async function enterProject(id) {
+  const list = await api('/projects');
+  CURR_PROJ = Array.isArray(list) ? list.find(p => p.id === id) : null;
+  if (!CURR_PROJ) { toast('找不到工程'); return; }
+  // 從 KV 載入進度
+  const state = await api(`/state/${id}`);
+  S = {
+    sys: '', sub: '', expanded: {},
+    chk:  state.chk  || {},
+    note: state.note || {},
+    sig:  state.sig  || {},
+  };
+  // 更新 header 工程欄位
+  g('projectName').value = CURR_PROJ.caseNo ? `${CURR_PROJ.caseNo} ${CURR_PROJ.name}` : CURR_PROJ.name;
+  g('drawingRev').value  = state.proj?.rev  || '';
+  const savedDate = state.proj?.date || '';
+  g('checkDate').value = savedDate || new Date().toISOString().split('T')[0];
+  _dateLocked = !!savedDate;
+  g('checkDate').readOnly = _dateLocked;
+  g('dateLockBtn').style.display = _dateLocked ? 'inline' : 'none';
+  g('dateLockBtn').textContent = '🔒';
+  g('dateLockBtn').title = '點此解鎖日期';
+  // 切換畫面
+  g('projectScreen').style.display = 'none';
+  _dirty = false;
+  g('autoSaveLbl').style.display = 'inline-flex';
+  g('autoSaveCk').checked = false;
+  g('autoSaveTick').textContent = '';
+  _autoSaveEnabled = false; clearInterval(_autoSaveInterval);
+  renderSB(); renderMain();
+}
+
+async function kvSave() {
+  if (!CURR_PROJ) return;
+  await api(`/state/${CURR_PROJ.id}`, {
+    method: 'PUT',
+    body: JSON.stringify({
+      proj: { name: CURR_PROJ.name, rev: g('drawingRev').value, date: g('checkDate').value },
+      chk: S.chk, note: S.note, sig: S.sig
+    })
+  });
+  _dirty = false;
+  toast('✅ 已存檔');
+  updateAutoSaveTick();
+}
+
+function toggleAutoSave(enabled) {
+  _autoSaveEnabled = enabled;
+  clearInterval(_autoSaveInterval);
+  if (enabled) {
+    _autoSaveInterval = setInterval(() => { if (_dirty) kvSave(); }, 5 * 60 * 1000);
+    updateAutoSaveTick();
+    toast('⏱ 自動存檔已開啟（每 5 分鐘）');
+  } else {
+    g('autoSaveTick').textContent = '';
+    toast('自動存檔已關閉');
+  }
+}
+
+function updateAutoSaveTick() {
+  const el = g('autoSaveTick');
+  if (!el) return;
+  const now = new Date();
+  el.textContent = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')} ✓`;
+}
+
+// ═══════════════════════════════════════════════
+// 管理員：帳號與系統權限管理
+// ═══════════════════════════════════════════════
+async function openAdminPanel(){
+  if(!CURR_ACCT?.isAdmin){toast('⛔ 僅管理員可操作');return;}
+  g('adminModal').classList.remove('hidden');
+  await _refreshAdminCache();
+  _renderAdminAcctList();
+}
+
+async function _renderAdminAcctList() {
+  g('adminAcctList').innerHTML = '<div style="text-align:center;color:#94a3b8;padding:16px 0">載入中…</div>';
+  const list = await api('/admin/accounts');
+  if (list.error) { g('adminAcctList').innerHTML = `<div style="color:#ef4444;padding:8px">${esc(list.error)}</div>`; return; }
+  const others = list.filter(a => !a.isAdmin);
+  if (others.length === 0) {
+    g('adminAcctList').innerHTML = '<div style="text-align:center;color:#94a3b8;padding:16px 0">尚無操作者帳號<br><span style="font-size:10.5px">請在下方建立</span></div>';
+    return;
+  }
+  g('adminAcctList').innerHTML = others.map(a => {
+    const sysCks = DATA.map(sys => {
+      const checked = (a.systems || []).includes(sys.id);
+      return `<label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;padding:3px 0;user-select:none">
+        <input type="checkbox" onchange="toggleSysAccess('${a.id}','${sys.id}',this.checked)"
+          ${checked ? 'checked' : ''}
+          style="width:14px;height:14px;cursor:pointer;accent-color:var(--pr)">
+        <span>${sys.icon} ${sys.name}</span>
+      </label>`;
+    }).join('');
+    return `<div style="padding:13px;background:var(--g50);border-radius:var(--r);border:1px solid var(--g200)">
+      <div style="display:flex;align-items:center;gap:9px;margin-bottom:10px">
+        <div class="acct-av">${esc(a.name.charAt(0))}</div>
+        <div style="font-size:13px;font-weight:600;color:var(--g700);flex:1">${esc(a.name)}</div>
+        <button class="btn-out" onclick="delAcct('${a.id}')"
+          style="padding:3px 9px;font-size:11px">🗑 刪除</button>
+      </div>
+      <div style="font-size:10.5px;color:var(--g500);margin-bottom:6px;font-weight:600">可存取系統：</div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:2px 12px">${sysCks}</div>
+      <div style="margin-top:10px;padding-top:9px;border-top:1px solid var(--g200)">
+        <label style="display:flex;align-items:center;gap:7px;font-size:12px;cursor:pointer;user-select:none">
+          <input type="checkbox" onchange="toggleReportAccess('${a.id}',this.checked)"
+            ${a.canReport ? 'checked' : ''}
+            style="width:14px;height:14px;cursor:pointer;accent-color:#16a34a">
+          <span>📋 <strong>送出報告</strong>　允許此帳號將檢查結果送至 Notion</span>
+        </label>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// 快取目前面板帳號資料，避免重複請求
+let _adminAcctCache = [];
+async function _refreshAdminCache() {
+  const list = await api('/admin/accounts');
+  _adminAcctCache = Array.isArray(list) ? list : [];
+}
+
+async function toggleSysAccess(acctId, sysId, checked) {
+  const acct = _adminAcctCache.find(a => a.id === acctId);
+  if (!acct) return;
+  let systems = [...(acct.systems || [])];
+  if (checked) { if (!systems.includes(sysId)) systems.push(sysId); }
+  else { systems = systems.filter(s => s !== sysId); }
+  acct.systems = systems;
+  await api(`/admin/accounts/${acctId}`, { method: 'PATCH', body: JSON.stringify({ systems }) });
+}
+
+async function toggleReportAccess(acctId, checked) {
+  const acct = _adminAcctCache.find(a => a.id === acctId);
+  if (acct) acct.canReport = checked;
+  await api(`/admin/accounts/${acctId}`, { method: 'PATCH', body: JSON.stringify({ canReport: checked }) });
+}
+
+// ═══════════════════════════════════════════════
+// 送出報告（Cloudflare Worker → Notion）
+// ═══════════════════════════════════════════════
+function _buildReport(){
+  const proj=g('projectName').value.trim()||'未命名專案';
+  const rev=g('drawingRev').value.trim();
+  const date=g('checkDate').value;
+  let pass=0,issue=0,na=0,total=0;
+  DATA.forEach(sys=>sysAllItems(sys).forEach(i=>{
+    total++;
+    const s=S.chk[i.id]||'';
+    if(s==='pass')pass++;else if(s==='issue')issue++;else if(s==='na')na++;
+  }));
+  const pct=total?Math.round((pass+issue+na)/total*100):0;
+  const systems=DATA.map(sys=>{
+    const subs=sys.expandable
+      ?sys.subs.map(sub=>({
+          id:sub.id,name:sub.name,icon:sub.icon,
+          items:sub.items.map(i=>({
+            id:i.id,sev:i.sev,text:i.text,basis:i.basis,
+            status:S.chk[i.id]||'',note:S.note[i.id]||''
+          }))
+        }))
+      :[{id:sys.id,name:sys.name,icon:sys.icon,
+          items:(sys.items||[]).map(i=>({
+            id:i.id,sev:i.sev,text:i.text,basis:i.basis,
+            status:S.chk[i.id]||'',note:S.note[i.id]||''
+          }))}];
+    return{id:sys.id,name:sys.name,icon:sys.icon,expandable:sys.expandable,subs};
+  });
+  return{
+    meta:{proj,rev,date,submitter:CURR_ACCT?.name||'',
+      caseNo:CURR_PROJ?.caseNo||'', projName:CURR_PROJ?.name||'',
+      submittedAt:new Date().toISOString(),pct,pass,issue,na,total},
+    systems
+  };
+}
+
+async function exportReportJSON(){
+  if(!CURR_ACCT?.isAdmin&&!CURR_ACCT?.canReport){
+    toast('⛔ 您沒有送出報告的權限');return;
+  }
+  if(!CURR_PROJ){toast('⛔ 請先進入工程');return;}
+  const report=_buildReport();
+  toast('⏳ 傳送中…');
+  const res=await api(`/report/${CURR_PROJ.id}`,{
+    method:'POST',
+    body:JSON.stringify({report})
+  });
+  if(res.ok){
+    toast('✅ 報告已成功送至 Notion');
+  }else{
+    toast('❌ 傳送失敗：'+(res.error||'未知錯誤'));
+  }
+}
+
+// ═══════════════════════════════════════════════
+// 多份紀錄管理
+// ═══════════════════════════════════════════════
+let RKEY='mep_records_v3';
+function loadRecords(){try{return JSON.parse(localStorage.getItem(RKEY))||[];}catch(e){return[];}}
+function saveRecs(recs){localStorage.setItem(RKEY,JSON.stringify(recs));}
+
+function saveAsRecord(){
+  const proj=g('projectName').value.trim()||'未命名專案';
+  const rev=g('drawingRev').value.trim();
+  const date=g('checkDate').value;
+  const ov=overallStats();
+  const rec={
+    id:Date.now().toString(),ts:new Date().toISOString(),
+    proj:{name:proj,rev,date},pct:ov.pct,
+    sys:S.sys,sub:S.sub,expanded:{...S.expanded},
+    chk:{...S.chk},note:{...S.note},sig:JSON.parse(JSON.stringify(S.sig))
+  };
+  let recs=loadRecords();
+  const ei=recs.findIndex(r=>r.proj.name===proj&&r.proj.rev===rev);
+  if(ei>=0){
+    if(!confirm(`「${proj}${rev?' '+rev:''}」已有紀錄，是否覆蓋？`))return;
+    recs[ei]=rec;
+  } else {
+    recs.unshift(rec);
+    if(recs.length>20)recs.pop();
+  }
+  saveRecs(recs);
+  toast('✅ 已儲存紀錄：'+proj+(rev?' '+rev:''));
+}
+
+function openRecordManager(){_renderRecList();g('recordModal').classList.remove('hidden');}
+
+function _renderRecList(){
+  const recs=loadRecords();
+  g('recordList').innerHTML=recs.length===0
+    ?'<div style="text-align:center;color:#94a3b8;padding:24px 0">尚無儲存的紀錄<br><span style="font-size:10.5px">點「💾 儲存」建立第一筆</span></div>'
+    :recs.map(r=>{
+      const ts=new Date(r.ts).toLocaleString('zh-TW');
+      const nm=esc((r.proj?.name||'未命名')+(r.proj?.rev?' '+r.proj.rev:''));
+      const dt=r.proj?.date?'核對日：'+r.proj.date+' · ':'';
+      return`<div class="rec-item">
+        <div class="rec-info">
+          <div class="rec-name">${nm}</div>
+          <div class="rec-meta">${dt}儲存：${ts}</div>
+          <div class="rec-prog">
+            <div class="rec-bar"><div class="rec-fill" style="width:${r.pct||0}%"></div></div>
+            <span class="rec-pct">${r.pct||0}%</span>
+          </div>
+        </div>
+        <div class="rec-acts">
+          <button class="btn-out" onclick="deleteRecord('${r.id}')" title="刪除" style="padding:5px 9px">🗑</button>
+          <button class="btn btn-p" onclick="loadRecord('${r.id}')">載入</button>
+        </div>
+      </div>`;
+    }).join('');
+}
+
+function loadRecord(id){
+  const r=loadRecords().find(x=>x.id===id);
+  if(!r)return;
+  applyData(r);renderSB();renderMain();save();
+  g('recordModal').classList.add('hidden');
+  toast('✅ 已載入：'+(r.proj?.name||'紀錄'));
+}
+
+function deleteRecord(id){
+  if(!confirm('確定刪除這筆紀錄？'))return;
+  saveRecs(loadRecords().filter(r=>r.id!==id));
+  _renderRecList();
+  toast('🗑 已刪除紀錄');
+}
+
+// ═══════════════════════════════════════════════
+// 匯出 / 匯入 JSON
+// ═══════════════════════════════════════════════
+function exportJSON(){
+  const proj=g('projectName').value||'未命名專案';
+  const data={
+    version:'MEP_v3',exportedAt:new Date().toISOString(),
+    proj:{name:proj,rev:g('drawingRev').value,date:g('checkDate').value},
+    sys:S.sys,sub:S.sub,expanded:S.expanded,
+    chk:S.chk,note:S.note,sig:S.sig
+  };
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download='MEP_'+proj.replace(/[/\\?%*:|"<>]/g,'_')+'_'+new Date().toISOString().split('T')[0]+'.json';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast('✅ 已匯出 JSON 檔案');
+}
+
+function importJSON(e){
+  const file=e.target.files[0];if(!file)return;
+  const rd=new FileReader();
+  rd.onload=ev=>{
+    try{
+      const d=JSON.parse(ev.target.result);
+      if(!d.chk)throw new Error('格式錯誤（缺少 chk 欄位）');
+      applyData(d);renderSB();renderMain();save();
+      toast('✅ 已匯入：'+(d.proj?.name||file.name));
+    }catch(err){alert('❌ 匯入失敗：'+err.message);}
+    e.target.value='';
+  };
+  rd.readAsText(file,'UTF-8');
+}
+
+// ═══════════════════════════════════════════════
+// 初始化（冷啟動）
+// ═══════════════════════════════════════════════
+function init(){
+  renderSB(); renderMain();
+  ['projectName','drawingRev','checkDate'].forEach(id=>g(id).addEventListener('change',save));
+  // 嘗試從 localStorage JWT 自動恢復 session
+  const jwt = sessionStorage.getItem(JWT_KEY);
+  if (jwt) {
+    try {
+      const payload = JSON.parse(atob(jwt.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));
+      if (payload.exp > Math.floor(Date.now() / 1000)) {
+        AUTH_TOKEN = jwt;
+        applyLogin({ id: payload.sub, name: payload.name, isAdmin: payload.isAdmin,
+          systems: payload.systems || [], canReport: payload.canReport ?? true });
+        return;
+      }
+    } catch { /* JWT 損壞，清除 */ }
+    sessionStorage.removeItem(JWT_KEY);
+  }
+  // 無有效 session，顯示登入畫面
+}
+init();
+</script>
+</body>
+</html>

@@ -261,16 +261,18 @@ function buildBlocks(report) {
     },
   });
   for (const sys of systems) {
+    const sysTitle = [sys.icon, sys.name].filter(Boolean).join(' ') || '（未命名系統）';
     blocks.push({ object:'block', type:'heading_1',
-      heading_1:{ rich_text:[{ type:'text', text:{ content:`${sys.icon} ${sys.name}` } }] } });
+      heading_1:{ rich_text:[{ type:'text', text:{ content: sysTitle } }] } });
     for (const sub of sys.subs) {
+      const subTitle = [sub.icon, sub.name].filter(Boolean).join(' ') || '（未命名子項）';
       blocks.push({ object:'block', type:'heading_2',
-        heading_2:{ rich_text:[{ type:'text', text:{ content:`${sub.icon} ${sub.name}` } }] } });
+        heading_2:{ rich_text:[{ type:'text', text:{ content: subTitle } }] } });
       for (const item of sub.items) {
         const s = item.status || '';
         const color = s==='issue'?'red_background': s==='pass'?'green_background': s==='na'?'gray_background':'default';
         const emoji = s==='pass'?'✅': s==='issue'?'❌': s==='na'?'➖':'⬜';
-        let content = `${STATUS_ICON[s]||'□'}  [${SEV_LABEL[item.sev]||item.sev}]  ${item.text}`;
+        let content = `${STATUS_ICON[s]||'□'}  [${SEV_LABEL[item.sev]||item.sev||'—'}]  ${item.text||'（無內容）'}`;
         if (item.basis) content += `\n📋 ${item.basis}`;
         if (item.note)  content += `\n📝 備註：${item.note}`;
         if (content.length > 1990) content = content.slice(0, 1990) + '…';

@@ -207,7 +207,7 @@ async function notionReq(method, path, body, token) {
   return res.json();
 }
 
-async function ensureReportDb(kv, token) {
+async function ensureReportDb(kv, token, parentPageId) {
   const cached = await kv.get('report_db_id');
   if (cached) {
     try {
@@ -215,9 +215,9 @@ async function ensureReportDb(kv, token) {
       if (!db.archived) return cached;
     } catch { /* 繼續建立新的 */ }
   }
-  // 取得父頁面（從 Notion 工作區根層建立）
+  if (!parentPageId) throw new Error('請設定 NOTION_PARENT_PAGE_ID（Notion 父頁面 ID）');
   const db = await notionReq('POST', '/databases', {
-    parent: { type: 'workspace', workspace: true },
+    parent: { type: 'page_id', page_id: parentPageId },
     icon:   { type: 'emoji', emoji: '📋' },
     title:  [{ type: 'text', text: { content: 'MEP 檢查報告' } }],
     properties: {
@@ -254,16 +254,18 @@ function buildBlocks(report) {
     },
   });
   for (const sys of systems) {
+    const sysTitle = [sys.icon, sys.name].filter(Boolean).join(' ') || '（未命名系統）';
     blocks.push({ object:'block', type:'heading_1',
-      heading_1:{ rich_text:[{ type:'text', text:{ content:`${sys.icon} ${sys.name}` } }] } });
+      heading_1:{ rich_text:[{ type:'text', text:{ content: sysTitle } }] } });
     for (const sub of sys.subs) {
+      const subTitle = [sub.icon, sub.name].filter(Boolean).join(' ') || '（未命名子項）';
       blocks.push({ object:'block', type:'heading_2',
-        heading_2:{ rich_text:[{ type:'text', text:{ content:`${sub.icon} ${sub.name}` } }] } });
+        heading_2:{ rich_text:[{ type:'text', text:{ content: subTitle } }] } });
       for (const item of sub.items) {
         const s = item.status || '';
         const color = s==='issue'?'red_background': s==='pass'?'green_background': s==='na'?'gray_background':'default';
         const emoji = s==='pass'?'✅': s==='issue'?'❌': s==='na'?'➖':'⬜';
-        let content = `${STATUS_ICON[s]||'□'}  [${SEV_LABEL[item.sev]||item.sev}]  ${item.text}`;
+        let content = `${STATUS_ICON[s]||'□'}  [${SEV_LABEL[item.sev]||item.sev||'—'}]  ${item.text||'（無內容）'}`;
         if (item.basis) content += `\n📋 ${item.basis}`;
         if (item.note)  content += `\n📝 備註：${item.note}`;
         if (content.length > 1990) content = content.slice(0, 1990) + '…';
@@ -276,10 +278,17 @@ function buildBlocks(report) {
   return blocks;
 }
 
-async function pushToNotion(kv, token, report) {
-  const dbId  = await ensureReportDb(kv, token);
+async function pushToNotion(kv, token, parentPageId, report) {
+  const dbId  = await ensureReportDb(kv, token, parentPageId);
   const { meta } = report;
-  const title = `${meta.proj}${meta.rev?' '+meta.rev:''} ${meta.date||''}`.trim();
+  // 將 submittedAt（ISO）轉為 台灣時間 YYYY-MM-DD HH:mm
+  const dt = new Date(meta.submittedAt || Date.now());
+  const pad = n => String(n).padStart(2, '0');
+  const twOffset = 8 * 60;
+  const local = new Date(dt.getTime() + twOffset * 60000);
+  const dateTime = `${local.getUTCFullYear()}-${pad(local.getUTCMonth()+1)}-${pad(local.getUTCDate())} ${pad(local.getUTCHours())}:${pad(local.getUTCMinutes())}`;
+  const parts = [dateTime, meta.caseNo, meta.projName, meta.submitter].filter(Boolean);
+  const title = parts.join('　');
   const props = {
     '報告名稱':  { title:     [{ text:{ content: title } }] },
     '專案名稱':  { rich_text: [{ text:{ content: meta.proj        ||'' } }] },
@@ -492,7 +501,7 @@ async function handleReport(projId, req, env, cors, user) {
   const { report } = await req.json();
   if (!report?.meta || !report?.systems) return E('無效的報告格式', 400, cors);
   try {
-    const result = await pushToNotion(env.MEP_KV, env.NOTION_TOKEN, report);
+    const result = await pushToNotion(env.MEP_KV, env.NOTION_TOKEN, env.NOTION_PARENT_PAGE_ID, report);
     return R({ ok: true, ...result }, 200, cors);
   } catch (e) {
     return E(`Notion 錯誤：${e.message}`, 502, cors);
@@ -514,7 +523,7 @@ export default {
     }
 
     const url    = new URL(request.url);
-    const path   = url.pathname.replace(/\/$/, ''); // 去尾部斜線
+    const path   = url.pathname.replace(/\/$/,''); // 去尾部斜線
     const method = request.method;
     const user   = await getUser(request, env);
 

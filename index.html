@@ -2444,7 +2444,7 @@ async function openAdminPanel(){
 async function _renderAdminAcctList() {
   g('adminAcctList').innerHTML = '<div style="text-align:center;color:#94a3b8;padding:16px 0">載入中…</div>';
   const list = await api('/admin/accounts');
-  if (list.error) { g('adminAcctList').innerHTML = `<div style="color:#ef4444;padding:8px">${list.error}</div>`; return; }
+  if (list.error) { g('adminAcctList').innerHTML = `<div style="color:#ef4444;padding:8px">${esc(list.error)}</div>`; return; }
   const others = list.filter(a => !a.isAdmin);
   if (others.length === 0) {
     g('adminAcctList').innerHTML = '<div style="text-align:center;color:#94a3b8;padding:16px 0">尚無操作者帳號<br><span style="font-size:10.5px">請在下方建立</span></div>';
@@ -2541,18 +2541,22 @@ function _buildReport(){
   };
 }
 
-function exportReportJSON(){
+async function exportReportJSON(){
   if(!CURR_ACCT?.isAdmin&&!CURR_ACCT?.canReport){
     toast('⛔ 您沒有送出報告的權限');return;
   }
+  if(!CURR_PROJ){toast('⛔ 請先進入工程');return;}
   const report=_buildReport();
-  const ts=new Date().toISOString().replace(/[:.]/g,'-').slice(0,19);
-  const blob=new Blob([JSON.stringify(report,null,2)],{type:'application/json'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download=`report_${ts}.json`;
-  a.click();
-  toast('✅ 報告 JSON 已下載，請執行 push_report.bat');
+  toast('⏳ 傳送中…');
+  const res=await api(`/report/${CURR_PROJ.id}`,{
+    method:'POST',
+    body:JSON.stringify({report})
+  });
+  if(res.ok){
+    toast('✅ 報告已成功送至 Notion');
+  }else{
+    toast('❌ 傳送失敗：'+(res.error||'未知錯誤'));
+  }
 }
 
 // ═══════════════════════════════════════════════

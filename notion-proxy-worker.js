@@ -1,15 +1,7 @@
 /**
  * notion-proxy-worker.js
- * Cloudflare Worker — MEP 檢查報告 → Notion
- *
- * 部署步驟：
- *   1. 前往 https://workers.cloudflare.com/ 免費註冊
- *   2. 建立新 Worker → 貼上本程式碼 → 部署
- *   3. 到 Worker 設定 → Variables → 新增 Secret：
- *      名稱：NOTION_TOKEN
- *      值：ntn_Y36273413268N3qINTubBtDxXTJUiBSr3w36Il3SNaK29v
- *   4. 複製 Worker URL（格式：https://xxx.workers.dev）
- *      貼到 index.html 頂部的 WORKER_URL 變數
+ * ⚠️  此檔案已廢棄 — Notion 推送功能已整合至主 worker.js (POST /report/:projId)
+ * 請勿部署此檔案。NOTION_TOKEN 請用 wrangler secret put NOTION_TOKEN 設定。
  */
 
 const NOTION_VER = '2022-06-28';

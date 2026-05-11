@@ -2563,9 +2563,9 @@ async function exportReportJSON(){
 // ═══════════════════════════════════════════════
 // 多份紀錄管理
 // ═══════════════════════════════════════════════
-let RKEY='mep_records_v3';
-function loadRecords(){try{return JSON.parse(localStorage.getItem(RKEY))||[];}catch(e){return[];}}
-function saveRecs(recs){localStorage.setItem(RKEY,JSON.stringify(recs));}
+function getRKEY(){return`mep_records_v3_${CURR_ACCT?.id||CURR_ACCT?.name||'anon'}`;}
+function loadRecords(){try{return JSON.parse(localStorage.getItem(getRKEY()))||[];}catch(e){return[];}}
+function saveRecs(recs){localStorage.setItem(getRKEY(),JSON.stringify(recs));}
 
 function saveAsRecord(){
   const proj=g('projectName').value.trim()||'未命名專案';

@@ -2564,7 +2564,25 @@ async function exportReportJSON(){
 // 多份紀錄管理
 // ═══════════════════════════════════════════════
 function getRKEY(){return`mep_records_v3_${CURR_ACCT?.id||CURR_ACCT?.name||'anon'}`;}
-function loadRecords(){try{return JSON.parse(localStorage.getItem(getRKEY()))||[];}catch(e){return[];}}
+function loadRecords(){
+  if(CURR_ACCT?.isAdmin){
+    // 管理者：合併所有帳號的紀錄
+    const all=[];
+    for(let i=0;i<localStorage.length;i++){
+      const k=localStorage.key(i);
+      if(!k||!k.startsWith('mep_records_v3_'))continue;
+      const owner=k.replace('mep_records_v3_','');
+      try{
+        const rows=JSON.parse(localStorage.getItem(k))||[];
+        rows.forEach(r=>{if(!r._owner)r._owner=owner;});
+        all.push(...rows);
+      }catch(e){}
+    }
+    all.sort((a,b)=>b.ts.localeCompare(a.ts));
+    return all;
+  }
+  try{return JSON.parse(localStorage.getItem(getRKEY()))||[];}catch(e){return[];}
+}
 function saveRecs(recs){localStorage.setItem(getRKEY(),JSON.stringify(recs));}
 
 function saveAsRecord(){
@@ -2576,9 +2594,12 @@ function saveAsRecord(){
     id:Date.now().toString(),ts:new Date().toISOString(),
     proj:{name:proj,rev,date},pct:ov.pct,
     sys:S.sys,sub:S.sub,expanded:{...S.expanded},
-    chk:{...S.chk},note:{...S.note},sig:JSON.parse(JSON.stringify(S.sig))
+    chk:{...S.chk},note:{...S.note},sig:JSON.parse(JSON.stringify(S.sig)),
+    _owner:CURR_ACCT?.name||CURR_ACCT?.id||'anon'
   };
-  let recs=loadRecords();
+  // 管理者儲存時寫入自己的 key
+  const key=getRKEY();
+  let recs;try{recs=JSON.parse(localStorage.getItem(key))||[];}catch(e){recs=[];}
   const ei=recs.findIndex(r=>r.proj.name===proj&&r.proj.rev===rev);
   if(ei>=0){
     if(!confirm(`「${proj}${rev?' '+rev:''}」已有紀錄，是否覆蓋？`))return;
@@ -2587,7 +2608,7 @@ function saveAsRecord(){
     recs.unshift(rec);
     if(recs.length>20)recs.pop();
   }
-  saveRecs(recs);
+  localStorage.setItem(key,JSON.stringify(recs));
   toast('✅ 已儲存紀錄：'+proj+(rev?' '+rev:''));
 }
 
@@ -2595,15 +2616,17 @@ function openRecordManager(){_renderRecList();g('recordModal').classList.remove(
 
 function _renderRecList(){
   const recs=loadRecords();
+  const isAdmin=CURR_ACCT?.isAdmin;
   g('recordList').innerHTML=recs.length===0
     ?'<div style="text-align:center;color:#94a3b8;padding:24px 0">尚無儲存的紀錄<br><span style="font-size:10.5px">點「💾 儲存」建立第一筆</span></div>'
     :recs.map(r=>{
       const ts=new Date(r.ts).toLocaleString('zh-TW');
       const nm=esc((r.proj?.name||'未命名')+(r.proj?.rev?' '+r.proj.rev:''));
       const dt=r.proj?.date?'核對日：'+r.proj.date+' · ':'';
+      const ownerTag=isAdmin&&r._owner?`<span style="background:#e0f2fe;color:#0369a1;border-radius:4px;padding:1px 6px;font-size:11px;margin-left:4px">${esc(r._owner)}</span>`:'';
       return`<div class="rec-item">
         <div class="rec-info">
-          <div class="rec-name">${nm}</div>
+          <div class="rec-name">${nm}${ownerTag}</div>
           <div class="rec-meta">${dt}儲存：${ts}</div>
           <div class="rec-prog">
             <div class="rec-bar"><div class="rec-fill" style="width:${r.pct||0}%"></div></div>
@@ -2611,24 +2634,32 @@ function _renderRecList(){
           </div>
         </div>
         <div class="rec-acts">
-          <button class="btn-out" onclick="deleteRecord('${r.id}')" title="刪除" style="padding:5px 9px">🗑</button>
-          <button class="btn btn-p" onclick="loadRecord('${r.id}')">載入</button>
+          <button class="btn-out" onclick="deleteRecord('${r.id}','${esc(r._owner||'')}')" title="刪除" style="padding:5px 9px">🗑</button>
+          <button class="btn btn-p" onclick="loadRecord('${r.id}','${esc(r._owner||'')}')">載入</button>
         </div>
       </div>`;
     }).join('');
 }
 
-function loadRecord(id){
-  const r=loadRecords().find(x=>x.id===id);
+function _resolveRecKey(owner){
+  if(owner&&CURR_ACCT?.isAdmin)return`mep_records_v3_${owner}`;
+  return getRKEY();
+}
+function loadRecord(id,owner){
+  const key=_resolveRecKey(owner);
+  let rows;try{rows=JSON.parse(localStorage.getItem(key))||[];}catch(e){rows=[];}
+  const r=rows.find(x=>x.id===id)||(CURR_ACCT?.isAdmin?loadRecords().find(x=>x.id===id):null);
   if(!r)return;
   applyData(r);renderSB();renderMain();save();
   g('recordModal').classList.add('hidden');
   toast('✅ 已載入：'+(r.proj?.name||'紀錄'));
 }
 
-function deleteRecord(id){
+function deleteRecord(id,owner){
   if(!confirm('確定刪除這筆紀錄？'))return;
-  saveRecs(loadRecords().filter(r=>r.id!==id));
+  const key=_resolveRecKey(owner);
+  let rows;try{rows=JSON.parse(localStorage.getItem(key))||[];}catch(e){rows=[];}
+  localStorage.setItem(key,JSON.stringify(rows.filter(r=>r.id!==id)));
   _renderRecList();
   toast('🗑 已刪除紀錄');
 }

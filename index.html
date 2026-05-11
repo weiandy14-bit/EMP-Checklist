@@ -698,8 +698,8 @@ body{font-family:'Segoe UI',-apple-system,'微軟正黑體',sans-serif;
         自動存檔
         <span id="autoSaveTick" style="font-size:10px;color:var(--g400)"></span>
       </label>
-      <button class="btn btn-rec" onclick="saveAsRecord()" title="儲存目前進度為一筆紀錄">💾 儲存</button>
-      <button class="btn btn-rec" onclick="openRecordManager()" title="管理所有已儲存的紀錄">📂 紀錄</button>
+      <button class="btn btn-p" onclick="kvSave()" title="存檔至雲端（所有帳號可見）" style="font-size:12px">☁️ 存檔</button>
+      <button class="btn btn-rec" onclick="openRecordManager()" title="管理本機快照紀錄">📂 紀錄</button>
       <button class="btn btn-rec" onclick="exportJSON()" title="匯出為 JSON 檔（可換電腦使用）">📤 匯出</button>
       <label class="btn btn-rec" title="從 JSON 檔匯入" style="cursor:pointer;display:inline-flex;align-items:center;gap:3px">📥 匯入<input type="file" id="importFileInput" accept=".json" onchange="importJSON(event)" style="display:none"></label>
       <button id="reportBtn" class="btn btn-rec" onclick="exportReportJSON()" style="display:none;background:#f0fdf4;color:#16a34a;border-color:#86efac;padding:5px 9px;font-size:11.5px" title="將本次檢查結果匯出 JSON，再執行 push_report.bat 送至 Notion">📋 傳送</button>
@@ -767,9 +767,10 @@ body{font-family:'Segoe UI',-apple-system,'微軟正黑體',sans-serif;
       <div class="modal-title">📂 紀錄管理</div>
       <button class="btn-out" onclick="g('recordModal').classList.add('hidden')" style="padding:3px 9px">✕</button>
     </div>
-    <div style="font-size:11px;color:var(--g400);margin-bottom:10px">最多儲存 20 筆・同名專案＋版次自動覆蓋</div>
+    <div style="font-size:11px;color:var(--g400);margin-bottom:10px">本機快照，最多 20 筆・同名專案＋版次自動覆蓋</div>
     <div id="recordList" style="max-height:350px;overflow-y:auto;display:flex;flex-direction:column;gap:7px"></div>
     <div class="modal-acts" style="margin-top:12px;border-top:1px solid var(--g100);padding-top:10px">
+      <button class="btn btn-rec" onclick="saveAsRecord();_renderRecList();" title="儲存目前進度為一筆本機快照">💾 儲存快照</button>
       <button class="btn-out" onclick="g('recordModal').classList.add('hidden')">關閉</button>
     </div>
   </div>

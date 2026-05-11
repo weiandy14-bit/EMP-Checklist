@@ -1,13 +1,17 @@
-name: Restore files from feature branch
+name: Sync files from feature branch to main
 
 on:
   push:
+    branches:
+      - claude/fix-api-call-error-EpFts
     paths:
+      - 'index.html'
+      - 'worker.js'
       - '.github/workflows/restore-files.yml'
   workflow_dispatch:
 
 jobs:
-  restore:
+  sync:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -16,7 +20,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Restore index.html and worker.js from feature branch
+      - name: Sync index.html and worker.js from feature branch to main
         run: |
           git fetch origin claude/fix-api-call-error-EpFts
           git checkout origin/claude/fix-api-call-error-EpFts -- index.html worker.js
@@ -26,6 +30,6 @@ jobs:
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "fix: 還原完整 index.html 與 worker.js (auto restore)"
+            git commit -m "sync: 從 feature branch 同步 index.html / worker.js"
             git push origin main
           fi

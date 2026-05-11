@@ -2712,7 +2712,8 @@ function init(){
   const jwt = sessionStorage.getItem(JWT_KEY);
   if (jwt) {
     try {
-      const payload = JSON.parse(atob(jwt.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));
+      const b64 = jwt.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');
+      const payload = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(b64), c => c.charCodeAt(0))));
       if (payload.exp > Math.floor(Date.now() / 1000)) {
         AUTH_TOKEN = jwt;
         applyLogin({ id: payload.sub, name: payload.name, isAdmin: payload.isAdmin,

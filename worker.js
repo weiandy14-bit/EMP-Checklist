@@ -359,7 +359,7 @@ async function handleLogin(req, env, cors, request) {
     }
     await clearFailures(env.MEP_KV, ip);
     const token = await jwtSign(
-      { sub: id, name, isAdmin: acct.isAdmin, canReport: acct.canReport, exp: Math.floor(Date.now()/1000) + JWT_TTL },
+      { sub: id, name, isAdmin: acct.isAdmin, systems: acct.systems || [], canReport: acct.canReport, exp: Math.floor(Date.now()/1000) + JWT_TTL },
       env.JWT_SECRET
     );
     return R({
